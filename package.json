@@ -1,8 +1,8 @@
 {
-    "name": "solidity-nextjs-starter",
-    "version": "2.0.0",
-    "description": "A starter kit for building full stack Ethereum dApps with Solidity and Next.js",
-    "author": "Tom Hirst <hello@tomhirst.com>",
+    "name": "packs-main",
+    "version": "0.0.1",
+    "description": "Just Packs",
+    "author": "PACKD",
     "license": "MIT",
     "private": true,
     "engines": {
@@ -12,8 +12,8 @@
         "packages/*"
     ],
     "scripts": {
-        "start:contracts": "yarn workspace solidity-next-js-starter-contracts run start",
-        "start:app": "yarn workspace solidity-next-js-starter-app run dev"
+        "start:contracts": "yarn workspace packs-contracts run start",
+        "start:app": "yarn workspace packs-app run dev"
     },
     "devDependencies": {
         "@typechain/ethers-v6": "^0.4.3",
