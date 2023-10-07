@@ -1,11 +1,16 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { PackMain } from "../typechain-types";
 
 const packConfig = {
   baseTokenURI: "baseTokenURI",
   name: "PackMain",
   symbol: "PCK",
+};
+
+const packBalance = async (packMain: PackMain) => {
+  return await ethers.provider.getBalance(await packMain.getAddress());
 };
 
 describe("PackMain", function () {
@@ -40,7 +45,12 @@ describe("PackMain", function () {
   it("Should mint a new pack", async function () {
     const { packMain, alice } = await loadFixture(setup);
     const packInstance = packMain.connect(alice);
+    const ethBalanceBefore = await packBalance(packMain);
     await packInstance.pack(alice.address, { value: ethers.parseEther("1") });
+
+    // Check pack eth balance
+    const ethBalanceAfter = await packBalance(packMain);
+    expect(ethBalanceAfter).to.equal(ethBalanceBefore + ethers.parseEther("1"));
 
     expect(await packMain.packState(0)).to.equal(1); // 1 is the enum value for Created
     expect(await packMain.ownerOf(0)).to.equal(alice.address);
@@ -59,9 +69,12 @@ describe("PackMain", function () {
     const packInstance = packMain.connect(alice);
     await packInstance.pack(alice.address, { value: ethers.parseEther("1") });
     expect(await packInstance.packState(0)).to.equal(1); // 1 is the enum value for Created
+    const ethBalanceBefore = await packBalance(packMain);
     // Pack is really created
     await packInstance.revoke(0);
     expect(await packInstance.packState(0)).to.equal(3); // 3 is the enum value for Revoked
+    const ethBalanceAfter = await packBalance(packMain);
+    expect(ethBalanceAfter).to.equal(ethBalanceBefore - ethers.parseEther("1"));
   });
   it("Should not revoke a pack if not owner", async function () {
     const { packMain, alice, bob } = await loadFixture(setup);
@@ -82,10 +95,17 @@ describe("PackMain", function () {
     let packInstance = packMain.connect(alice);
     await packInstance.pack(alice.address, { value: ethers.parseEther("1") });
     expect(await packInstance.packState(0)).to.equal(1); // 1 is the enum value for Created
+    const ethBalanceBefore = await packBalance(packMain);
+    const bobBalanceBefore = await ethers.provider.getBalance(bob.address);
 
     // Change account to bob
     packInstance = packMain.connect(bob);
     await packInstance.open(0);
     expect(await packInstance.packState(0)).to.equal(2); // 2 is the enum value for Opened
+    const ethBalanceAfter = await packBalance(packMain);
+    expect(ethBalanceAfter).to.equal(ethBalanceBefore - ethers.parseEther("1"));
+    expect(await ethers.provider.getBalance(bob.address)).to.gt(
+      bobBalanceBefore
+    );
   });
 });
