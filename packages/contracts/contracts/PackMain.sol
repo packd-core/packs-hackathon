@@ -2,6 +2,8 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 import "./interfaces/IERC6551Registry.sol";
 import "./interfaces/IERC6551Account.sol";
@@ -24,6 +26,19 @@ contract PackMain is PackNFT, Ownable {
     error OnlyOwnerOf(uint256 tokenId);
     error TokenNotInExpectedState(uint256 tokenId);
     error EtherTransferFailed();
+    error InvalidOwnerSignature();
+    error InvalidClaimerSignature();
+
+    // ---------- Struct Definitions ---------
+    // Contains information required to claim a Pack
+    struct ClaimData {
+        uint256 tokenId;
+        bytes sigOwner; // Signature from the Pack owner
+        address claimer; // Address of the claimer
+        bytes sigClaimer; // Signature from the claimer
+        uint256 refundValue; // Value to refund to the relayer
+        uint256 maxRefundValue; // Maximum refundable value (to prevent over-refund)
+    }
 
     // ---------- Constants -------------------
     uint256 public constant VERSION = 1;
@@ -33,6 +48,8 @@ contract PackMain is PackNFT, Ownable {
     address public immutable implementation;
     uint256 public immutable registryChainId;
     uint256 public immutable salt;
+
+    mapping(uint256 => address) public claimPublicKey;
 
     constructor(
         address initialOwner_,
@@ -65,15 +82,20 @@ contract PackMain is PackNFT, Ownable {
     }
 
     function pack(
-        address to
+        address to_,
+        address claimPublicKey_
     ) public payable returns (uint256 tokenId, address newAccount) {
         if (msg.value == 0) {
             revert InvalidEthValue();
         }
 
-        _mintPack(to, tokenId);
+        // Mint the Pack
+        _mintPack(to_, tokenId);
 
-        // Initialize the Pack and create the account
+        // Set the claim public key
+        claimPublicKey[tokenId] = claimPublicKey_;
+
+        // Create the account for the NFT
         newAccount = registry.createAccount(
             implementation,
             registryChainId,
@@ -91,34 +113,38 @@ contract PackMain is PackNFT, Ownable {
 
         // TODO: Replace this with proper modules from params
         address[] memory emptyModules = new address[](0);
-        emit PackCreated(tokenId, to, emptyModules);
+        emit PackCreated(tokenId, to_, emptyModules);
     }
 
     // TODO: custom error
     function revoke(
-        uint256 tokenId
-    ) public onlyOwnerOf(tokenId) tokenInState(tokenId, PackState.Created) {
-        _revokePack(tokenId);
+        uint256 tokenId_
+    ) public onlyOwnerOf(tokenId_) tokenInState(tokenId_, PackState.Created) {
+        _revokePack(tokenId_);
 
         // Send ETH to owner
-        address payable thisAccount = payable(account(tokenId));
+        address payable thisAccount = payable(account(tokenId_));
         uint256 value = thisAccount.balance;
         _executeTransfer(thisAccount, msg.sender, value);
 
-        emit PackRevoked(tokenId, msg.sender);
+        emit PackRevoked(tokenId_, msg.sender);
     }
 
     function open(
-        uint256 tokenId
-    ) public tokenInState(tokenId, PackState.Created) {
-        _openPack(tokenId);
+        ClaimData memory data
+    ) public tokenInState(data.tokenId, PackState.Created) {
+        // Checks for valid signatures
+        _validateSignatures(data);
+
+        // Set state to Opened
+        _openPack(data.tokenId);
 
         // Send ETH to claimer
-        address payable thisAccount = payable(account(tokenId));
+        address payable thisAccount = payable(account(data.tokenId));
         uint256 value = thisAccount.balance;
         _executeTransfer(thisAccount, msg.sender, value);
 
-        emit PackOpened(tokenId, msg.sender);
+        emit PackOpened(data.tokenId, msg.sender);
     }
 
     function account(uint256 tokenId) public view returns (address) {
@@ -149,5 +175,47 @@ contract PackMain is PackNFT, Ownable {
             data,
             operation
         );
+    }
+
+    function _validateSignatures(ClaimData memory data) internal view {
+        bytes32 messageHashOwner = keccak256(
+            abi.encodePacked(
+                data.tokenId,
+                data.claimer,
+                registryChainId,
+                salt,
+                address(this)
+            )
+        );
+
+        if (
+            !SignatureChecker.isValidSignatureNow(
+                claimPublicKey[data.tokenId],
+                messageHashOwner,
+                data.sigOwner
+            )
+        ) {
+            revert InvalidOwnerSignature();
+        }
+
+        bytes32 messageHashClaimer = keccak256(
+            abi.encodePacked(
+                data.tokenId,
+                data.maxRefundValue,
+                registryChainId,
+                salt,
+                address(this)
+            )
+        );
+
+        if (
+            !SignatureChecker.isValidSignatureNow(
+                data.claimer,
+                messageHashClaimer,
+                data.sigClaimer
+            )
+        ) {
+            revert InvalidClaimerSignature();
+        }
     }
 }

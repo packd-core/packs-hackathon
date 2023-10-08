@@ -1,9 +1,19 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { PackMain } from "../typechain-types";
+
+import { KeySignManager } from "../utils/keySignManager";
 
 const DEFAULT_CHAIN_ID = 1337;
+
+interface ClaimData {
+  tokenId: number;
+  sigOwner: string; // Signature from the Pack owner
+  claimer: string; // Address of the claimer
+  sigClaimer: string; // Signature from the claimer
+  refundValue: bigint; // Value to refund to the relayer
+  maxRefundValue: bigint; // Maximum refundable value (to prevent over-refund)
+}
 
 const packConfig = {
   initBaseURI: "https://packd.io/",
@@ -49,7 +59,15 @@ describe("PackMain", function () {
       packConfig.registryChainId,
       packConfig.salt
     );
-    return { packMain, alice, bob, deployer };
+
+    // Set PackMain address in KeySignManager
+    const keySignManager = new KeySignManager(
+      packConfig.registryChainId,
+      packConfig.salt,
+      await packMain.getAddress()
+    );
+
+    return { packMain, alice, bob, deployer, keySignManager };
   };
 
   it("Should be deployed", async function () {
@@ -60,16 +78,20 @@ describe("PackMain", function () {
     // TODO: Check baseTokenURI
     expect(await packMain.owner()).to.equal(deployer.address);
   });
-
   it("Should mint a new pack", async function () {
     const value = ethers.parseEther("1");
-    const { packMain, alice } = await loadFixture(setup);
+    const { packMain, alice, keySignManager } = await loadFixture(setup);
 
     const aliceBalanceBefore = await ethers.provider.getBalance(alice.address);
 
     // Mint a new pack
     const packInstance = packMain.connect(alice);
-    await packInstance.pack(alice.address, { value });
+    const { claimPublicKey } = await keySignManager.generateClaimKey(
+      alice,
+      ["uint256"],
+      [1]
+    );
+    await packInstance.pack(alice.address, claimPublicKey, { value });
 
     // Check correct state
     expect(await packInstance.packState(0)).to.equal(1); // 1 is the enum value for Created
@@ -82,19 +104,29 @@ describe("PackMain", function () {
     const aliceBalanceAfter = await ethers.provider.getBalance(alice.address);
     expect(aliceBalanceAfter).to.lte(aliceBalanceBefore);
   });
-
   it("Should not mint a new pack without ETH", async function () {
-    const { packMain, alice } = await loadFixture(setup);
+    const { packMain, alice, keySignManager } = await loadFixture(setup);
     const packInstance = packMain.connect(alice);
+    const { claimPublicKey } = await keySignManager.generateClaimKey(
+      alice,
+      ["uint256"],
+      [1]
+    );
     await expect(
-      packInstance.pack(alice.address)
+      packInstance.pack(alice.address, claimPublicKey)
     ).to.be.revertedWithCustomError(packMain, "InvalidEthValue");
   });
-
   it("Should revoke a pack", async function () {
-    const { packMain, alice } = await loadFixture(setup);
+    const { packMain, alice, keySignManager } = await loadFixture(setup);
     const packInstance = packMain.connect(alice);
-    await packInstance.pack(alice.address, { value: ethers.parseEther("1") });
+    const { claimPublicKey } = await keySignManager.generateClaimKey(
+      alice,
+      ["uint256"],
+      [1]
+    );
+    await packInstance.pack(alice.address, claimPublicKey, {
+      value: ethers.parseEther("1"),
+    });
 
     // Check correct state
     expect(await packInstance.packState(0)).to.equal(1); // 1 is the enum value for Created
@@ -113,9 +145,16 @@ describe("PackMain", function () {
     expect(aliceBalanceAfter).to.gt(aliceBalanceBefore);
   });
   it("Should not revoke a pack if not owner", async function () {
-    const { packMain, alice, bob } = await loadFixture(setup);
+    const { packMain, alice, bob, keySignManager } = await loadFixture(setup);
     const packInstance = packMain.connect(alice);
-    await packInstance.pack(alice.address, { value: ethers.parseEther("1") });
+    const { claimPublicKey } = await keySignManager.generateClaimKey(
+      alice,
+      ["uint256"],
+      [1]
+    );
+    await packInstance.pack(alice.address, claimPublicKey, {
+      value: ethers.parseEther("1"),
+    });
     expect(await packInstance.packState(0)).to.equal(1); // 1 is the enum value for Created
     // Pack is really created
 
@@ -125,14 +164,15 @@ describe("PackMain", function () {
       "OnlyOwnerOf"
     );
   });
-
   it("Should open a pack", async function () {
     const value = ethers.parseEther("1");
-    const { packMain, alice, bob } = await loadFixture(setup);
+    const { packMain, alice, bob, keySignManager } = await loadFixture(setup);
+    const { claimPublicKey, claimPrivateKey } =
+      await keySignManager.generateClaimKey(alice, ["uint256"], [1]);
 
     // Mint a new pack
     let packInstance = packMain.connect(alice);
-    await packInstance.pack(alice.address, { value });
+    await packInstance.pack(alice.address, claimPublicKey, { value });
 
     // Check correct state
     expect(await packInstance.packState(0)).to.equal(1); // 1 is the enum value for Created
@@ -140,9 +180,33 @@ describe("PackMain", function () {
     // Check balances
     const bobBalanceBefore = await ethers.provider.getBalance(bob.address);
 
+    // Create SigOwner
+    const { claimSignature: sigOwner } =
+      await keySignManager.generateClaimSignature(
+        claimPrivateKey,
+        ["uint256", "address"],
+        [0, bob.address]
+      );
+    // Create SigClaimer
+    const { claimSignature: sigClaimer } =
+      await keySignManager.generateClaimSignature(
+        bob,
+        ["uint256", "uint256"],
+        [0, 0]
+      );
+
+    const claimData: ClaimData = {
+      tokenId: 0,
+      sigOwner: sigOwner,
+      claimer: bob.address,
+      sigClaimer: sigClaimer,
+      refundValue: BigInt(0),
+      maxRefundValue: BigInt(0),
+    };
+
     // Change account to bob
     packInstance = packMain.connect(bob);
-    await packInstance.open(0);
+    await packInstance.open(claimData);
 
     // Check correct state
     expect(await packInstance.packState(0)).to.equal(2); // 2 is the enum value for Opened
