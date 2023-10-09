@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
-import "./ClaimData.sol";
+import "../ClaimData.sol";
 
 library SignatureValidator {
     error InvalidOwnerSignature();

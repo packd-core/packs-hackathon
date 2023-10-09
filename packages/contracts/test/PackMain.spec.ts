@@ -1,12 +1,10 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
-import type { Signer } from "ethers";
+import hre, { ethers } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { PackMain } from "../typechain-types/contracts/PackMain";
 
 import { KeySignManager } from "../utils/keySignManager";
-
-const DEFAULT_CHAIN_ID = 1337;
+import { getSystemConfig } from "../utils/deployConfig";
+import { createPack } from "../utils/testUtils";
 
 interface ClaimData {
   tokenId: number;
@@ -17,30 +15,7 @@ interface ClaimData {
   maxRefundValue: bigint; // Maximum refundable value (to prevent over-refund)
 }
 
-const packConfig = {
-  initBaseURI: "https://packd.io/",
-  name: "PackMain",
-  symbol: "PCK",
-  registry: ethers.ZeroAddress,
-  implementation: ethers.ZeroAddress,
-  registryChainId: DEFAULT_CHAIN_ID,
-  salt: 0,
-};
-
-async function createPack(
-  packMain: PackMain,
-  signer: Signer,
-  keySignManager: KeySignManager,
-  value: number
-) {
-  const packInstance = packMain.connect(signer);
-  const { claimPublicKey, claimPrivateKey } =
-    await keySignManager.generateClaimKey(signer, ["uint256"], [0]);
-  await packInstance.pack(signer.getAddress(), claimPublicKey, {
-    value: ethers.parseEther(value.toString()),
-  });
-  return { packInstance, claimPrivateKey };
-}
+const { packConfig } = getSystemConfig(hre);
 
 describe("PackMain", function () {
   // This fixture deploys the contract and returns it

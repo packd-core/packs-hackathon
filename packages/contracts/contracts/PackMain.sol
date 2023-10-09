@@ -11,7 +11,7 @@ import "./interfaces/IERC6551Executable.sol";
 
 import "./PackNFT.sol";
 import "./ClaimData.sol";
-import "./SignatureValidator.sol";
+import "./lib/SignatureValidator.sol";
 
 contract PackMain is PackNFT, Ownable {
     // ---------- Events ---------------------
@@ -29,6 +29,7 @@ contract PackMain is PackNFT, Ownable {
     error TokenNotInExpectedState(uint256 tokenId);
     error EtherTransferFailed();
     error InvalidRefundValue();
+    error InvalidAddress();
 
     // ---------- Constants -------------------
     uint256 public constant VERSION = 1;
@@ -52,6 +53,11 @@ contract PackMain is PackNFT, Ownable {
         uint256 registryChainId_,
         uint256 salt_
     ) PackNFT(baseTokenURI_, name_, symbol_) Ownable(initialOwner_) {
+        // Check that the registry and implementation are not the zero address
+        if (registry_ == address(0) || implementation_ == address(0)) {
+            revert InvalidAddress();
+        }
+
         registry = IERC6551Registry(registry_);
         implementation = implementation_;
         registryChainId = registryChainId_;
