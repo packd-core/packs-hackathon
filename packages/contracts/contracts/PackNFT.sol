@@ -67,6 +67,10 @@ contract PackNFT is ERC721, ERC721Enumerable {
         }
     }
 
+    function _baseURI() internal view override returns (string memory) {
+        return _baseTokenURI;
+    }
+
     // The following functions are overrides required by Solidity.
 
     function _update(

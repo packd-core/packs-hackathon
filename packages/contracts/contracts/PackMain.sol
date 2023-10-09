@@ -139,10 +139,8 @@ contract PackMain is PackNFT, Ownable {
         // Set state to Opened
         _openPack(data.tokenId);
 
-        // Send ETH to claimer
-        address payable thisAccount = payable(account(data.tokenId));
-        uint256 value = thisAccount.balance;
-        _executeTransfer(thisAccount, msg.sender, value);
+        // Transfer the ETH from the account to the owner and refund the relayer
+        _transferAndRefund(data);
 
         emit PackOpened(data.tokenId, msg.sender);
     }
@@ -156,6 +154,15 @@ contract PackMain is PackNFT, Ownable {
                 tokenId,
                 salt
             );
+    }
+
+    function _transferAndRefund(ClaimData memory data) internal {
+        // Refund the relayer
+        address payable thisAccount = payable(account(data.tokenId));
+        _executeTransfer(thisAccount, msg.sender, data.refundValue);
+        // Transfer the rest to the claimer
+        uint256 value = thisAccount.balance;
+        _executeTransfer(thisAccount, data.claimer, value);
     }
 
     function _executeTransfer(
