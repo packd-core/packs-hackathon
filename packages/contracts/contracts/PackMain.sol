@@ -28,6 +28,7 @@ contract PackMain is PackNFT, Ownable {
     error EtherTransferFailed();
     error InvalidOwnerSignature();
     error InvalidClaimerSignature();
+    error InvalidRefundValue();
 
     // ---------- Struct Definitions ---------
     // Contains information required to claim a Pack
@@ -135,6 +136,10 @@ contract PackMain is PackNFT, Ownable {
     ) public tokenInState(data.tokenId, PackState.Created) {
         // Checks for valid signatures
         _validateSignatures(data);
+        // Check that the refund value is not greater than the maximum refund value
+        if (data.refundValue > data.maxRefundValue) {
+            revert InvalidRefundValue();
+        }
 
         // Set state to Opened
         _openPack(data.tokenId);
