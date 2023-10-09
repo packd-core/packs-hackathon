@@ -42,6 +42,7 @@ contract PackMain is PackNFT, Ownable {
 
     // ---------- Constants -------------------
     uint256 public constant VERSION = 1;
+    uint256 public constant CALL_OPERATION = 0; // Only call operations are supported for ERC6551
 
     // ---------- ERC6551-related ------------
     IERC6551Registry public immutable registry;
@@ -116,7 +117,6 @@ contract PackMain is PackNFT, Ownable {
         emit PackCreated(tokenId, to_, emptyModules);
     }
 
-    // TODO: custom error
     function revoke(
         uint256 tokenId_
     ) public onlyOwnerOf(tokenId_) tokenInState(tokenId_, PackState.Created) {
@@ -168,23 +168,25 @@ contract PackMain is PackNFT, Ownable {
             recipient,
             value
         );
-        uint256 operation = 0; // CALL
+
         IERC6551Executable(accountAddress).execute(
             recipient,
             value,
             data,
-            operation
+            CALL_OPERATION
         );
     }
 
     function _validateSignatures(ClaimData memory data) internal view {
-        bytes32 messageHashOwner = keccak256(
-            abi.encodePacked(
-                data.tokenId,
-                data.claimer,
-                registryChainId,
-                salt,
-                address(this)
+        bytes32 messageHashOwner = MessageHashUtils.toEthSignedMessageHash(
+            keccak256(
+                abi.encodePacked(
+                    data.tokenId,
+                    data.claimer,
+                    registryChainId,
+                    salt,
+                    address(this)
+                )
             )
         );
 
@@ -198,13 +200,15 @@ contract PackMain is PackNFT, Ownable {
             revert InvalidOwnerSignature();
         }
 
-        bytes32 messageHashClaimer = keccak256(
-            abi.encodePacked(
-                data.tokenId,
-                data.maxRefundValue,
-                registryChainId,
-                salt,
-                address(this)
+        bytes32 messageHashClaimer = MessageHashUtils.toEthSignedMessageHash(
+            keccak256(
+                abi.encodePacked(
+                    data.tokenId,
+                    data.maxRefundValue,
+                    registryChainId,
+                    salt,
+                    address(this)
+                )
             )
         );
 
