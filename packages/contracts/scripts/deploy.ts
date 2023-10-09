@@ -2,9 +2,13 @@ import type { HardhatRuntimeEnvironment } from "hardhat/types";
 import hre from "hardhat";
 import type { Signer } from "ethers";
 
-import type { PackAccount } from "../typechain-types/contracts/PackAccount";
-import type { PackRegistry } from "../typechain-types/contracts/PackRegistry";
-import type { PackMain } from "../typechain-types/contracts/PackMain";
+import type {
+  PackAccount,
+  PackRegistry,
+  PackMain,
+  ERC20Module,
+  ERC20Mock,
+} from "../typechain-types";
 
 import { getSystemConfig, SystemConfig } from "../utils/deployConfig";
 import { deployContract } from "../utils/deployUtils";
@@ -15,6 +19,9 @@ export interface SystemDeployed {
   packAccount: PackAccount;
   packRegistry: PackRegistry;
   packMain: PackMain;
+  erc20Module: ERC20Module;
+  erc20MockA: ERC20Mock;
+  erc20MockB: ERC20Mock;
 }
 
 export async function deploySystem(
@@ -25,6 +32,28 @@ export async function deploySystem(
   const deploymentOverrides = {
     gasPrice: hre.ethers.parseUnits("1.0", "gwei"),
   };
+
+  const erc20Module = await deployContract<ERC20Module>(
+    hre,
+    signer,
+    "ERC20Module",
+    [],
+    deploymentOverrides
+  );
+  const erc20MockA = await deployContract<ERC20Mock>(
+    hre,
+    signer,
+    "ERC20Mock",
+    [],
+    deploymentOverrides
+  );
+  const erc20MockB = await deployContract<ERC20Mock>(
+    hre,
+    signer,
+    "ERC20Mock",
+    [],
+    deploymentOverrides
+  );
   const packAccount = await deployContract<PackAccount>(
     hre,
     signer,
@@ -60,5 +89,8 @@ export async function deploySystem(
     packAccount,
     packRegistry,
     packMain,
+    erc20Module,
+    erc20MockA,
+    erc20MockB,
   };
 }
