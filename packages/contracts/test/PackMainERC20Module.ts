@@ -18,7 +18,8 @@ describe("PackMain", function () {
     const { alice, bob, deployer, relayer } = await getCommonSigners(hre);
 
     // ERC6551 Related contracts
-    const { packMain } = await deploySystem(hre, deployer, systemConfig);
+    const { packMain, erc20MockA, erc20MockB, erc20Module } =
+      await deploySystem(hre, deployer, systemConfig);
 
     // Set PackMain address in KeySignManager
     const keySignManager = new KeySignManager(
@@ -29,16 +30,7 @@ describe("PackMain", function () {
 
     return { packMain, alice, bob, deployer, keySignManager, relayer };
   };
-
-  it("Should be deployed", async function () {
-    const { packMain, deployer } = await loadFixture(setup);
-    expect(await packMain.getAddress()).to.be.properAddress;
-    expect(await packMain.name()).to.equal(systemConfig.packConfig.name);
-    expect(await packMain.symbol()).to.equal(systemConfig.packConfig.symbol);
-    // TODO: Check baseTokenURI
-    expect(await packMain.owner()).to.equal(deployer.address);
-  });
-  describe("SelfClaim tests", function () {
+  describe("ERC20 Module, 1 token", function () {
     it("Should mint a new pack", async function () {
       const value = 1;
       const { packMain, alice, keySignManager } = await loadFixture(setup);
