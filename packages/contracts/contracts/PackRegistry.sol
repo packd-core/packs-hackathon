@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 // From:
 // https://github.com/erc6551/reference/blob/main/src/ERC6551Registry.sol
