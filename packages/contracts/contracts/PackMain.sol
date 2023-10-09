@@ -10,6 +10,8 @@ import "./interfaces/IERC6551Account.sol";
 import "./interfaces/IERC6551Executable.sol";
 
 import "./PackNFT.sol";
+import "./ClaimData.sol";
+import "./SignatureValidator.sol";
 
 contract PackMain is PackNFT, Ownable {
     // ---------- Events ---------------------
@@ -26,20 +28,7 @@ contract PackMain is PackNFT, Ownable {
     error OnlyOwnerOf(uint256 tokenId);
     error TokenNotInExpectedState(uint256 tokenId);
     error EtherTransferFailed();
-    error InvalidOwnerSignature();
-    error InvalidClaimerSignature();
     error InvalidRefundValue();
-
-    // ---------- Struct Definitions ---------
-    // Contains information required to claim a Pack
-    struct ClaimData {
-        uint256 tokenId;
-        bytes sigOwner; // Signature from the Pack owner
-        address claimer; // Address of the claimer
-        bytes sigClaimer; // Signature from the claimer
-        uint256 refundValue; // Value to refund to the relayer
-        uint256 maxRefundValue; // Maximum refundable value (to prevent over-refund)
-    }
 
     // ---------- Constants -------------------
     uint256 public constant VERSION = 1;
@@ -190,48 +179,12 @@ contract PackMain is PackNFT, Ownable {
     }
 
     function _validateSignatures(ClaimData memory data) internal view {
-        bytes32 messageHashOwner = MessageHashUtils.toEthSignedMessageHash(
-            keccak256(
-                abi.encodePacked(
-                    data.tokenId,
-                    data.claimer,
-                    registryChainId,
-                    salt,
-                    address(this)
-                )
-            )
+        SignatureValidator.validateSignatures(
+            data,
+            registryChainId,
+            salt,
+            address(this),
+            claimPublicKey[data.tokenId]
         );
-
-        if (
-            !SignatureChecker.isValidSignatureNow(
-                claimPublicKey[data.tokenId],
-                messageHashOwner,
-                data.sigOwner
-            )
-        ) {
-            revert InvalidOwnerSignature();
-        }
-
-        bytes32 messageHashClaimer = MessageHashUtils.toEthSignedMessageHash(
-            keccak256(
-                abi.encodePacked(
-                    data.tokenId,
-                    data.maxRefundValue,
-                    registryChainId,
-                    salt,
-                    address(this)
-                )
-            )
-        );
-
-        if (
-            !SignatureChecker.isValidSignatureNow(
-                data.claimer,
-                messageHashClaimer,
-                data.sigClaimer
-            )
-        ) {
-            revert InvalidClaimerSignature();
-        }
     }
 }
