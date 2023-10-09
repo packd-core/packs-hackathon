@@ -30,6 +30,7 @@ contract PackMain is PackNFT, Ownable {
     error EtherTransferFailed();
     error InvalidRefundValue();
     error InvalidAddress();
+    error InvalidLengthOfData(uint256 modulesLength, uint256 moduleDataLength);
 
     // ---------- Constants -------------------
     uint256 public constant VERSION = 1;
@@ -80,8 +81,15 @@ contract PackMain is PackNFT, Ownable {
 
     function pack(
         address to_,
-        address claimPublicKey_
+        address claimPublicKey_,
+        address[] calldata modules,
+        bytes[] calldata moduleData
     ) public payable returns (uint256 tokenId, address newAccount) {
+        // Need to check that the modules and moduleData are the same length
+        if (modules.length != moduleData.length) {
+            revert InvalidLengthOfData(modules.length, moduleData.length);
+        }
+        // Pack needs ETH to be minted
         if (msg.value == 0) {
             revert InvalidEthValue();
         }
