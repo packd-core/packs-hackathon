@@ -3,6 +3,18 @@ import type { HardhatRuntimeEnvironment } from "hardhat/types";
 
 const DEFAULT_CHAIN_ID = 1337;
 
+export interface SystemConfig {
+  packConfig: {
+    initBaseURI: string;
+    name: string;
+    symbol: string;
+    registry: string;
+    implementation: string;
+    registryChainId: number;
+    salt: number;
+  };
+}
+
 export function getSystemConfig(hre: HardhatRuntimeEnvironment) {
   return {
     packConfig: {

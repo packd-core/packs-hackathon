@@ -5,6 +5,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { KeySignManager } from "../utils/keySignManager";
 import { getSystemConfig } from "../utils/deployConfig";
 import { createPack } from "../utils/testUtils";
+import { deploySystem } from "../scripts/deploy";
 
 interface ClaimData {
   tokenId: number;
@@ -15,7 +16,7 @@ interface ClaimData {
   maxRefundValue: bigint; // Maximum refundable value (to prevent over-refund)
 }
 
-const { packConfig } = getSystemConfig(hre);
+const systemConfig = getSystemConfig(hre);
 
 describe("PackMain", function () {
   // This fixture deploys the contract and returns it
@@ -28,35 +29,12 @@ describe("PackMain", function () {
     const relayer = signers[3];
 
     // ERC6551 Related contracts
-    const PackAccount = await ethers
-      .getContractFactory("PackAccount")
-      .then((f) => f.deploy())
-      .then((d) => d.waitForDeployment());
-    const PackRegistry = await ethers
-      .getContractFactory("PackRegistry")
-      .then((f) => f.deploy())
-      .then((d) => d.waitForDeployment());
-
-    packConfig.registry = await PackRegistry.getAddress();
-    packConfig.implementation = await PackAccount.getAddress();
-
-    // Deploy PackMain
-    const PackMain = await ethers.getContractFactory("PackMain");
-    const packMain = await PackMain.deploy(
-      deployer.address,
-      packConfig.initBaseURI,
-      packConfig.name,
-      packConfig.symbol,
-      packConfig.registry,
-      packConfig.implementation,
-      packConfig.registryChainId,
-      packConfig.salt
-    );
+    const { packMain } = await deploySystem(hre, deployer, systemConfig);
 
     // Set PackMain address in KeySignManager
     const keySignManager = new KeySignManager(
-      packConfig.registryChainId,
-      packConfig.salt,
+      systemConfig.packConfig.registryChainId,
+      systemConfig.packConfig.salt,
       await packMain.getAddress()
     );
 
@@ -66,8 +44,8 @@ describe("PackMain", function () {
   it("Should be deployed", async function () {
     const { packMain, deployer } = await loadFixture(setup);
     expect(await packMain.getAddress()).to.be.properAddress;
-    expect(await packMain.name()).to.equal(packConfig.name);
-    expect(await packMain.symbol()).to.equal(packConfig.symbol);
+    expect(await packMain.name()).to.equal(systemConfig.packConfig.name);
+    expect(await packMain.symbol()).to.equal(systemConfig.packConfig.symbol);
     // TODO: Check baseTokenURI
     expect(await packMain.owner()).to.equal(deployer.address);
   });
