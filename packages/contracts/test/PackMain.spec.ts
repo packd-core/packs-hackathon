@@ -1,6 +1,8 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import type { Signer } from "ethers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { PackMain } from "../typechain-types/contracts/PackMain";
 
 import { KeySignManager } from "../utils/keySignManager";
 
@@ -25,6 +27,21 @@ const packConfig = {
   salt: 0,
 };
 
+async function createPack(
+  packMain: PackMain,
+  signer: Signer,
+  keySignManager: KeySignManager,
+  value: number
+) {
+  const packInstance = packMain.connect(signer);
+  const { claimPublicKey, claimPrivateKey } =
+    await keySignManager.generateClaimKey(signer, ["uint256"], [0]);
+  await packInstance.pack(signer.getAddress(), claimPublicKey, {
+    value: ethers.parseEther(value.toString()),
+  });
+  return { packInstance, claimPrivateKey };
+}
+
 describe("PackMain", function () {
   // This fixture deploys the contract and returns it
   const setup = async () => {
@@ -33,6 +50,7 @@ describe("PackMain", function () {
     const deployer = signers[0];
     const alice = signers[1];
     const bob = signers[2];
+    const relayer = signers[3];
 
     // ERC6551 Related contracts
     const PackAccount = await ethers
@@ -67,7 +85,7 @@ describe("PackMain", function () {
       await packMain.getAddress()
     );
 
-    return { packMain, alice, bob, deployer, keySignManager };
+    return { packMain, alice, bob, deployer, keySignManager, relayer };
   };
 
   it("Should be deployed", async function () {
@@ -79,19 +97,18 @@ describe("PackMain", function () {
     expect(await packMain.owner()).to.equal(deployer.address);
   });
   it("Should mint a new pack", async function () {
-    const value = ethers.parseEther("1");
+    const value = 1;
     const { packMain, alice, keySignManager } = await loadFixture(setup);
 
     const aliceBalanceBefore = await ethers.provider.getBalance(alice.address);
 
-    // Mint a new pack
-    const packInstance = packMain.connect(alice);
-    const { claimPublicKey } = await keySignManager.generateClaimKey(
+    // Mint a new pack using createPack function
+    const { packInstance } = await createPack(
+      packMain,
       alice,
-      ["uint256"],
-      [1]
+      keySignManager,
+      value
     );
-    await packInstance.pack(alice.address, claimPublicKey, { value });
 
     // Check correct state
     expect(await packInstance.packState(0)).to.equal(1); // 1 is the enum value for Created
@@ -100,33 +117,31 @@ describe("PackMain", function () {
     // Check pack eth balance
     const accountAddress = await packInstance.account(0);
     const ethBalanceAccount = await ethers.provider.getBalance(accountAddress);
-    expect(ethBalanceAccount).to.equal(value);
+    expect(ethBalanceAccount).to.equal(ethers.parseEther(value.toString()));
     const aliceBalanceAfter = await ethers.provider.getBalance(alice.address);
     expect(aliceBalanceAfter).to.lte(aliceBalanceBefore);
   });
   it("Should not mint a new pack without ETH", async function () {
     const { packMain, alice, keySignManager } = await loadFixture(setup);
-    const packInstance = packMain.connect(alice);
-    const { claimPublicKey } = await keySignManager.generateClaimKey(
-      alice,
-      ["uint256"],
-      [1]
-    );
+
+    // Mint pack without ETH
+    const value = 0;
     await expect(
-      packInstance.pack(alice.address, claimPublicKey)
+      createPack(packMain, alice, keySignManager, value)
     ).to.be.revertedWithCustomError(packMain, "InvalidEthValue");
   });
+
   it("Should revoke a pack", async function () {
+    const value = 1;
     const { packMain, alice, keySignManager } = await loadFixture(setup);
-    const packInstance = packMain.connect(alice);
-    const { claimPublicKey } = await keySignManager.generateClaimKey(
+
+    // Mint a new pack using createPack function
+    const { packInstance } = await createPack(
+      packMain,
       alice,
-      ["uint256"],
-      [1]
+      keySignManager,
+      value
     );
-    await packInstance.pack(alice.address, claimPublicKey, {
-      value: ethers.parseEther("1"),
-    });
 
     // Check correct state
     expect(await packInstance.packState(0)).to.equal(1); // 1 is the enum value for Created
@@ -146,15 +161,13 @@ describe("PackMain", function () {
   });
   it("Should not revoke a pack if not owner", async function () {
     const { packMain, alice, bob, keySignManager } = await loadFixture(setup);
-    const packInstance = packMain.connect(alice);
-    const { claimPublicKey } = await keySignManager.generateClaimKey(
+    const value = 1;
+    const { packInstance } = await createPack(
+      packMain,
       alice,
-      ["uint256"],
-      [1]
+      keySignManager,
+      value
     );
-    await packInstance.pack(alice.address, claimPublicKey, {
-      value: ethers.parseEther("1"),
-    });
     expect(await packInstance.packState(0)).to.equal(1); // 1 is the enum value for Created
     // Pack is really created
 
@@ -165,14 +178,16 @@ describe("PackMain", function () {
     );
   });
   it("Should open a pack", async function () {
-    const value = ethers.parseEther("1");
+    const value = 1;
     const { packMain, alice, bob, keySignManager } = await loadFixture(setup);
-    const { claimPublicKey, claimPrivateKey } =
-      await keySignManager.generateClaimKey(alice, ["uint256"], [1]);
 
-    // Mint a new pack
-    let packInstance = packMain.connect(alice);
-    await packInstance.pack(alice.address, claimPublicKey, { value });
+    // Mint a new pack using createPack function
+    const { packInstance, claimPrivateKey } = await createPack(
+      packMain,
+      alice,
+      keySignManager,
+      value
+    );
 
     // Check correct state
     expect(await packInstance.packState(0)).to.equal(1); // 1 is the enum value for Created
@@ -205,14 +220,14 @@ describe("PackMain", function () {
     };
 
     // Change account to bob
-    packInstance = packMain.connect(bob);
-    await packInstance.open(claimData);
+    const packInstanceBob = packMain.connect(bob);
+    await packInstanceBob.open(claimData);
 
     // Check correct state
-    expect(await packInstance.packState(0)).to.equal(2); // 2 is the enum value for Opened
+    expect(await packInstanceBob.packState(0)).to.equal(2); // 2 is the enum value for Opened
 
     // Check balances
-    const accountAddress = await packInstance.account(0);
+    const accountAddress = await packInstanceBob.account(0);
     const ethBalanceAccount = await ethers.provider.getBalance(accountAddress);
     expect(ethBalanceAccount).to.equal(0);
     const bobBalanceAfter = await ethers.provider.getBalance(bob.address);
