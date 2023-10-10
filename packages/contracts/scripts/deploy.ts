@@ -1,6 +1,8 @@
 import type { HardhatRuntimeEnvironment } from "hardhat/types";
 import hre from "hardhat";
-import type { Signer } from "ethers";
+import type { Signer, BaseContract } from "ethers";
+import { ethers, network } from "hardhat";
+import fs from 'fs/promises'
 
 import type {
   PackAccount,
@@ -84,6 +86,9 @@ export async function deploySystem(
     ],
     deploymentOverrides
   );
+  
+  // TODO: Use await saveAddress(contract, 'Name of contract')
+  // Maybe can be moved to "deployContract"
 
   return {
     packAccount,
@@ -94,3 +99,27 @@ export async function deploySystem(
     erc20MockB,
   };
 }
+
+
+
+const saveAddress = async (contract: BaseContract, name: string) => {
+  const networkName = network.name
+  const chainId = network.config.chainId ?? 31337
+
+  const mainFolder = "../app/app";
+  const abi = JSON.stringify(JSON.parse(contract.interface.formatJson()), undefined, 2) // hack to format the json
+  const address = contract.target
+
+  await fs.writeFile(`${mainFolder}/abi/${name}.json`, abi)
+
+  const addressesFile = `${mainFolder}/abi/addresses.json`
+  let currentContent = '{}'
+  try { currentContent = await fs.readFile(addressesFile, 'utf-8') || '{}' } catch { }
+
+  const addresses = {
+    ...JSON.parse(currentContent),
+    [chainId]: address
+  }
+
+  await fs.writeFile(addressesFile, JSON.stringify(addresses, undefined, 2))
+};

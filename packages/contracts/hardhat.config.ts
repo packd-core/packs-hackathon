@@ -3,15 +3,34 @@ import "@nomicfoundation/hardhat-toolbox";
 import { config as dotenvConfig } from "dotenv";
 dotenvConfig({ path: __dirname + "/.env" });
 
+const accounts = process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : []
+
 const config: HardhatUserConfig = {
   solidity: "0.8.20",
   networks: {
-    goerli: {
-      url: `https://eth-goerli.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
-      accounts: [
-        process.env.GOERLI_PRIVATE_KEY ??
-          "0x38592522a0d55b59f57da7ba4283d73c106bfd5022ff551c41af4cc43619cdcd", // RANDOM PRIVATE KEY, DO NOT USE
-      ],
+    hardhat: {
+      chainId: 31337,
+      accounts: [{
+        privateKey: accounts[0],
+        balance: '10000000000000000000'
+      }]
+    },
+    // Faucet RPC, etc : https://docs.scroll.io/en/developers/developer-quickstart/#hardhat
+    scrollSepolia: {
+      url: "https://sepolia-rpc.scroll.io/" || "",
+      accounts: accounts
+    },
+
+    //  https://faucet.polygon.technology/
+    polygonZkEVMTestnet: {
+      url: "https://rpc.public.zkevm-test.net" || "",
+      accounts: accounts,
+    },
+
+    // Faucets, RPC, etc: https://windranger-io.notion.site/Developer-Starter-Guide-9e9de7a4e60a49dc97dd786c48ffd455
+    mantleTestnet: {
+      url: "https://rpc.testnet.mantle.xyz/" || "",
+      accounts: accounts
     },
   },
   etherscan: {

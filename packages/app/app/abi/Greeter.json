@@ -1,0 +1,40 @@
+[
+  {
+    "type": "constructor",
+    "stateMutability": "undefined",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "string",
+        "name": "_greeting"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getGreeting",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "string",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "setGreeting",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "string",
+        "name": "_greeting"
+      }
+    ],
+    "outputs": []
+  }
+]

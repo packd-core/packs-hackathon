@@ -8,7 +8,8 @@ import {
   useContractWrite,
   useWaitForTransaction,
 } from "wagmi";
-import abi from "../abi/greeter.json";
+import abi from "../abi/Greeter.json";
+import addresses from '../abi/addresses.json'
 
 const useGreeting = ({
   newGreeting,
@@ -48,6 +49,8 @@ const useGreeting = ({
   });
 
   const { address } = useAccount();
+  const currentChainId = 31337
+  const currentAddress = addresses[currentChainId] as `0x${string}`
 
   // Otherwise we'd just return these values directly
   const {
@@ -55,16 +58,16 @@ const useGreeting = ({
     isLoading: getGreetingLoading,
     isError: getGreetingError,
   } = useContractRead({
-    address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
-    chainId: parseInt(process.env.NEXT_PUBLIC_CHAIN_ID ?? "31337"),
+    address: currentAddress,
+    chainId: currentChainId,
     abi,
     functionName: "getGreeting",
     watch: true,
   }) as { data: string | null; isLoading: boolean; isError: boolean };
 
   const { config, isError: prepareSetGreetingError } = usePrepareContractWrite({
-    address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
-    chainId: parseInt(process.env.NEXT_PUBLIC_CHAIN_ID ?? "31337"),
+    address: currentAddress,
+    chainId: currentChainId,
     abi,
     functionName: "setGreeting",
     args: [newGreeting],
