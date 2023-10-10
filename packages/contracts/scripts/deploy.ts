@@ -1,25 +1,105 @@
+import type { HardhatRuntimeEnvironment } from "hardhat/types";
+import hre from "hardhat";
+import type { Signer, BaseContract } from "ethers";
 import { ethers, network } from "hardhat";
 import fs from 'fs/promises'
-import { BaseContract } from "ethers";
 
+import type {
+  PackAccount,
+  PackRegistry,
+  PackMain,
+  ERC20Module,
+  ERC20Mock,
+} from "../typechain-types";
 
-async function main() {
-  const greeting = "Hello, world!";
-  const greeter = await ethers.deployContract("Greeter", [
-    greeting,
-  ]);
-  await greeter.waitForDeployment();
-  await saveAddress(greeter, 'Greeter')
-  console.log(
-    `Greeter with greeting "${greeting}" deployed to ${greeter.target}`,
-  );
+import { getSystemConfig, SystemConfig } from "../utils/deployConfig";
+import { deployContract } from "../utils/deployUtils";
 
+const { packConfig } = getSystemConfig(hre);
+
+export interface SystemDeployed {
+  packAccount: PackAccount;
+  packRegistry: PackRegistry;
+  packMain: PackMain;
+  erc20Module: ERC20Module;
+  erc20MockA: ERC20Mock;
+  erc20MockB: ERC20Mock;
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+export async function deploySystem(
+  hre: HardhatRuntimeEnvironment,
+  signer: Signer,
+  systemConfig: SystemConfig
+): Promise<SystemDeployed> {
+  const deploymentOverrides = {
+    gasPrice: hre.ethers.parseUnits("1.0", "gwei"),
+  };
+
+  const erc20Module = await deployContract<ERC20Module>(
+    hre,
+    signer,
+    "ERC20Module",
+    [],
+    deploymentOverrides
+  );
+  const erc20MockA = await deployContract<ERC20Mock>(
+    hre,
+    signer,
+    "ERC20Mock",
+    [],
+    deploymentOverrides
+  );
+  const erc20MockB = await deployContract<ERC20Mock>(
+    hre,
+    signer,
+    "ERC20Mock",
+    [],
+    deploymentOverrides
+  );
+  const packAccount = await deployContract<PackAccount>(
+    hre,
+    signer,
+    "PackAccount",
+    [],
+    deploymentOverrides
+  );
+  const packRegistry = await deployContract<PackRegistry>(
+    hre,
+    signer,
+    "PackRegistry",
+    [],
+    deploymentOverrides
+  );
+  const packMain = await deployContract<PackMain>(
+    hre,
+    signer,
+    "PackMain",
+    [
+      await signer.getAddress(),
+      systemConfig.packConfig.initBaseURI,
+      systemConfig.packConfig.name,
+      systemConfig.packConfig.symbol,
+      await packRegistry.getAddress(),
+      await packAccount.getAddress(),
+      systemConfig.packConfig.registryChainId,
+      systemConfig.packConfig.salt,
+    ],
+    deploymentOverrides
+  );
+  
+  // TODO: Use await saveAddress(contract, 'Name of contract')
+  // Maybe can be moved to "deployContract"
+
+  return {
+    packAccount,
+    packRegistry,
+    packMain,
+    erc20Module,
+    erc20MockA,
+    erc20MockB,
+  };
+}
+
 
 
 const saveAddress = async (contract: BaseContract, name: string) => {
