@@ -19,6 +19,7 @@ contract PackNFT is ERC721, ERC721Enumerable {
     string private _baseTokenURI;
 
     mapping(uint256 => PackState) public packState;
+    mapping(uint256 => string) public packStateURIs;
 
     constructor(
         string memory baseTokenURI_,
@@ -26,6 +27,11 @@ contract PackNFT is ERC721, ERC721Enumerable {
         string memory symbol_
     ) ERC721(name_, symbol_) {
         _baseTokenURI = baseTokenURI_;
+
+        // Initialize the mapping
+        packStateURIs[uint(PackState.Created)] = "created";
+        packStateURIs[uint(PackState.Opened)] = "opened";
+        packStateURIs[uint(PackState.Revoked)] = "revoked";
     }
 
     // overwrite the _safeMint function to set the state of the Pack
@@ -55,16 +61,12 @@ contract PackNFT is ERC721, ERC721Enumerable {
         // Get state of the Pack
         PackState state = packState[tokenId];
 
+        // Check if the state exists in the mapping
+        string memory stateURI = packStateURIs[uint(state)];
+        require(bytes(stateURI).length > 0, "PackdMain: invalid state");
+
         // Return the URI based on the state of the Pack
-        if (state == PackState.Created) {
-            return string(abi.encodePacked(_baseURI(), "created"));
-        } else if (state == PackState.Opened) {
-            return string(abi.encodePacked(_baseURI(), "opened"));
-        } else if (state == PackState.Revoked) {
-            return string(abi.encodePacked(_baseURI(), "revoked"));
-        } else {
-            revert("PackdMain: invalid state");
-        }
+        return string(abi.encodePacked(_baseURI(), stateURI));
     }
 
     function _baseURI() internal view override returns (string memory) {
