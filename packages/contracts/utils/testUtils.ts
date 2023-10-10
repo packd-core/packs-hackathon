@@ -2,7 +2,7 @@ import type { Signer } from "ethers";
 import { ethers } from "hardhat";
 import type { PackMain } from "../typechain-types";
 import type { KeySignManager } from "./keySignManager";
-import { encodeData } from "./moduleData";
+import { encodeData } from "./erc20moduleData";
 
 export async function createPack(
   packMain: PackMain,

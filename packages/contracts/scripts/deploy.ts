@@ -7,6 +7,8 @@ import type {
   PackMain,
   ERC20Module,
   ERC20Mock,
+  ERC721Module,
+  ERC721Mock,
 } from "../typechain-types";
 
 import { getSystemConfig, SystemConfig } from "../utils/deployConfig";
@@ -19,6 +21,8 @@ export interface SystemDeployed {
   erc20Module: ERC20Module;
   erc20MockA: ERC20Mock;
   erc20MockB: ERC20Mock;
+  erc721Module: ERC721Module;
+  erc721MockA: ERC721Mock;
 }
 
 export async function deploySystem(
@@ -53,6 +57,20 @@ export async function deploySystem(
     [],
     deploymentOverrides
   );
+  const erc721Module = await deployContract<ERC721Module>(
+    hre,
+    signer,
+    "ERC721Module",
+    [],
+    deploymentOverrides
+  );
+  const erc721MockA = await deployContract<ERC721Mock>(
+    hre,
+    signer,
+    "ERC721Mock",
+    [],
+    deploymentOverrides
+  );
   const packAccount = await deployContract<PackAccount>(
     hre,
     signer,
@@ -83,8 +101,7 @@ export async function deploySystem(
     ],
     deploymentOverrides
   );
-  
- 
+
   return {
     packAccount,
     packRegistry,
@@ -92,5 +109,7 @@ export async function deploySystem(
     erc20Module,
     erc20MockA,
     erc20MockB,
+    erc721Module,
+    erc721MockA,
   };
 }

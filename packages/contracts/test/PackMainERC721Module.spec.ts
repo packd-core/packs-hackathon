@@ -3,7 +3,7 @@ import hre, { ethers } from "hardhat";
 import type { Signer } from "ethers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
-import type { PackMain, ERC20Module, ERC20Mock } from "../typechain-types";
+import type { PackMain, ERC721Module, ERC721Mock } from "../typechain-types";
 
 import { KeySignManager } from "../utils/keySignManager";
 import { getSystemConfig } from "../utils/deployConfig";
@@ -19,15 +19,18 @@ import { getCommonSigners } from "../utils/signers";
 
 const systemConfig = getSystemConfig(hre);
 
-describe("PackMain, ERC20Module", function () {
+describe("PackMain, ERC721Module", function () {
   // This fixture deploys the contract and returns it
   const setup = async () => {
     // Get signers
     const { alice, bob, deployer, relayer } = await getCommonSigners(hre);
 
     // ERC6551 Related contracts
-    const { packMain, erc20MockA, erc20MockB, erc20Module } =
-      await deploySystem(hre, deployer, systemConfig);
+    const { packMain, erc721MockA, erc721Module } = await deploySystem(
+      hre,
+      deployer,
+      systemConfig
+    );
 
     // Set PackMain address in KeySignManager
     const keySignManager = new KeySignManager(
@@ -43,18 +46,17 @@ describe("PackMain, ERC20Module", function () {
       deployer,
       keySignManager,
       relayer,
-      erc20Module,
-      erc20MockA,
-      erc20MockB,
+      erc721MockA,
+      erc721Module,
     };
   };
 
-  const mintPackWithERC20 = async (
+  const mintPackWithERC721 = async (
     value: bigint,
     alice: Signer,
     packMain: PackMain,
-    erc20Module: ERC20Module,
-    erc20Mocks: { mock: ERC20Mock; value: bigint }[],
+    erc721Module: ERC721Module,
+    erc721Mocks: ERC721Module,
     keySignManager: KeySignManager
   ) => {
     const moduleDataArray: [string, bigint][] = [];
