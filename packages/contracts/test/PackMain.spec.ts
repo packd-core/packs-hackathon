@@ -97,7 +97,7 @@ describe("PackMain", function () {
       );
 
       // Revoke pack
-      await packInstance.revoke(0);
+      await packInstance.revoke(0, []);
       expect(await packInstance.packState(0)).to.equal(3); // 3 is the enum value for Revoked
 
       // Check pack eth balance
@@ -120,7 +120,7 @@ describe("PackMain", function () {
       // Pack is really created
 
       const packInstanceBob = packMain.connect(bob);
-      await expect(packInstanceBob.revoke(0)).to.be.revertedWithCustomError(
+      await expect(packInstanceBob.revoke(0, [])).to.be.revertedWithCustomError(
         packMain,
         "OnlyOwnerOf"
       );
@@ -169,7 +169,7 @@ describe("PackMain", function () {
 
       // Change account to bob
       const packInstanceBob = packMain.connect(bob);
-      await packInstanceBob.open(claimData);
+      await packInstanceBob.open(claimData, []);
 
       // Check correct state
       expect(await packInstanceBob.packState(0)).to.equal(2); // 2 is the enum value for Opened
@@ -227,7 +227,7 @@ describe("PackMain", function () {
 
       // Change account to relayer
       const packInstanceRelayer = packMain.connect(relayer);
-      await packInstanceRelayer.open(claimData);
+      await packInstanceRelayer.open(claimData, []);
 
       // Check correct state
       expect(await packInstanceRelayer.packState(0)).to.equal(2); // 2 is the enum value for Opened
@@ -289,7 +289,7 @@ describe("PackMain", function () {
 
       // Change account to relayer
       const packInstanceRelayer = packMain.connect(relayer);
-      await packInstanceRelayer.open(claimData);
+      await packInstanceRelayer.open(claimData, []);
 
       // Check correct state
       expect(await packInstanceRelayer.packState(0)).to.equal(2); // 2 is the enum value for Opened
@@ -351,7 +351,7 @@ describe("PackMain", function () {
       // Change account to relayer
       const packInstanceRelayer = packMain.connect(relayer);
       await expect(
-        packInstanceRelayer.open(claimData)
+        packInstanceRelayer.open(claimData, [])
       ).to.be.revertedWithCustomError(packMain, "InvalidRefundValue");
     });
     it("Should not open a pack, relayer tries to steal pack content", async function () {
@@ -399,7 +399,7 @@ describe("PackMain", function () {
       // Change account to relayer
       const packInstanceRelayer = packMain.connect(relayer);
       await expect(
-        packInstanceRelayer.open(claimData)
+        packInstanceRelayer.open(claimData, [])
       ).to.be.revertedWithCustomError(packMain, "InvalidOwnerSignature");
     });
   });

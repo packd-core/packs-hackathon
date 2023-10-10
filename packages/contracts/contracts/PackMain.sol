@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 
 import "./interfaces/IERC6551Registry.sol";
 import "./interfaces/IERC6551Account.sol";
@@ -12,6 +13,8 @@ import "./interfaces/IERC6551Executable.sol";
 import "./PackNFT.sol";
 import "./ClaimData.sol";
 import "./lib/SignatureValidator.sol";
+
+import "hardhat/console.sol";
 
 contract PackMain is PackNFT, Ownable {
     // ---------- Events ---------------------
@@ -43,6 +46,7 @@ contract PackMain is PackNFT, Ownable {
     uint256 public immutable salt;
 
     mapping(uint256 => address) public claimPublicKey;
+    mapping(uint256 => address[]) public packModules;
 
     constructor(
         address initialOwner_,
@@ -97,8 +101,9 @@ contract PackMain is PackNFT, Ownable {
         // Mint the Pack
         _mintPack(to_, tokenId);
 
-        // Set the claim public key
+        // Set params
         claimPublicKey[tokenId] = claimPublicKey_;
+        packModules[tokenId] = modules;
 
         // Create the account for the NFT
         newAccount = registry.createAccount(
@@ -116,14 +121,34 @@ contract PackMain is PackNFT, Ownable {
             revert EtherTransferFailed();
         }
 
-        // TODO: Replace this with proper modules from params
-        address[] memory emptyModules = new address[](0);
-        emit PackCreated(tokenId, to_, emptyModules);
+        // Loop through the modules and execute the data
+        for (uint256 i = 0; i < modules.length; i++) {
+            Address.functionDelegateCall(
+                modules[i],
+                abi.encodeWithSignature(
+                    "onCreate(uint256,address,bytes)",
+                    tokenId,
+                    newAccount,
+                    moduleData[i]
+                )
+            );
+        }
+
+        emit PackCreated(tokenId, to_, modules);
     }
 
     function revoke(
-        uint256 tokenId_
+        uint256 tokenId_,
+        bytes[] calldata moduleData
     ) public onlyOwnerOf(tokenId_) tokenInState(tokenId_, PackState.Created) {
+        // Check that the moduleData is the same length as the modules
+        if (moduleData.length != packModules[tokenId_].length) {
+            revert InvalidLengthOfData(
+                packModules[tokenId_].length,
+                moduleData.length
+            );
+        }
+
         _revokePack(tokenId_);
 
         // Send ETH to owner
@@ -131,11 +156,25 @@ contract PackMain is PackNFT, Ownable {
         uint256 value = thisAccount.balance;
         _executeTransfer(thisAccount, msg.sender, value);
 
+        // Loop through the modules and execute the data
+        for (uint256 i = 0; i < packModules[tokenId_].length; i++) {
+            Address.functionDelegateCall(
+                packModules[tokenId_][i],
+                abi.encodeWithSignature(
+                    "onRevoke(uint256,address,bytes)",
+                    tokenId_,
+                    thisAccount,
+                    moduleData[i]
+                )
+            );
+        }
+
         emit PackRevoked(tokenId_, msg.sender);
     }
 
     function open(
-        ClaimData memory data
+        ClaimData memory data,
+        bytes[] calldata moduleData
     ) public tokenInState(data.tokenId, PackState.Created) {
         // Checks for valid signatures
         _validateSignatures(data);
@@ -146,6 +185,20 @@ contract PackMain is PackNFT, Ownable {
 
         // Set state to Opened
         _openPack(data.tokenId);
+
+        // Loop through the modules and execute the data
+        for (uint256 i = 0; i < packModules[data.tokenId].length; i++) {
+            Address.functionDelegateCall(
+                packModules[data.tokenId][i],
+                abi.encodeWithSignature(
+                    "onOpen(uint256,address,address,bytes)",
+                    data.tokenId,
+                    account(data.tokenId),
+                    data.claimer,
+                    moduleData[i]
+                )
+            );
+        }
 
         // Transfer the ETH from the account to the owner and refund the relayer
         _transferAndRefund(data);
