@@ -1,6 +1,7 @@
 import type { BaseContract, Signer } from "ethers";
 
 import type { HardhatRuntimeEnvironment } from "hardhat/types";
+import { saveAddress } from "./saveAddress";
 
 export const deployContract = async <T extends BaseContract>(
   hre: HardhatRuntimeEnvironment,
@@ -30,5 +31,8 @@ export const deployContract = async <T extends BaseContract>(
   }
   if (constructorArguments.length > 0)
     console.log(`ABI encoded args: ${abiEncodedConstructorArgs.slice(2)}`);
+
+  await saveAddress(hre, contract, contractName)
+  
   return contract;
 };
