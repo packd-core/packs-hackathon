@@ -1,0 +1,117 @@
+[
+  {
+    "type": "error",
+    "name": "AccountCreationFailed",
+    "inputs": []
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "AccountCreated",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "account",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "implementation",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "chainId",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "tokenContract",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "tokenId",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "salt",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "account",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "implementation"
+      },
+      {
+        "type": "uint256",
+        "name": "chainId"
+      },
+      {
+        "type": "address",
+        "name": "tokenContract"
+      },
+      {
+        "type": "uint256",
+        "name": "tokenId"
+      },
+      {
+        "type": "uint256",
+        "name": "salt"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "createAccount",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "implementation"
+      },
+      {
+        "type": "uint256",
+        "name": "chainId"
+      },
+      {
+        "type": "address",
+        "name": "tokenContract"
+      },
+      {
+        "type": "uint256",
+        "name": "tokenId"
+      },
+      {
+        "type": "uint256",
+        "name": "salt"
+      },
+      {
+        "type": "bytes",
+        "name": "initData"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address",
+        "name": ""
+      }
+    ]
+  }
+]
