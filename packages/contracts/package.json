@@ -8,9 +8,15 @@
     "scripts": {
         "start": "hardhat node",
         "test": "hardhat test",
-        "deploy": "hardhat run --network localhost scripts/deploy.ts",
-        "deploy:goerli": "hardhat run --network goerli scripts/deploy.ts",
-        "verify:goerli": "hardhat verify --network goerli",
+        
+        
+        "deploy": "hardhat run scripts/deploy.ts",
+        "deploy:local": "yarn deploy --network localhost ",
+        "deploy:scrollSepolia": "yarn deploy --network scrollSepolia",
+        
+        "verify": "hardhat verify",
+        "verify:scrollSepolia": "yarn verify --network scrollSepolia",
+
         "format": "prettier --write \"./contracts/**/*.sol\" --plugin prettier-plugin-solidity && prettier --write \"./**/*.ts\""
     },
     "devDependencies": {

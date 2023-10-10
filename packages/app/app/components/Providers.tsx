@@ -3,13 +3,23 @@
 import { ReactNode } from "react";
 import { WagmiConfig, configureChains, createConfig } from "wagmi";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { hardhat, goerli } from "wagmi/chains";
+// tesnets
+import { hardhat, scrollSepolia, polygonZkEvmTestnet, mantleTestnet } from "wagmi/chains";
+// mainnets
+import { polygonZkEvm, mantle } from "wagmi/chains";
+
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
-const chain = process.env.NEXT_PUBLIC_CHAIN_ID === "5" ? goerli : hardhat;
+const testnets = [scrollSepolia, polygonZkEvmTestnet, mantleTestnet]
+const mainnets = [polygonZkEvm, mantle] //scroll not yet live
+
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [chain],
+  [
+    ...(process.env.NEXT_PUBLIC_ENVIRONMENT == 'development' ? ([hardhat]) : []),
+    ...(process.env.NEXT_PUBLIC_ENVIRONMENT == 'development' || process.env.NEXT_PUBLIC_ENVIRONMENT == 'testnet' ? (testnets) : []),
+    ...(process.env.NEXT_PUBLIC_ENVIRONMENT == 'production' ? (mainnets) : [])
+  ],
   [
     alchemyProvider({
       apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY ?? "",
