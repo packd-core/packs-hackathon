@@ -14,8 +14,6 @@ import "./PackNFT.sol";
 import "./ClaimData.sol";
 import "./lib/SignatureValidator.sol";
 
-import "hardhat/console.sol";
-
 contract PackMain is PackNFT, Ownable {
     // ---------- Events ---------------------
     event PackCreated(

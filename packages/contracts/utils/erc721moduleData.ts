@@ -19,8 +19,8 @@ export async function generateMintData(data: Array<[string, bigint]>) {
   return encodeData(["tuple(address,uint256)[]"], [data]);
 }
 
-export async function generateRevokeData(tokenAddresses: string[]) {
-  return encodeData(["address[]"], [tokenAddresses]);
+export async function generateRevokeData(data: Array<[string, bigint]>) {
+  return encodeData(["tuple(address,uint256)[]"], [data]);
 }
 
 export const generateClaimData = generateRevokeData;

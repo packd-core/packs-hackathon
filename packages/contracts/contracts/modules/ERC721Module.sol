@@ -40,7 +40,7 @@ contract ERC721Module is IPackModule {
         for (uint256 i = 0; i < tokensData.length; i++) {
             OnCreateData memory tokenData = tokensData[i];
 
-            IERC721(tokenData.tokenAddress).safeTransferFrom(
+            IERC721(tokenData.tokenAddress).transferFrom(
                 msg.sender,
                 account,
                 tokenData.id

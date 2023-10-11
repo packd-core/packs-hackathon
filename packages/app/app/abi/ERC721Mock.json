@@ -249,11 +249,11 @@
     "inputs": [
       {
         "type": "address",
-        "name": "account"
+        "name": "to"
       },
       {
         "type": "uint256",
-        "name": "amount"
+        "name": "tokenId"
       }
     ],
     "outputs": []
