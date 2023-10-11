@@ -50,7 +50,7 @@ const useGreeting = ({
 
   const { address } = useAccount();
   const currentChainId = 31337
-  const currentAddress = addresses[currentChainId] as `0x${string}`
+  const currentAddress = addresses[currentChainId] as unknown as `0x${string}`
 
   // Otherwise we'd just return these values directly
   const {
