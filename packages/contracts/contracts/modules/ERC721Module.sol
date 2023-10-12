@@ -6,23 +6,30 @@ import "../interfaces/IERC6551Executable.sol";
 
 import "../interfaces/IPackModule.sol";
 
+import "hardhat/console.sol";
+
 contract ERC721Module is IPackModule {
     //
     uint256 public constant CALL_OPERATION = 0; // Only call operations are supported for ERC6551
     uint256 public constant CALL_VALUE = 0; // No value is sent with the call
+
     struct OnCreateData {
+        tokenData[] tokens;
+    }
+
+    struct tokenData {
         address tokenAddress;
-        uint256 id;
+        uint256[] id;
     }
 
     struct OnRevokeData {
-        address tokenAddress;
-        uint256 id;
+        address[] tokenAddresses;
+        uint256[][] ids;
     }
 
     struct OnClaimData {
-        address tokenAddress;
-        uint256 id;
+        address[] tokenAddresses;
+        uint256[][] ids;
     }
 
     // Lifecycle functions
@@ -32,21 +39,32 @@ contract ERC721Module is IPackModule {
         bytes calldata additionalData
     ) external payable override {
         // unpack data
-        OnCreateData[] memory tokensData = abi.decode(
+        console.log("Received Data in Contract");
+        console.logBytes(additionalData);
+        console.log("onCreate");
+        OnCreateData memory tokensData = abi.decode(
             additionalData,
-            (OnCreateData[])
+            (OnCreateData)
         );
-        // Iterate over the array of TokenData objects
-        for (uint256 i = 0; i < tokensData.length; i++) {
-            OnCreateData memory tokenData = tokensData[i];
+        // console.log("tokensData.length", tokensData.length);
 
-            IERC721(tokenData.tokenAddress).transferFrom(
-                msg.sender,
-                account,
-                tokenData.id
-            );
-        }
-        // TODO: Add more data to the event
+        // // Iterate over the array of TokenData objects
+        // for (uint256 i = 0; i < tokensData.length; i++) {
+        //     OnCreateData memory tokenData = tokensData[i];
+
+        //     // Iterate over the array of token addresses and corresponding ids
+        //     for (uint256 j = 0; j < tokenData.tokenAddresses.length; j++) {
+        //         // Iterate over the array of ids for each token address
+        //         for (uint256 k = 0; k < tokenData.ids[j].length; k++) {
+        //             IERC721(tokenData.tokenAddresses[j]).transferFrom(
+        //                 msg.sender,
+        //                 account,
+        //                 tokenData.ids[j][k]
+        //             );
+        //         }
+        //     }
+        // }
+
         emit Created(tokenId, account);
         return;
     }
@@ -67,17 +85,23 @@ contract ERC721Module is IPackModule {
         for (uint256 i = 0; i < tokensData.length; i++) {
             OnClaimData memory tokenData = tokensData[i];
 
-            IERC6551Executable(payable(account)).execute(
-                tokenData.tokenAddress,
-                CALL_VALUE,
-                abi.encodeWithSignature(
-                    "safeTransferFrom(address,address,uint256)",
-                    account,
-                    claimer,
-                    tokenData.id
-                ),
-                CALL_OPERATION
-            );
+            // Iterate over the array of token addresses and corresponding ids
+            for (uint256 j = 0; j < tokenData.tokenAddresses.length; j++) {
+                // Iterate over the array of ids for each token address
+                for (uint256 k = 0; k < tokenData.ids[j].length; k++) {
+                    IERC6551Executable(payable(account)).execute(
+                        tokenData.tokenAddresses[j],
+                        CALL_VALUE,
+                        abi.encodeWithSignature(
+                            "safeTransferFrom(address,address,uint256)",
+                            account,
+                            claimer,
+                            tokenData.ids[j][k]
+                        ),
+                        CALL_OPERATION
+                    );
+                }
+            }
         }
         emit Opened(tokenId, account);
         return;
@@ -94,21 +118,26 @@ contract ERC721Module is IPackModule {
             (OnRevokeData[])
         );
 
-        // Iterate over the array of TokenData objects
         for (uint256 i = 0; i < tokensData.length; i++) {
             OnRevokeData memory tokenData = tokensData[i];
 
-            IERC6551Executable(payable(account)).execute(
-                tokenData.tokenAddress,
-                CALL_VALUE,
-                abi.encodeWithSignature(
-                    "safeTransferFrom(address,address,uint256)",
-                    account,
-                    msg.sender,
-                    tokenData.id
-                ),
-                CALL_OPERATION
-            );
+            // Iterate over the array of token addresses and corresponding ids
+            for (uint256 j = 0; j < tokenData.tokenAddresses.length; j++) {
+                // Iterate over the array of ids for each token address
+                for (uint256 k = 0; k < tokenData.ids[j].length; k++) {
+                    IERC6551Executable(payable(account)).execute(
+                        tokenData.tokenAddresses[j],
+                        CALL_VALUE,
+                        abi.encodeWithSignature(
+                            "safeTransferFrom(address,address,uint256)",
+                            account,
+                            msg.sender,
+                            tokenData.ids[j][k]
+                        ),
+                        CALL_OPERATION
+                    );
+                }
+            }
         }
 
         emit Revoked(tokenId, account);
