@@ -51,23 +51,44 @@ describe("PackMain, ERC721Module", function () {
     };
   };
 
+  interface ERC721MockData {
+    mock: ERC721Mock;
+    quantity: number;
+  }
+
   const mintPackWithERC721 = async (
     value: bigint,
     alice: Signer,
     packMain: PackMain,
     erc721Module: ERC721Module,
-    erc721Mock: ERC721Mock,
+    erc721Mocks: ERC721MockData[],
     keySignManager: KeySignManager
   ) => {
-    const tokenId = 0;
-    await erc721Mock.mint(await alice.getAddress(), tokenId);
-    const mockInstance = erc721Mock.connect(alice);
-    await mockInstance.approve(await packMain.getAddress(), tokenId);
+    const data: Array<[string, bigint[]]> = [];
+
+    for (const { mock, quantity } of erc721Mocks) {
+      const ids: bigint[] = [];
+      for (let i = 0; i < quantity; i++) {
+        await mock.mint(await alice.getAddress(), i);
+        const mockInstance = mock.connect(alice);
+        await mockInstance.approve(await packMain.getAddress(), i);
+        ids.push(BigInt(i));
+      }
+      data.push([await mock.getAddress(), ids]);
+    }
 
     const modules = [await erc721Module.getAddress()];
+    console.log("data", data);
+
     const moduleData = await generateMintData([
-      [await erc721Mock.getAddress(), BigInt(tokenId)],
+      ["0x000000000000000000000000000000000000dEaD", [BigInt(0)]],
+      ["0x000000000000000000000000000000000000DEed", [BigInt(0), BigInt(1)]],
     ]);
+
+    console.log("moduleData", moduleData);
+    const moduleDataParams = [moduleData];
+
+    console.log("moduleDataParams", moduleDataParams);
 
     const { packInstance, claimPrivateKey } = await createPack(
       packMain,
@@ -75,13 +96,13 @@ describe("PackMain, ERC721Module", function () {
       keySignManager,
       value,
       modules,
-      [moduleData]
+      moduleDataParams
     );
-    return { packInstance, alice, claimPrivateKey, erc721Mock };
+    return { packInstance, alice, claimPrivateKey, erc721Mocks };
   };
 
   describe("ERC721 Module, 1 token", function () {
-    it("Should mint a new pack, with erc721MockA", async function () {
+    it.only("Should mint a new pack, with erc721MockA", async function () {
       const value = ethers.parseEther("1");
 
       const { packMain, alice, keySignManager, erc721MockA, erc721Module } =
@@ -97,7 +118,7 @@ describe("PackMain, ERC721Module", function () {
         alice,
         packMain,
         erc721Module,
-        erc721MockA,
+        [{ mock: erc721MockA, quantity: 1 }],
         keySignManager
       );
 
