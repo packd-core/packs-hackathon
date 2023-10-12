@@ -6,7 +6,7 @@ import { KeySignManager } from "../utils/keySignManager";
 import { getSystemConfig } from "../utils/deployConfig";
 import { createPack } from "../utils/testUtils";
 import { deploySystem } from "../scripts/deploy";
-import { ClaimData } from "../utils/moduleData";
+import { ClaimData } from "../utils/erc20moduleData";
 import { getCommonSigners } from "../utils/signers";
 
 const systemConfig = getSystemConfig(hre);

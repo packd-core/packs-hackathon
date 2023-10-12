@@ -14,7 +14,7 @@ import {
   generateMintData,
   generateRevokeData,
   generateClaimData,
-} from "../utils/moduleData";
+} from "../utils/erc20moduleData";
 import { getCommonSigners } from "../utils/signers";
 
 const systemConfig = getSystemConfig(hre);
