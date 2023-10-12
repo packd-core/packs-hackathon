@@ -23,6 +23,7 @@ export interface SystemDeployed {
   erc20MockB: ERC20Mock;
   erc721Module: ERC721Module;
   erc721MockA: ERC721Mock;
+  erc721MockB: ERC721Mock;
 }
 
 export async function deploySystem(
@@ -71,6 +72,13 @@ export async function deploySystem(
     [],
     deploymentOverrides
   );
+  const erc721MockB = await deployContract<ERC721Mock>(
+    hre,
+    signer,
+    "ERC721Mock",
+    [],
+    deploymentOverrides
+  );
   const packAccount = await deployContract<PackAccount>(
     hre,
     signer,
@@ -111,5 +119,6 @@ export async function deploySystem(
     erc20MockB,
     erc721Module,
     erc721MockA,
+    erc721MockB,
   };
 }

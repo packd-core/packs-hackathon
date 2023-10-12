@@ -26,11 +26,8 @@ describe("PackMain, ERC721Module", function () {
     const { alice, bob, deployer, relayer } = await getCommonSigners(hre);
 
     // ERC6551 Related contracts
-    const { packMain, erc721MockA, erc721Module } = await deploySystem(
-      hre,
-      deployer,
-      systemConfig
-    );
+    const { packMain, erc721MockA, erc721MockB, erc721Module } =
+      await deploySystem(hre, deployer, systemConfig);
 
     // Set PackMain address in KeySignManager
     const keySignManager = new KeySignManager(
@@ -47,6 +44,7 @@ describe("PackMain, ERC721Module", function () {
       keySignManager,
       relayer,
       erc721MockA,
+      erc721MockB,
       erc721Module,
     };
   };
@@ -64,45 +62,35 @@ describe("PackMain, ERC721Module", function () {
     erc721Mocks: ERC721MockData[],
     keySignManager: KeySignManager
   ) => {
-    const data: Array<[string, bigint[]]> = [];
+    const data: Array<[string, bigint]> = [];
 
     for (const { mock, quantity } of erc721Mocks) {
-      const ids: bigint[] = [];
+      let tokenId = 0;
       for (let i = 0; i < quantity; i++) {
-        await mock.mint(await alice.getAddress(), i);
+        await mock.mint(await alice.getAddress(), tokenId);
         const mockInstance = mock.connect(alice);
-        await mockInstance.approve(await packMain.getAddress(), i);
-        ids.push(BigInt(i));
+        await mockInstance.approve(await packMain.getAddress(), tokenId);
+
+        data.push([await mock.getAddress(), BigInt(tokenId)]);
+        tokenId++;
       }
-      data.push([await mock.getAddress(), ids]);
     }
 
     const modules = [await erc721Module.getAddress()];
-    console.log("data", data);
-
-    const moduleData = await generateMintData([
-      ["0x000000000000000000000000000000000000dEaD", [BigInt(0)]],
-      ["0x000000000000000000000000000000000000DEed", [BigInt(0), BigInt(1)]],
-    ]);
-
-    console.log("moduleData", moduleData);
-    const moduleDataParams = [moduleData];
-
-    console.log("moduleDataParams", moduleDataParams);
-
+    const moduleDataParams = await generateMintData(data);
     const { packInstance, claimPrivateKey } = await createPack(
       packMain,
       alice,
       keySignManager,
       value,
       modules,
-      moduleDataParams
+      [moduleDataParams]
     );
     return { packInstance, alice, claimPrivateKey, erc721Mocks };
   };
 
   describe("ERC721 Module, 1 token", function () {
-    it.only("Should mint a new pack, with erc721MockA", async function () {
+    it("Should mint a new pack, with erc721MockA", async function () {
       const value = ethers.parseEther("1");
 
       const { packMain, alice, keySignManager, erc721MockA, erc721Module } =
@@ -154,16 +142,18 @@ describe("PackMain, ERC721Module", function () {
         alice,
         packMain,
         erc721Module,
-        erc721MockA,
+        [{ mock: erc721MockA, quantity: 1 }],
         keySignManager
       );
 
       // Check correct state
       expect(await packInstance.packState(0)).to.equal(1); // 1 is the enum value for Created
 
-      const revokeData = await generateRevokeData([
+      const data: Array<[string, bigint]> = [
         [await erc721MockA.getAddress(), tokenId],
-      ]);
+      ];
+
+      const revokeData = await generateRevokeData(data);
 
       // Revoke pack
       await packInstance.revoke(0, [revokeData]);
@@ -193,7 +183,7 @@ describe("PackMain, ERC721Module", function () {
         alice,
         packMain,
         erc721Module,
-        erc721MockA,
+        [{ mock: erc721MockA, quantity: 1 }],
         keySignManager
       );
 
@@ -251,7 +241,7 @@ describe("PackMain, ERC721Module", function () {
       expect(aliceBalanceERC721After).to.equal(0);
     });
   });
-  describe.skip("RelayClaim tests, with ERC721 Module", function () {
+  describe("RelayClaim tests, with ERC721 Module", function () {
     it("Should open a pack, some gas reimburstments", async function () {
       const value = ethers.parseEther("1");
       const maxRefundValue = ethers.parseEther("0.1");
@@ -261,17 +251,17 @@ describe("PackMain, ERC721Module", function () {
         bob,
         relayer,
         keySignManager,
-        erc20Module,
-        erc20MockA,
+        erc721MockA,
+        erc721Module,
       } = await loadFixture(setup);
 
       // Mint a new pack using createPack function
-      const { packInstance, claimPrivateKey } = await mintPackWithERC20(
+      const { packInstance, claimPrivateKey } = await mintPackWithERC721(
         value,
         alice,
         packMain,
-        erc20Module,
-        [{ mock: erc20MockA, value }],
+        erc721Module,
+        [{ mock: erc721MockA, quantity: 1 }],
         keySignManager
       );
 
@@ -304,7 +294,7 @@ describe("PackMain, ERC721Module", function () {
       const bobBalanceBefore = await ethers.provider.getBalance(bob.address);
 
       const moduleData = await generateClaimData([
-        await erc20MockA.getAddress(),
+        [await erc721MockA.getAddress(), BigInt(0)],
       ]);
 
       // Change account to relayer
@@ -322,38 +312,37 @@ describe("PackMain, ERC721Module", function () {
       const bobBalanceAfter = await ethers.provider.getBalance(bob.address);
       expect(bobBalanceAfter).to.gt(bobBalanceBefore);
 
-      // Check that the erc20 tokens are in the claimer's account
-      const erc20BalanceAccount = await erc20MockA.balanceOf(accountAddress);
-      expect(erc20BalanceAccount).to.equal(0);
-      const bobBalanceERC20After = await erc20MockA.balanceOf(bob.address);
-      expect(bobBalanceERC20After).to.equal(value);
+      // Check that the erc721 tokens are in the claimer's account
+      const erc721BalanceAccount = await erc721MockA.balanceOf(accountAddress);
+      expect(erc721BalanceAccount).to.equal(0);
+      const bobBalanceERC721After = await erc721MockA.balanceOf(bob.address);
+      expect(bobBalanceERC721After).to.equal(1);
     });
     it.skip("Should not open a pack, relayer tries to steal pack content", async function () {
       // TODO: Relayer could change the moduleData to send other valueless tokens to claimer
     });
   });
-  describe.skip("ERC721 Module, 2 tokens", function () {
-    it("Should mint a new pack, with erc20MockA and erc20MockB", async function () {
-      const valueA = ethers.parseEther("1");
-      const valueB = ethers.parseEther("2");
+  describe("ERC721 Module, 2 tokens", function () {
+    it("Should mint a new pack, with erc721MockA and erc621MockB", async function () {
+      const value = ethers.parseEther("1");
       const {
         packMain,
         alice,
         keySignManager,
-        erc20Module,
-        erc20MockA,
-        erc20MockB,
+        erc721MockA,
+        erc721MockB,
+        erc721Module,
       } = await loadFixture(setup);
 
       // Mint a new pack using createPack function
-      const { packInstance } = await mintPackWithERC20(
-        valueA + valueB,
+      const { packInstance } = await mintPackWithERC721(
+        value,
         alice,
         packMain,
-        erc20Module,
+        erc721Module,
         [
-          { mock: erc20MockA, value: valueA },
-          { mock: erc20MockB, value: valueB },
+          { mock: erc721MockA, quantity: 1 },
+          { mock: erc721MockB, quantity: 1 },
         ],
         keySignManager
       );
@@ -366,35 +355,34 @@ describe("PackMain, ERC721Module", function () {
       const accountAddress = await packInstance.account(0);
       const ethBalanceAccount =
         await ethers.provider.getBalance(accountAddress);
-      expect(ethBalanceAccount).to.equal(valueA + valueB);
+      expect(ethBalanceAccount).to.equal(value);
 
-      // Check pack erc20 balance
-      const erc20BalanceAccountA = await erc20MockA.balanceOf(accountAddress);
-      expect(erc20BalanceAccountA).to.equal(valueA);
-      const erc20BalanceAccountB = await erc20MockB.balanceOf(accountAddress);
-      expect(erc20BalanceAccountB).to.equal(valueB);
+      // Check pack erc721 balance
+      const erc721BalanceAccountA = await erc721MockA.balanceOf(accountAddress);
+      expect(erc721BalanceAccountA).to.equal(1);
+      const erc721BalanceAccountB = await erc721MockB.balanceOf(accountAddress);
+      expect(erc721BalanceAccountB).to.equal(1);
     });
     it("Should revoke a pack", async function () {
-      const valueA = ethers.parseEther("1");
-      const valueB = ethers.parseEther("2");
+      const value = ethers.parseEther("1");
       const {
         packMain,
         alice,
         keySignManager,
-        erc20Module,
-        erc20MockA,
-        erc20MockB,
+        erc721Module,
+        erc721MockA,
+        erc721MockB,
       } = await loadFixture(setup);
 
       // Mint a new pack using createPack function
-      const { packInstance } = await mintPackWithERC20(
-        valueA + valueB,
+      const { packInstance } = await mintPackWithERC721(
+        value,
         alice,
         packMain,
-        erc20Module,
+        erc721Module,
         [
-          { mock: erc20MockA, value: valueA },
-          { mock: erc20MockB, value: valueB },
+          { mock: erc721MockA, quantity: 1 },
+          { mock: erc721MockB, quantity: 1 },
         ],
         keySignManager
       );
@@ -403,57 +391,60 @@ describe("PackMain, ERC721Module", function () {
 
       // Check correct state
       expect(await packInstance.packState(0)).to.equal(1); // 1 is the enum value for Created
-      // Check pack erc20 balance
-      const erc20BalanceAccountA = await erc20MockA.balanceOf(accountAddress);
-      expect(erc20BalanceAccountA).to.equal(valueA);
-      const erc20BalanceAccountB = await erc20MockB.balanceOf(accountAddress);
-      expect(erc20BalanceAccountB).to.equal(valueB);
+      // Check pack erc721 balance
+      const erc721BalanceAccountA = await erc721MockA.balanceOf(accountAddress);
+      expect(erc721BalanceAccountA).to.equal(1);
+      const erc721BalanceAccountB = await erc721MockB.balanceOf(accountAddress);
+      expect(erc721BalanceAccountB).to.equal(1);
 
       const revokeData = await generateRevokeData([
-        await erc20MockA.getAddress(),
-        await erc20MockB.getAddress(),
+        [await erc721MockA.getAddress(), BigInt(0)],
+        [await erc721MockB.getAddress(), BigInt(0)],
       ]);
 
       // Revoke pack
       await packInstance.revoke(0, [revokeData]);
       expect(await packInstance.packState(0)).to.equal(3); // 3 is the enum value for Revoked
 
-      // Check ERC20 balances
-      const erc20BalanceAccountAAfter =
-        await erc20MockA.balanceOf(accountAddress);
-      expect(erc20BalanceAccountAAfter).to.equal(0);
-      const erc20BalanceAccountBAfter =
-        await erc20MockB.balanceOf(accountAddress);
-      expect(erc20BalanceAccountBAfter).to.equal(0);
+      // Check ERC721 balances
+      const erc721BalanceAccountAAfter =
+        await erc721MockA.balanceOf(accountAddress);
+      expect(erc721BalanceAccountAAfter).to.equal(0);
+      const erc721BalanceAccountBAfter =
+        await erc721MockB.balanceOf(accountAddress);
+      expect(erc721BalanceAccountBAfter).to.equal(0);
 
-      // Check that the erc20 tokens are back in the owner's account
-      const aliceBalanceERC20AfterA = await erc20MockA.balanceOf(alice.address);
-      expect(aliceBalanceERC20AfterA).to.equal(valueA);
-      const aliceBalanceERC20AfterB = await erc20MockB.balanceOf(alice.address);
-      expect(aliceBalanceERC20AfterB).to.equal(valueB);
+      // Check that the erc721 tokens are back in the owner's account
+      const aliceBalanceERC721AfterA = await erc721MockA.balanceOf(
+        alice.address
+      );
+      expect(aliceBalanceERC721AfterA).to.equal(1);
+      const aliceBalanceERC721AfterB = await erc721MockB.balanceOf(
+        alice.address
+      );
+      expect(aliceBalanceERC721AfterB).to.equal(1);
     });
     it("Should open a pack", async function () {
-      const valueA = ethers.parseEther("1");
-      const valueB = ethers.parseEther("2");
+      const value = ethers.parseEther("1");
       const {
         packMain,
         alice,
         bob,
         keySignManager,
-        erc20Module,
-        erc20MockA,
-        erc20MockB,
+        erc721Module,
+        erc721MockA,
+        erc721MockB,
       } = await loadFixture(setup);
 
       // Mint a new pack using createPack function
-      const { packInstance, claimPrivateKey } = await mintPackWithERC20(
-        valueA + valueB,
+      const { packInstance, claimPrivateKey } = await mintPackWithERC721(
+        value,
         alice,
         packMain,
-        erc20Module,
+        erc721Module,
         [
-          { mock: erc20MockA, value: valueA },
-          { mock: erc20MockB, value: valueB },
+          { mock: erc721MockA, quantity: 1 },
+          { mock: erc721MockB, quantity: 1 },
         ],
         keySignManager
       );
@@ -461,17 +452,12 @@ describe("PackMain, ERC721Module", function () {
       // Check correct state
       expect(await packInstance.packState(0)).to.equal(1); // 1 is the enum value for Created
 
-      // Check balances
+      // Check pack erc721 balance
       const accountAddress = await packInstance.account(0);
-      const ethBalanceAccount =
-        await ethers.provider.getBalance(accountAddress);
-      expect(ethBalanceAccount).to.equal(valueA + valueB);
-
-      // Check that the erc20 tokens are in the pack
-      const erc20BalanceAccountA = await erc20MockA.balanceOf(accountAddress);
-      expect(erc20BalanceAccountA).to.equal(valueA);
-      const erc20BalanceAccountB = await erc20MockB.balanceOf(accountAddress);
-      expect(erc20BalanceAccountB).to.equal(valueB);
+      const erc721BalanceAccountA = await erc721MockA.balanceOf(accountAddress);
+      expect(erc721BalanceAccountA).to.equal(1);
+      const erc721BalanceAccountB = await erc721MockB.balanceOf(accountAddress);
+      expect(erc721BalanceAccountB).to.equal(1);
 
       // Create SigOwner
       const { claimSignature: sigOwner } =
@@ -480,6 +466,7 @@ describe("PackMain, ERC721Module", function () {
           ["uint256", "address"],
           [0, bob.address]
         );
+
       // Create SigClaimer
       const { claimSignature: sigClaimer } =
         await keySignManager.generateClaimSignature(
@@ -498,30 +485,103 @@ describe("PackMain, ERC721Module", function () {
       };
 
       const moduleData = await generateClaimData([
-        await erc20MockA.getAddress(),
-        await erc20MockB.getAddress(),
+        [await erc721MockA.getAddress(), BigInt(0)],
+        [await erc721MockB.getAddress(), BigInt(0)],
       ]);
 
-      // Change account to bob
+      // Open pack
       const packInstanceBob = packMain.connect(bob);
       await packInstanceBob.open(claimData, [moduleData]);
 
       // Check correct state
-      expect(await packInstanceBob.packState(0)).to.equal(2); // 2 is the enum value for Opened
+      expect(await packInstance.packState(0)).to.equal(2); // 2 is the enum value for Opened
 
-      // Check erc20 balances
-      const erc20BalanceAccountAAfter =
-        await erc20MockA.balanceOf(accountAddress);
-      expect(erc20BalanceAccountAAfter).to.equal(0);
-      const erc20BalanceAccountBAfter =
-        await erc20MockB.balanceOf(accountAddress);
-      expect(erc20BalanceAccountBAfter).to.equal(0);
+      // Check ERC721 balances
+      const erc721BalanceAccountAAfter =
+        await erc721MockA.balanceOf(accountAddress);
+      expect(erc721BalanceAccountAAfter).to.equal(0);
+      const erc721BalanceAccountBAfter =
+        await erc721MockB.balanceOf(accountAddress);
+      expect(erc721BalanceAccountBAfter).to.equal(0);
 
-      // Check erc20 balances for claimer
-      const bobBalanceERC20AfterA = await erc20MockA.balanceOf(bob.address);
-      expect(bobBalanceERC20AfterA).to.equal(valueA);
-      const bobBalanceERC20AfterB = await erc20MockB.balanceOf(bob.address);
-      expect(bobBalanceERC20AfterB).to.equal(valueB);
+      // Check that the erc721 tokens are in the owner's account
+      const bobBalanceERC721AfterA = await erc721MockA.balanceOf(bob.address);
+      expect(bobBalanceERC721AfterA).to.equal(1);
+      const bobBalanceERC721AfterB = await erc721MockB.balanceOf(bob.address);
+      expect(bobBalanceERC721AfterB).to.equal(1);
+    });
+    it("Should mint and open with 2 tokens from the same contract", async function () {
+      const value = ethers.parseEther("1");
+      const {
+        packMain,
+        alice,
+        bob,
+        keySignManager,
+        erc721Module,
+        erc721MockA,
+      } = await loadFixture(setup);
+
+      // Mint a new pack using createPack function
+      const { packInstance, claimPrivateKey } = await mintPackWithERC721(
+        value,
+        alice,
+        packMain,
+        erc721Module,
+        [{ mock: erc721MockA, quantity: 2 }],
+        keySignManager
+      );
+
+      // Check correct state
+      expect(await packInstance.packState(0)).to.equal(1); // 1 is the enum value for Created
+
+      // Check pack erc721 balance
+      const accountAddress = await packInstance.account(0);
+      const erc721BalanceAccountA = await erc721MockA.balanceOf(accountAddress);
+      expect(erc721BalanceAccountA).to.equal(2);
+
+      // Create SigOwner
+      const { claimSignature: sigOwner } =
+        await keySignManager.generateClaimSignature(
+          claimPrivateKey,
+          ["uint256", "address"],
+          [0, bob.address]
+        );
+
+      // Create SigClaimer
+      const { claimSignature: sigClaimer } =
+        await keySignManager.generateClaimSignature(
+          bob,
+          ["uint256", "uint256"],
+          [0, 0]
+        );
+
+      const claimData: ClaimData = {
+        tokenId: 0,
+        sigOwner: sigOwner,
+        claimer: bob.address,
+        sigClaimer: sigClaimer,
+        refundValue: BigInt(0),
+        maxRefundValue: BigInt(0),
+      };
+
+      const moduleData = await generateClaimData([
+        [await erc721MockA.getAddress(), BigInt(0)],
+        [await erc721MockA.getAddress(), BigInt(1)],
+      ]);
+
+      // Open pack
+      const packInstanceBob = packMain.connect(bob);
+      await packInstanceBob.open(claimData, [moduleData]);
+
+      // Check correct state
+      expect(await packInstance.packState(0)).to.equal(2); // 2 is the enum value for Opened
+
+      // Check ERC721 balances
+      const erc721BalanceAccountAfter =
+        await erc721MockA.balanceOf(accountAddress);
+      expect(erc721BalanceAccountAfter).to.equal(0);
+      const bobBalanceERC721After = await erc721MockA.balanceOf(bob.address);
+      expect(bobBalanceERC721After).to.equal(2);
     });
   });
 });
