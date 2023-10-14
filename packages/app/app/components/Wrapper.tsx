@@ -1,7 +1,14 @@
-import { ReactNode } from "react";
+import {ReactNode} from "react";
+import clsxm from "@/src/lib/clsxm";
 
-const Wrapper = ({ children }: { children: ReactNode }) => (
-  <div className="max-w-6xl mx-auto px-6">{children}</div>
+type WrapperProps = {
+    children: ReactNode;
+    className?: string;
+}
+const Wrapper = ({children, className}: WrapperProps) => (
+    <div className={clsxm("max-w-6xl mx-auto px-6", className)}>
+        {children}
+    </div>
 );
 
-export { Wrapper };
+export {Wrapper};
