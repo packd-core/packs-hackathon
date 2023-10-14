@@ -7,7 +7,7 @@ import {BsDisc, BsDiscord, BsGithub, BsTwitter} from "react-icons/bs";
 
 const Header = () => {
   return (
-    <header className="py-8 border-b mb-10">
+    <header className="py-8 border-b mb-10 fixed top-0 left-0 right-0">
       <Wrapper>
         <div className="flex items-center justify-between">
           <PackdLogo />
