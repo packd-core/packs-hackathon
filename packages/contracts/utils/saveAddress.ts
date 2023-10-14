@@ -4,7 +4,6 @@ import type { HardhatRuntimeEnvironment } from "hardhat/types";
 
 
 export const saveAddress = async (hre: HardhatRuntimeEnvironment, contract: BaseContract, name: string) => {
-  const networkName = hre.network.name
   const chainId = hre.network.config.chainId ?? 31337
 
   const mainFolder = "../app/app";

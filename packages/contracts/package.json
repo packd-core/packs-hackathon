@@ -7,10 +7,9 @@
     "license": "MIT",
     "scripts": {
         "start": "hardhat node",
-        "test": "hardhat test",
+        "test": "hardhat test",        
         
-        
-        "deploy": "hardhat run scripts/deploy.ts",
+        "deploy": "hardhat typechain && hardhat deploy",
         "deploy:local": "yarn deploy --network localhost ",
         "deploy:scrollSepolia": "yarn deploy --network scrollSepolia",
         
@@ -36,7 +35,8 @@
         "prettier": "^3.0.3",
         "prettier-plugin-solidity": "^1.1.3",
         "solidity-coverage": "^0.8.4",
-        "typechain": "^8.3.1"
+        "typechain": "^8.3.1",
+        "@wagmi/cli": "^1.5.2"
     },
     "dependencies": {
         "dotenv": "^16.3.1"
