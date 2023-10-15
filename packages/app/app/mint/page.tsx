@@ -8,6 +8,7 @@ import CurrentChain from "@/app/components/web3/CurrentChain";
 import {AssetsForm} from "@/app/mint/pack/AssetsForm";
 import {useState} from "react";
 import {ApproveForm} from "@/app/mint/pack/ApproveForm";
+import {SignForm} from "@/app/mint/pack/SignForm";
 
 const MintPage = () => {
     const [step, setStep] = useState(0)
@@ -41,6 +42,7 @@ const MintPage = () => {
                         <CurrentChain className='my-4'/>
                         {step === 0 && <AssetsForm/>}
                         {step === 1 && <ApproveForm/>}
+                        {step === 2 && <SignForm/>}
                     </div>
                 </Card>
             </Wrapper>
