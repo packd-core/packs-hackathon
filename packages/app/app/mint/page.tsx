@@ -7,6 +7,7 @@ import Present from "~/present.svg";
 import CurrentChain from "@/app/components/web3/CurrentChain";
 import {AssetsForm} from "@/app/mint/pack/AssetsForm";
 import {useState} from "react";
+import {ApproveForm} from "@/app/mint/pack/ApproveForm";
 
 const MintPage = () => {
     const [step, setStep] = useState(0)
@@ -39,6 +40,7 @@ const MintPage = () => {
                         <h1 className="text-lg">Create new Pack</h1>
                         <CurrentChain className='my-4'/>
                         {step === 0 && <AssetsForm/>}
+                        {step === 1 && <ApproveForm/>}
                     </div>
                 </Card>
             </Wrapper>
