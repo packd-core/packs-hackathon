@@ -1,15 +1,15 @@
+'use client'
 import {Card} from "@/app/components/Card";
 import {Wrapper} from "@/app/components/Wrapper";
-import {AiOutlineArrowLeft, AiOutlinePlus} from "react-icons/ai";
 import {FiArrowLeft, FiArrowRight} from "react-icons/fi";
 import Button from "@/app/components/button/Button";
 import Present from "~/present.svg";
-import {useAccount, useNetwork} from "wagmi";
 import CurrentChain from "@/app/components/web3/CurrentChain";
-import {ContentCard} from "@/app/components/content/ContentCard";
-import {TiPlus} from "react-icons/ti";
+import {AssetsForm} from "@/app/mint/pack/AssetsForm";
+import {useState} from "react";
 
 const MintPage = () => {
+    const [step, setStep] = useState(0)
 
     return (
         <main>
@@ -19,11 +19,15 @@ const MintPage = () => {
                     containerClassName='max-h-[60vh] overflow-y-auto'
                     controls={
                         <div className='w-full flex justify-between py-1'>
-                            <Button variant="navigation" disabled={true}
+                            <Button
+                                onClick={() => setStep(step - 1)}
+                                variant="navigation" disabled={step == 0}
                                     leftIcon={<FiArrowLeft className='text-inherit inline'/>}>
                                 Back
                             </Button>
-                            <Button variant="navigation" rightIcon={<FiArrowRight className='text-inherit inline'/>}>
+                            <Button
+                                onClick={() => setStep(step + 1)}
+                                variant="navigation" rightIcon={<FiArrowRight className='text-inherit inline'/>}>
                                 Next
                             </Button>
                         </div>
@@ -34,46 +38,7 @@ const MintPage = () => {
                         </div>
                         <h1 className="text-lg">Create new Pack</h1>
                         <CurrentChain className='my-4'/>
-                        <div className='border-b-[1px] self-stretch border-gray-500 text-sm py-2'>
-                            Contents
-                        </div>
-                        <div className="flex flex-col w-full gap-2">
-                            <ContentCard className='self-stretch'>
-                                <span className='text-card-title'>ETH</span>
-                                <input className='text-right'/>
-                            </ContentCard>
-                            <ContentCard className='self-stretch'>
-                                <span className='text-card-title'>Token address</span>
-                                <input className='text-right'/>
-                                <span className='text-card-title'>Amount</span>
-                                <input className='text-right'/>
-                            </ContentCard>
-                            <ContentCard className='self-stretch'>
-                                <span className='text-card-title'>Nft address</span>
-                                <input className='text-right'/>
-                                <span className='text-card-title'>Token id</span>
-                                <input className='text-right'/>
-                            </ContentCard>
-                            <Button
-                                variant='flat' isDarkBg={true}
-                                className='justify-center bg-gray-800 text-white py-2 rounded-2xl'
-                                rightIcon={<AiOutlinePlus/>}>Add</Button>
-
-                            <ContentCard className='self-stretch'>
-                                <span className='text-card-title'>Add assets</span>
-                                <div className='flex gap-2'>
-                                    <Button
-                                        variant='flat' isDarkBg={true}
-                                        className='flex-1 justify-center bg-gray-600 text-white rounded-lg'
-                                        leftIcon={<AiOutlinePlus/>}>Token</Button>
-                                    <Button
-                                        variant='flat' isDarkBg={true}
-                                        className='flex-1 justify-center bg-gray-600 text-white rounded-lg'
-                                        leftIcon={<AiOutlinePlus/>}>NFT</Button>
-                                </div>
-                            </ContentCard>
-                        </div>
-
+                        {step === 0 && <AssetsForm/>}
                     </div>
                 </Card>
             </Wrapper>
