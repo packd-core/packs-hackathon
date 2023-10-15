@@ -34,5 +34,8 @@
     "typescript": "5.2.2",
     "viem": "^1.11.0",
     "wagmi": "^1.4.2"
+  },
+  "devDependencies": {
+    "@svgr/webpack": "^8.1.0"
   }
 }
