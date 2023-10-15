@@ -6,13 +6,23 @@ import Button from "@/app/components/button/Button";
 import Present from "~/present.svg";
 import CurrentChain from "@/app/components/web3/CurrentChain";
 import {AssetsForm} from "@/app/mint/pack/AssetsForm";
-import {useState} from "react";
+import {useCallback, useState} from "react";
 import {ApproveForm} from "@/app/mint/pack/ApproveForm";
 import {SignForm} from "@/app/mint/pack/SignForm";
 
 const MintPage = () => {
     const [step, setStep] = useState(0)
-
+    const signMessage = useCallback(() => {}, []);
+    const next = useCallback(() => {
+        if (step === 2) {
+            signMessage()
+            return;
+        }
+        setStep(step + 1)
+    }, [step, signMessage]);
+    const back = useCallback(() => {
+        setStep(step - 1)
+    }, [step]);
     return (
         <main>
             <Wrapper className='min-h-screen flex items-center'>
@@ -22,15 +32,15 @@ const MintPage = () => {
                     controls={
                         <div className='w-full flex justify-between py-1'>
                             <Button
-                                onClick={() => setStep(step - 1)}
+                                onClick={back}
                                 variant="navigation" disabled={step == 0}
-                                    leftIcon={<FiArrowLeft className='text-inherit inline'/>}>
+                                leftIcon={<FiArrowLeft className='text-inherit inline'/>}>
                                 Back
                             </Button>
                             <Button
-                                onClick={() => setStep(step + 1)}
+                                onClick={next}
                                 variant="navigation" rightIcon={<FiArrowRight className='text-inherit inline'/>}>
-                                Next
+                                {step === 2 ? 'Sign Message' : 'Next'}
                             </Button>
                         </div>
                     }>
