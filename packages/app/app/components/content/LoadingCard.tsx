@@ -2,6 +2,7 @@ import Present from "~/present.svg";
 import {ImNewTab} from "react-icons/im";
 import {Card} from "@/app/components/Card";
 import clsxm from "@/src/lib/clsxm";
+import {ExternalLink} from "@/app/components/button/ExternalLink";
 
 type LoadingCardProps = {
     className?: string;
@@ -26,8 +27,7 @@ export function LoadingCard({className, children, title, text, transactionHash}:
             <h1 className="text-lg pt-4">{title}</h1>
             {
                 transactionHash &&
-                <a href={'https://etherscan.io'} target={'_blank'} className='text-primary-500'>Track it
-                    onchain <ImNewTab className="inline"/></a>
+                <ExternalLink href={'https://etherscan.io'}>Track it onchain</ExternalLink>
             }
             {children}
         </div>
