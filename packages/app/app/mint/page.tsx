@@ -43,57 +43,46 @@ const MintPage = () => {
     }, [step]);
 
     if (step === 4) return (
-        <main>
-            <Wrapper className='min-h-screen flex items-center'>
-                <LoadingCard
-                    title="Your pack is being created..."
-                    text='Waiting for Comfirmation...'
-                    transactionHash="askkhn"/>
-            </Wrapper>
-        </main>
+        <LoadingCard
+            title="Your pack is being created..."
+            text='Waiting for Comfirmation...'
+            transactionHash="askkhn"/>
+
     )
     if (step === 5) return (
-        <main>
-            <Wrapper className='min-h-screen flex items-center'>
-                <PackCreatedCard/>
-            </Wrapper>
-        </main>
+        <PackCreatedCard/>
     )
     return (
-        <main>
-            <Wrapper className='min-h-screen flex items-center'>
-                <Card
-                    className={'mx-auto w-full'}
-                    containerClassName='max-h-[60vh] overflow-y-auto'
-                    controls={
-                        <div className='w-full flex justify-between py-1'>
-                            <Button
-                                onClick={back}
-                                variant="navigation" disabled={step == 0}
-                                leftIcon={<FiArrowLeft className='text-inherit inline'/>}>
-                                Back
-                            </Button>
-                            <Button
-                                onClick={next}
-                                variant="navigation" rightIcon={<FiArrowRight className='text-inherit inline'/>}>
-                                {step === 2 ? 'Sign Message' : 'Next'}
-                            </Button>
-                        </div>
-                    }>
-                    <div className="flex flex-col items-center gap-2">
-                        <div className="p-2 rounded-full bg-gray-800">
-                            <Present className={'h-6 w-6'}/>
-                        </div>
-                        <h1 className="text-lg">Create new Pack</h1>
-                        <CurrentChain className='my-4'/>
-                        {step === 0 && <AssetsForm/>}
-                        {step === 1 && <ApproveForm/>}
-                        {step === 2 && <SignForm/>}
-                        {step === 3 && <ReviewForm/>}
-                    </div>
-                </Card>
-            </Wrapper>
-        </main>
+        <Card
+            className={'mx-auto w-full'}
+            containerClassName=' overflow-y-auto'
+            controls={
+                <div className='w-full flex justify-between py-1'>
+                    <Button
+                        onClick={back}
+                        variant="navigation" disabled={step == 0}
+                        leftIcon={<FiArrowLeft className='text-inherit inline'/>}>
+                        Back
+                    </Button>
+                    <Button
+                        onClick={next}
+                        variant="navigation" rightIcon={<FiArrowRight className='text-inherit inline'/>}>
+                        {step === 2 ? 'Sign Message' : 'Next'}
+                    </Button>
+                </div>
+            }>
+            <div className="flex flex-col items-center gap-2">
+                <div className="p-2 rounded-full bg-gray-800">
+                    <Present className={'h-6 w-6'}/>
+                </div>
+                <h1 className="text-lg">Create new Pack</h1>
+                <CurrentChain className='my-4'/>
+                {step === 0 && <AssetsForm/>}
+                {step === 1 && <ApproveForm/>}
+                {step === 2 && <SignForm/>}
+                {step === 3 && <ReviewForm/>}
+            </div>
+        </Card>
     );
 };
 
