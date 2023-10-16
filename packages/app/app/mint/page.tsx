@@ -9,6 +9,7 @@ import {AssetsForm} from "@/app/mint/pack/AssetsForm";
 import {useCallback, useState} from "react";
 import {ApproveForm} from "@/app/mint/pack/ApproveForm";
 import {SignForm} from "@/app/mint/pack/SignForm";
+import {ReviewForm} from "@/app/mint/pack/ReviewForm";
 
 const MintPage = () => {
     const [step, setStep] = useState(0)
@@ -16,7 +17,6 @@ const MintPage = () => {
     const next = useCallback(() => {
         if (step === 2) {
             signMessage()
-            return;
         }
         setStep(step + 1)
     }, [step, signMessage]);
@@ -53,6 +53,7 @@ const MintPage = () => {
                         {step === 0 && <AssetsForm/>}
                         {step === 1 && <ApproveForm/>}
                         {step === 2 && <SignForm/>}
+                        {step === 3 && <ReviewForm/>}
                     </div>
                 </Card>
             </Wrapper>
