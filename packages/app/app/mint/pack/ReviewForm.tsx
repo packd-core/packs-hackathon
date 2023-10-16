@@ -1,7 +1,3 @@
-import {ContentCard} from "@/app/components/content/ContentCard";
-import Button from "@/app/components/button/Button";
-import {HelpItem} from "@/app/components/content/HelpItem";
-import {Component} from "react";
 import {ContentRow} from "@/app/components/content/ContentRow";
 
 
@@ -30,6 +26,7 @@ export const ReviewForm = () => (
             label="Bored Ape"
             value="tokenId: 1875"/>
         <table className="font-semibold mt-4">
+            <tbody>
             <tr>
                 <td className='text-gray-500'>Chain</td>
                 <td className='text-right'>Base</td>
@@ -38,5 +35,6 @@ export const ReviewForm = () => (
                 <td className='text-gray-500'>Gas fees</td>
                 <td className='text-right'>$1.00</td>
             </tr>
+            </tbody>
         </table>
     </div>)
