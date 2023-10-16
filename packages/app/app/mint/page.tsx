@@ -21,7 +21,7 @@ import {HelpItem} from "@/app/components/content/HelpItem";
 import {PackCreatedCard} from "@/app/mint/pack/PackCreatedCard";
 
 const MintPage = () => {
-    const [step, setStep] = useState(5)
+    const [step, setStep] = useState(0)
     const signMessage = useCallback(() => {
     }, []);
     const next = useCallback(() => {
@@ -38,7 +38,7 @@ const MintPage = () => {
         if (step === 4) {
             setTimeout(() => {
                 setStep(5)
-            }, 5000)
+            }, 3000)
         }
     }, [step]);
 
