@@ -2,6 +2,7 @@ import {ContentCard} from "@/app/components/content/ContentCard";
 import Button from "@/app/components/button/Button";
 import Help from "~/help.svg";
 import {HelpItem} from "@/app/components/content/HelpItem";
+import {ContentTitle} from "@/app/components/content/ContentRow";
 
 export const ApproveForm = () => (
     <div className="flex flex-col w-full gap-2">
@@ -9,9 +10,7 @@ export const ApproveForm = () => (
             Approving tokens for a contract is necessary so that the contract can transfer the specified tokens and NFTs
             into the new pack.
         </HelpItem>
-        <div className='border-b-[1px] border-t-[1px] self-stretch border-gray-500 text-sm py-2'>
-            Approve tokens
-        </div>
+        <ContentTitle>Approve tokens</ContentTitle>
         <ContentCard className='self-stretch'>
             <span className='text-card-title'>Token address</span>
             <input className='text-right' disabled={true} value="0xkahdajhsdbjhasbdhjbdsfsf"/>

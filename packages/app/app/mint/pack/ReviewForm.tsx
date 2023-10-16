@@ -1,4 +1,4 @@
-import {ContentRow} from "@/app/components/content/ContentRow";
+import {ContentRow, ContentTitle} from "@/app/components/content/ContentRow";
 
 
 export const ReviewForm = () => (
@@ -7,21 +7,17 @@ export const ReviewForm = () => (
         <div className='text-center pb-8'>
             <h2 className="text-2xl font-bold ">Review Pack Content</h2>
         </div>
-        <div className='border-b-[1px] self-stretch border-gray-500 text-sm py-2'>
-            Contents
-        </div>
+        <ContentTitle>Contents</ContentTitle>
         <ContentRow
             label="ETH"
             value={0.01}/>
-        <div className='self-stretch border-gray-500 text-sm pt-2'>
-            Tokens
-        </div>
+        <ContentTitle borderBottom={false} className='pb-0'>Tokens</ContentTitle>
+
         <ContentRow
             label="RPL"
             value={1000}/>
-        <div className='self-stretch border-gray-500 text-sm pt-2'>
-            NFTs
-        </div>
+        <ContentTitle borderBottom={false} className='pb-0'>NFTs</ContentTitle>
+
         <ContentRow
             label="Bored Ape"
             value="tokenId: 1875"/>
