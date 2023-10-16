@@ -12,7 +12,6 @@ const Header = () => {
     const [scrolled, setScrolled] = useState(false);
     useEffect(() => {
         const observer = new IntersectionObserver(([entry]) => {
-            console.log(entry.isIntersecting)
             setScrolled(!entry.isIntersecting)
         });
         const trigger = document.querySelector('[data-header-trigger]');
