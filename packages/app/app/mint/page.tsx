@@ -6,14 +6,17 @@ import Button from "@/app/components/button/Button";
 import Present from "~/present.svg";
 import CurrentChain from "@/app/components/web3/CurrentChain";
 import {AssetsForm} from "@/app/mint/pack/AssetsForm";
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {ApproveForm} from "@/app/mint/pack/ApproveForm";
 import {SignForm} from "@/app/mint/pack/SignForm";
 import {ReviewForm} from "@/app/mint/pack/ReviewForm";
+import {ImNewTab} from "react-icons/im";
+import {LoadingCard} from "@/app/components/content/LoadingCard";
 
 const MintPage = () => {
     const [step, setStep] = useState(0)
-    const signMessage = useCallback(() => {}, []);
+    const signMessage = useCallback(() => {
+    }, []);
     const next = useCallback(() => {
         if (step === 2) {
             signMessage()
@@ -23,6 +26,26 @@ const MintPage = () => {
     const back = useCallback(() => {
         setStep(step - 1)
     }, [step]);
+
+    useEffect(() => {
+        if (step === 4) {
+            setTimeout(() => {
+                setStep(5)
+            }, 5000)
+        }
+    }, [step]);
+
+    if (step === 4) return (
+        <main>
+            <Wrapper className='min-h-screen flex items-center'>
+                <LoadingCard
+                    title="Your pack is being created..."
+                    text='Waiting for Comfirmation...'
+                    transactionHash="askkhn"/>
+
+            </Wrapper>
+        </main>
+    )
     return (
         <main>
             <Wrapper className='min-h-screen flex items-center'>
