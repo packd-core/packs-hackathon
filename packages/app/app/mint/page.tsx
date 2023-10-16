@@ -12,9 +12,16 @@ import {SignForm} from "@/app/mint/pack/SignForm";
 import {ReviewForm} from "@/app/mint/pack/ReviewForm";
 import {ImNewTab} from "react-icons/im";
 import {LoadingCard} from "@/app/components/content/LoadingCard";
+import {ExternalLink} from "@/app/components/button/ExternalLink";
+import {GiCheckMark} from "react-icons/gi";
+import {IoIosCheckmark} from "react-icons/io";
+import {BiCopy, BiLogoTwitter, BiX} from "react-icons/bi";
+import {CopyTextButton} from "@/app/components/button/CopyTextButton";
+import {HelpItem} from "@/app/components/content/HelpItem";
+import {PackCreatedCard} from "@/app/mint/pack/PackCreatedCard";
 
 const MintPage = () => {
-    const [step, setStep] = useState(0)
+    const [step, setStep] = useState(5)
     const signMessage = useCallback(() => {
     }, []);
     const next = useCallback(() => {
@@ -42,7 +49,13 @@ const MintPage = () => {
                     title="Your pack is being created..."
                     text='Waiting for Comfirmation...'
                     transactionHash="askkhn"/>
-
+            </Wrapper>
+        </main>
+    )
+    if (step === 5) return (
+        <main>
+            <Wrapper className='min-h-screen flex items-center'>
+                <PackCreatedCard/>
             </Wrapper>
         </main>
     )
