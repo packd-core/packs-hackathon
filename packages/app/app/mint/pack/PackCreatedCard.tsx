@@ -9,7 +9,6 @@ import {Card} from "@/app/components/Card";
 export function PackCreatedCard() {
     return <Card
         className={'mx-auto w-full bg-green-800'}
-        containerClassName='max-h-[60vh] overflow-y-auto'
         controls={
             <div className='w-full flex justify-between py-1 px-2'>
                 <div>Claimed!</div>
