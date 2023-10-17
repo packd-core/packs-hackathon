@@ -60,7 +60,7 @@ To mint some test ERC721 token, run the hardhat task:
 yarn hardhat mint:erc721 --account 0x....01 --tokenaddress 0x....02 --tokenid 0 --network localhost
 ```
 
-Replace the account with your own, and the tokenid with the desired token id. Increment the token id to mint more tokens.
+Replace the account with your own, and the tokenaddress with the address of the deployed ERC721 contract. Tokenid is optional, default is 0. Increment it to mint more tokens.
 
 ## DEV NOTES
 
