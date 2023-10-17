@@ -1,4 +1,4 @@
-import {ExternalLink} from "@/app/components/button/ExternalLink";
+import {ExternalLink} from "@/app/components/links/ExternalLink";
 import Present from "~/present.svg";
 import {IoIosCheckmark} from "react-icons/io";
 import {CopyTextButton} from "@/app/components/button/CopyTextButton";
