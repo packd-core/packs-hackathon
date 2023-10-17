@@ -47,7 +47,7 @@ Replace the account with your own, and the amount with the desired amount.
 To mint some test ERC20 tokens, run the hardhat task:
 
 ```bash
-yarn hardhat mint:erc20 --account 0x....01 --tokenaddress --amount 1000 --network localhost
+yarn hardhat mint:erc20 --account 0x....01 --tokenaddress 0x....02 --amount 1000 --network localhost
 ```
 
 Replace the account with your own, and the tokenaddress with the address of the deployed ERC20 contract. Amount is optional, default is 1000.
@@ -57,7 +57,7 @@ Replace the account with your own, and the tokenaddress with the address of the 
 To mint some test ERC721 token, run the hardhat task:
 
 ```bash
-yarn hardhat mint:erc721 --account 0x....01 --tokenid 0 --network localhost
+yarn hardhat mint:erc721 --account 0x....01 --tokenaddress 0x....02 --tokenid 0 --network localhost
 ```
 
 Replace the account with your own, and the tokenid with the desired token id. Increment the token id to mint more tokens.
