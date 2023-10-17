@@ -1,6 +1,8 @@
 # Packs Main Repo
 
-### Local Hardhat Node Setup
+## Local Hardhat Node Setup
+
+### Setup
 
 Change directory to the contracts folder:
 
@@ -28,7 +30,9 @@ In a new terminal, same directory, deploy the contracts:
 yarn deploy
 ```
 
-Note down the address of the deployed contract, you will need it later.
+**Note down the address of the deployed contract, you will need it later.**
+
+### Fund Account with ETH
 
 To send some ETH to your account, run the hardhat task:
 
@@ -38,6 +42,8 @@ yarn hardhat send:eth --account 0x....01 --amount 1 --network localhost
 
 Replace the account with your own, and the amount with the desired amount.
 
+### Mint Test Tokens
+
 To mint some test ERC20 tokens, run the hardhat task:
 
 ```bash
@@ -45,6 +51,8 @@ yarn hardhat mint:erc20 --account 0x....01 --tokenaddress --amount 1000 --networ
 ```
 
 Replace the account with your own, and the tokenaddress with the address of the deployed ERC20 contract. Amount is optional, default is 1000.
+
+### Mint Test NFTs
 
 To mint some test ERC721 token, run the hardhat task:
 
@@ -54,7 +62,7 @@ yarn hardhat mint:erc721 --account 0x....01 --tokenid 0 --network localhost
 
 Replace the account with your own, and the tokenid with the desired token id. Increment the token id to mint more tokens.
 
-### DEV NOTES
+## DEV NOTES
 
 To generate frontend hooks run on the app folder:
 
