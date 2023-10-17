@@ -1,12 +1,11 @@
 import {ContentCard} from "@/app/components/content/ContentCard";
 import Button from "@/app/components/button/Button";
 import {AiOutlinePlus} from "react-icons/ai";
+import {ContentTitle} from "@/app/components/content/ContentRow";
 
 export const AssetsForm = () => (
     <>
-        <div className='border-b-[1px] self-stretch border-gray-500 text-sm py-2'>
-            Contents
-        </div>
+        <ContentTitle>Contents</ContentTitle>
         <div className="flex flex-col w-full gap-2">
             <ContentCard className='self-stretch'>
                 <span className='text-card-title'>ETH</span>
