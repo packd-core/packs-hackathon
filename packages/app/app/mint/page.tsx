@@ -1,6 +1,5 @@
 'use client'
 import {Card} from "@/app/components/Card";
-import {Wrapper} from "@/app/components/Wrapper";
 import {FiArrowLeft, FiArrowRight} from "react-icons/fi";
 import Button from "@/app/components/button/Button";
 import Present from "~/present.svg";
@@ -10,14 +9,7 @@ import {useCallback, useEffect, useState} from "react";
 import {ApproveForm} from "@/app/mint/pack/ApproveForm";
 import {SignForm} from "@/app/mint/pack/SignForm";
 import {ReviewForm} from "@/app/mint/pack/ReviewForm";
-import {ImNewTab} from "react-icons/im";
 import {LoadingCard} from "@/app/components/content/LoadingCard";
-import {ExternalLink} from "@/app/components/button/ExternalLink";
-import {GiCheckMark} from "react-icons/gi";
-import {IoIosCheckmark} from "react-icons/io";
-import {BiCopy, BiLogoTwitter, BiX} from "react-icons/bi";
-import {CopyTextButton} from "@/app/components/button/CopyTextButton";
-import {HelpItem} from "@/app/components/content/HelpItem";
 import {PackCreatedCard} from "@/app/mint/pack/PackCreatedCard";
 
 const MintPage = () => {
