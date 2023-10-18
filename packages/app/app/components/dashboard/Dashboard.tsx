@@ -1,12 +1,8 @@
-import {ReactNode, useCallback, useMemo, useState} from "react";
+import {useMemo, useState} from "react";
 import clsxm from "@/src/lib/clsxm";
 import {PackTypeSelector} from "@/app/components/dashboard/PackTypeSelector";
-import Button from "@/app/components/button/Button";
 import {AiOutlinePlus} from "react-icons/ai";
-import Link from "next/link";
 import ButtonLink from "@/app/components/links/ButtonLink";
-import clsx from "clsx";
-import {EtherSymbol} from "ethers";
 import {FaEthereum} from "react-icons/fa";
 
 export enum PackState {
@@ -94,9 +90,9 @@ function PackItem({pack}: { pack: Pack }) {
 
 function PackModuleItem({module}: { module: string[] }) {
     return <div className="text-black p-2 rounded bg-white border border-gray-500/50 flex items-center">
-       <div className='p-2 aspect-square rounded-full bg-blue-500'>
-           <FaEthereum/>
-       </div>
+        <div className='p-2 aspect-square rounded-full bg-blue-500'>
+            <FaEthereum/>
+        </div>
         <div className='grow p-2'>{module[0]}</div>
         <div>{module[1]}</div>
     </div>
@@ -107,7 +103,7 @@ function PackStateBadge({packState}: { packState: PackState }) {
         packState === PackState.CREATED && 'text-[#AB8707] bg-[rgba(244,211,94,0.20)]',
         packState === PackState.REVOKED && 'text-[#202020] bg-[rgba(32,32,32,0.15)]',
         packState === PackState.OPENED && 'text-[#099276] bg-[rgba(9,146,118,0.15)]',
-        )}>
+    )}>
         {packState}
     </div>
 }

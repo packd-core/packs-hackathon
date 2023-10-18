@@ -2,10 +2,8 @@
 import {ConnectButton} from "@rainbow-me/rainbowkit";
 import {Wrapper} from "./Wrapper";
 import {PackdLogo} from "@/app/components/header/PackdLogo";
-import {CiTwitter} from "react-icons/ci";
-import {AiFillTwitterSquare} from "react-icons/ai";
-import {BsDisc, BsDiscord, BsGithub, BsTwitter} from "react-icons/bs";
-import {useEffect, useRef, useState} from "react";
+import {BsDiscord, BsGithub, BsTwitter} from "react-icons/bs";
+import {useEffect, useState} from "react";
 import clsxm from "@/src/lib/clsxm";
 import Link from "next/link";
 
