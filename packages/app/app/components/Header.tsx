@@ -7,6 +7,7 @@ import {AiFillTwitterSquare} from "react-icons/ai";
 import {BsDisc, BsDiscord, BsGithub, BsTwitter} from "react-icons/bs";
 import {useEffect, useRef, useState} from "react";
 import clsxm from "@/src/lib/clsxm";
+import Link from "next/link";
 
 const Header = () => {
     const [scrolled, setScrolled] = useState(false);
@@ -30,7 +31,9 @@ const Header = () => {
                 scrolled && 'backdrop-blur-md bg-black/10')}>
             <Wrapper>
                 <div className="flex items-center justify-between">
-                    <PackdLogo/>
+                    <Link href={'/'}>
+                        <PackdLogo/>
+                    </Link>
                     <div className='flex h-full items-center gap-2'>
                         <BsTwitter className='text-white text-2xl hidden sm:flex'/>
                         <BsDiscord className='text-white text-2xl hidden sm:flex'/>
