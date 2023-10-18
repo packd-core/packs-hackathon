@@ -4,6 +4,7 @@ import {PackTypeSelector} from "@/app/components/dashboard/PackTypeSelector";
 import {AiOutlinePlus} from "react-icons/ai";
 import ButtonLink from "@/app/components/links/ButtonLink";
 import {FaEthereum} from "react-icons/fa";
+import {PackActionsMenu} from "@/app/components/dashboard/PackActionsMenu";
 
 export enum PackState {
     CREATED = 'created',
@@ -80,7 +81,8 @@ function PackItem({pack}: { pack: Pack }) {
             <PackStateBadge packState={pack.state}/>
             <div className="text-sm px-2">{pack.date.toDateString()}</div>
             <div className='grow'></div>
-            <div className='text-sm'> Pack id: {pack.id}</div>
+            <div className='text-sm pr-2'> Pack id: {pack.id}</div>
+            <PackActionsMenu/>
         </div>
         <div className='mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
             {pack.modules.map((module, index) => <PackModuleItem key={index} module={module}/>)}
