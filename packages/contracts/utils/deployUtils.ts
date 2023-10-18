@@ -5,7 +5,6 @@ import {
   EventLog,
   Overrides,
   ethers,
-  formatUnits,
   getAddress,
   resolveAddress,
   solidityPackedKeccak256,
@@ -13,9 +12,11 @@ import {
   type Signer,
 } from "ethers";
 
+import debug from "debug";
 import type { HardhatRuntimeEnvironment } from "hardhat/types";
 import { Create2Factory } from "../typechain-types";
 import { saveAddress } from "./saveAddress";
+
 interface Create2Options {
   amount?: number;
   salt?: string;
@@ -25,9 +26,13 @@ interface Create2Options {
 interface DeployCreate2Options {
   overrides?: Overrides;
   create2Options?: Create2Options;
-  debug?: boolean;
   waitForBlocks?: number | undefined;
 }
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const logger = (...args: string[]) => debug(`packd:${args.join(":")}`);
+
+const log = logger("log", "deploy");
+
 export const deployContract = async <T extends BaseContract>(
   hre: HardhatRuntimeEnvironment,
   signer: Signer,
@@ -46,7 +51,7 @@ export const deployContract = async <T extends BaseContract>(
   const abiEncodedConstructorArgs =
     contract.interface.encodeDeploy(constructorArguments);
 
-  //   console.log(`Deployed ${contractName} to ${await contract.getAddress()}`);
+  log(`Deployed ${contractName} to ${await contract.getAddress()}`);
   // Verify the contract on Etherscan if not local network
   if (hre.network.name !== "hardhat" && hre.network.name !== "localhost") {
     await hre.run("verify:verify", {
@@ -55,7 +60,7 @@ export const deployContract = async <T extends BaseContract>(
     });
   }
   if (constructorArguments.length > 0)
-    console.log(`ABI encoded args: ${abiEncodedConstructorArgs.slice(2)}`);
+    log(`ABI encoded args: ${abiEncodedConstructorArgs.slice(2)}`);
 
   await saveAddress(hre, contract, contractName);
 
@@ -77,15 +82,14 @@ export const deployContractWithCreate2 = async <
   options: DeployCreate2Options = {
     overrides: {},
     create2Options: { amount: 0, salt: undefined, callbacks: [] },
-    debug: false,
     waitForBlocks: undefined,
   },
 ): Promise<T> => {
-  const { overrides, create2Options, debug, waitForBlocks } = options;
+  const { overrides, create2Options, waitForBlocks } = options;
 
   const salt = create2Options?.salt ?? contractName;
-  if (debug)
-    console.log("deployContractWithCreate2", contractName, "salt", salt);
+
+  log("deployContractWithCreate2", contractName, "salt", salt);
 
   const deployerAddress = await resolveAddress(create2Factory.target);
   const unsignedTx = await contractFactory.getDeployTransaction(
@@ -128,11 +132,10 @@ export const deployContractWithCreate2 = async <
     contractFactory.interface,
   ).connect(contractFactory.runner) as T;
 
-  if (debug) {
-    const abiEncodedConstructorArgs =
-      contract.interface.encodeDeploy(constructorArgs);
-    console.log(`ABI encoded args: ${abiEncodedConstructorArgs.slice(2)}`);
-  }
+  const abiEncodedConstructorArgs =
+    contract.interface.encodeDeploy(constructorArgs);
+  log(`ABI encoded args: ${abiEncodedConstructorArgs.slice(2)}`);
+
   await saveAddress(hre, contract, contractName);
   return contract;
 };

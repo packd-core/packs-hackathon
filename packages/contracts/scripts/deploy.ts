@@ -18,7 +18,10 @@ import { getSystemConfig, SystemConfig } from "../utils/deployConfig";
 import {
   deployContract,
   deployContractWithCreate2,
+  logger,
 } from "../utils/deployUtils";
+
+const info = logger("info", "deploy");
 export interface MocksDeployed {
   erc20MockA: ERC20Mock;
   erc20MockB: ERC20Mock;
@@ -44,13 +47,13 @@ export async function deployMocks(
   signer: Signer,
   create2Factory: Create2Factory,
 ): Promise<MocksDeployed> {
+  info("Deploying Mocks");
   const deploymentOverrides = {
     gasPrice: hre.ethers.parseUnits("1.0", "gwei"),
   };
   const deployCreate2Options = {
     overrides: deploymentOverrides,
     create2Options: { amount: 0, salt: "test", callbacks: [] },
-    debug: false,
     waitForBlocks: 0,
   };
   const withSalt = (salt: string) => ({
@@ -114,6 +117,7 @@ export async function deploySystem(
   signer: Signer,
   systemConfig: SystemConfig,
 ): Promise<SystemDeployed> {
+  info("Deploying System");
   const { packConfig } = getSystemConfig(hre);
 
   const deploymentOverrides = {

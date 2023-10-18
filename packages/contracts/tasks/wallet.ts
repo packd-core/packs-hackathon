@@ -1,22 +1,24 @@
 import { subtask, task, types } from "hardhat/config";
 import type { HardhatRuntimeEnvironment, TaskArguments } from "hardhat/types";
 import { getDeployer } from "../utils/signers";
+import { logger } from "../utils/deployUtils";
+const info = logger("info", "task");
+const log = logger("log", "task");
 
 subtask("send:eth")
   .addParam("account", "Address to send ETH to", undefined, types.string)
   .addParam("amount", "Amount to send", 1, types.int)
   .setAction(
     async (taskArguments: TaskArguments, hre: HardhatRuntimeEnvironment) => {
+      info(`Subtask send:eth ${taskArguments.account}`);
+
       const deployer = await getDeployer(hre);
       const balance = await hre.ethers.provider.getBalance(deployer);
 
       const wallet = taskArguments.account;
 
-      console.log(
-        "Deployer balance: ",
-        hre.ethers.parseEther(balance.toString()),
-      );
-      console.log("Sending to: ", wallet);
+      log("Deployer balance: ", hre.ethers.parseEther(balance.toString()));
+      log("Sending to: ", wallet);
 
       const tx = await deployer.sendTransaction({
         to: wallet,
@@ -24,8 +26,8 @@ subtask("send:eth")
       });
       const balanceNew = await hre.ethers.provider.getBalance(wallet);
 
-      console.log("Transaction hash: ", tx.hash);
-      console.log("New balance: ", balanceNew.toString());
+      log("Transaction hash: ", tx.hash);
+      log("New balance: ", balanceNew.toString());
     },
   );
 
@@ -43,11 +45,12 @@ subtask("mint:erc20")
   .addOptionalParam("amount", "The amount, default 1000", 1000, types.int)
   .setAction(
     async (taskArguments: TaskArguments, hre: HardhatRuntimeEnvironment) => {
+      info(`Subtask mint:erc20 ${taskArguments.account}`);
       const deployer = await getDeployer(hre);
       const wallet = taskArguments.account;
       const amount = hre.ethers.parseEther(taskArguments.amount.toString());
 
-      console.log("Sending to: ", wallet);
+      log("Sending to: ", wallet);
 
       const token = await hre.ethers.getContractAt(
         "ERC20Mock",
@@ -58,8 +61,8 @@ subtask("mint:erc20")
       const tx = await token.mint(wallet, taskArguments.amount);
       const balanceNew = await token.balanceOf(wallet);
 
-      console.log("Transaction hash: ", tx.hash);
-      console.log("New balance: ", balanceNew.toString());
+      log("Transaction hash: ", tx.hash);
+      log("New balance: ", balanceNew.toString());
     },
   );
 task("mint:erc20").setAction(async (_, __, runSuper) => {
@@ -81,9 +84,10 @@ subtask("mint:erc721")
   )
   .setAction(
     async (taskArguments: TaskArguments, hre: HardhatRuntimeEnvironment) => {
+      info(`Subtask mint:erc721 ${taskArguments.account}`);
       const deployer = await getDeployer(hre);
       const wallet = taskArguments.account;
-      console.log("Sending to: ", wallet);
+      log("Sending to: ", wallet);
 
       const token = await hre.ethers.getContractAt(
         "ERC721Mock",
@@ -94,8 +98,8 @@ subtask("mint:erc721")
       const tx = await token.mint(wallet, taskArguments.tokenid);
       const balanceNew = await token.balanceOf(wallet);
 
-      console.log("Transaction hash: ", tx.hash);
-      console.log("New balance: ", balanceNew.toString());
+      log("Transaction hash: ", tx.hash);
+      log("New balance: ", balanceNew.toString());
     },
   );
 task("mint:erc721").setAction(async (_, __, runSuper) => {

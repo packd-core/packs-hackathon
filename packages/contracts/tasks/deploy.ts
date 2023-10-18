@@ -1,11 +1,14 @@
 import { subtask, task } from "hardhat/config";
 import { deploySystem } from "../scripts/deploy";
 import { getSystemConfig } from "../utils/deployConfig";
+import { logger } from "../utils/deployUtils";
+const info = logger("info", "task");
 
 subtask(
   "deploy",
   "Deploy the contracts to the selected chain (defaults to localhost)",
 ).setAction(async (args, hre) => {
+  info("Subtask deploy");
   const systemConfig = getSystemConfig(hre);
   return await deploySystem(
     hre,
@@ -22,6 +25,7 @@ task(
   "deploy-dev-env",
   "Deploy all contracts, send ETH  and mint ERC20 to test accounts",
 ).setAction(async (args, hre) => {
+  info("deploy-dev-env");
   await hre.run("deploy", args);
   // Setup 3  test accounts, dao, alice, bob
   // Pre compute address with default deployer
@@ -32,12 +36,6 @@ task(
   let tokenId = 0;
   for (let i = 1; i <= 3; i++) {
     const account = process.env[`ACCOUNT_${i}`];
-    console.log(
-      "🚀 ------------------ Setup ",
-      i,
-      account,
-      "--------------- 🚀",
-    );
     if (account && account.length === 42) {
       await hre.run("send:eth", { account: account, amount: 1 });
       await hre.run("mint:erc20", {
