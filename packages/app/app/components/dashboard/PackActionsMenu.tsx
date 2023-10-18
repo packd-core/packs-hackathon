@@ -13,8 +13,8 @@ export function PackActionsMenu() {
     const [isClaimOpen, setIsClaimOpen] = useState(false)
     return (
         <Menu >
-            <RevokePackModal isOpen={isRevokeOpen} setIsOpen={setIsRevokeOpen}/>
-            <ClaimLinkModal isOpen={isClaimOpen} setIsOpen={setIsClaimOpen}/>
+            {isRevokeOpen && <RevokePackModal isOpen={isRevokeOpen} setIsOpen={setIsRevokeOpen}/>}
+            {isClaimOpen && <ClaimLinkModal isOpen={isClaimOpen} setIsOpen={setIsClaimOpen}/>}
             <Menu.Button ><FcSettings/></Menu.Button>
 
             <Transition
