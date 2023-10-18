@@ -30,7 +30,7 @@ const Header = () => {
                 'transition duration-200',
                 scrolled && 'backdrop-blur-md bg-black/10')}>
             <Wrapper>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                     <Link href={'/'}>
                         <PackdLogo/>
                     </Link>
