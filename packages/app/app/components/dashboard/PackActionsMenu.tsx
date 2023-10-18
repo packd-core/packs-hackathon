@@ -49,7 +49,7 @@ export function PackActionsMenu() {
                     <Menu.Item>
                         {({active}) => (
                             <HelpItem title={'Revoke Pack'}>
-                                <p>If a Pack hasn't been claimed, you can revoke it to retrieve your assets. This is
+                                <p>If a Pack hasn&apos;t been claimed, you can revoke it to retrieve your assets. This is
                                     often preferable to self-claiming the Pack.</p>
                                 <div className='flex justify-end'>
                                     <Button
