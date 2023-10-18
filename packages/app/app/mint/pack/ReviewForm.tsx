@@ -1,12 +1,14 @@
 import {ContentRow, ContentTitle} from "@/app/components/content/ContentRow";
 
-
-export const ReviewForm = () => (
+type ReviewFormProps = {
+    hideTitle?: boolean;
+}
+export const ReviewForm = ({hideTitle=false}:ReviewFormProps) => (
 
     <div className="flex flex-col w-full gap-2">
-        <div className='text-center pb-8'>
+        {!hideTitle && <div className='text-center pb-8'>
             <h2 className="text-2xl font-bold ">Review Pack Content</h2>
-        </div>
+        </div>}
         <ContentTitle>Contents</ContentTitle>
         <ContentRow
             label="ETH"
