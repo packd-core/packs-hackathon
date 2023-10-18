@@ -7,16 +7,16 @@
     "license": "MIT",
     "scripts": {
         "start": "hardhat node",
-        "test": "hardhat test",        
+        "start:dev": "concurrently -c \"auto\"  \"yarn start\" \"yarn task deploy-dev-env\"",
         
+        "test": "hardhat test",
         "deploy": "hardhat typechain && hardhat deploy",
         "deploy:local": "yarn deploy --network localhost ",
         "deploy:scrollSepolia": "yarn deploy --network scrollSepolia",
-        
         "verify": "hardhat verify",
         "verify:scrollSepolia": "yarn verify --network scrollSepolia",
-
-        "format": "prettier --write \"./contracts/**/*.sol\" --plugin prettier-plugin-solidity && prettier --write \"./**/*.ts\""
+        "format": "prettier --write \"./contracts/**/*.sol\" --plugin prettier-plugin-solidity && prettier --write \"./**/*.ts\"",
+        "task": "yarn hardhat"
     },
     "devDependencies": {
         "@nomicfoundation/hardhat-chai-matchers": "^2.0.2",
@@ -28,17 +28,19 @@
         "@typechain/ethers-v6": "^0.5.0",
         "@typechain/hardhat": "^9.0.0",
         "@types/chai": "^4.3.6",
+        "@wagmi/cli": "^1.5.2",
         "chai": "^4.3.8",
+        "concurrently": "^8.2.1",
         "ethers": "^6.7.1",
         "hardhat": "^2.17.3",
         "hardhat-gas-reporter": "^1.0.9",
         "prettier": "^3.0.3",
         "prettier-plugin-solidity": "^1.1.3",
         "solidity-coverage": "^0.8.4",
-        "typechain": "^8.3.1",
-        "@wagmi/cli": "^1.5.2"
+        "typechain": "^8.3.1"
     },
     "dependencies": {
+        "debug": "^4.3.4",
         "dotenv": "^16.3.1"
     }
 }
