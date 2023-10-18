@@ -17,7 +17,7 @@ export function PackTypeSelector({selectedTypes, setSelectedTypes}: { selectedTy
     }, [selectedTypes])
     const setAllTypes = useCallback(() => {
         setSelectedTypes([])
-    }, [])
+    }, [setSelectedTypes])
     const isSelected = useCallback((type: PackState | null) => {
         if (type === null) {
             return selectedTypes.length === 0
@@ -25,7 +25,7 @@ export function PackTypeSelector({selectedTypes, setSelectedTypes}: { selectedTy
             return selectedTypes.includes(type);
         }
     }, [selectedTypes])
-    return <div className="flex gap-4">
+    return <div className="flex md:gap-4 sm:gap-2 gap-1 flex-wrap">
         <ToggleButton selected={isSelected(null)} onClick={setAllTypes}>All</ToggleButton>
         <ToggleButton selected={isSelected(PackState.CREATED)}
                       onClick={() => toggleType(PackState.CREATED)}>Created</ToggleButton>

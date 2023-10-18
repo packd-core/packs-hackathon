@@ -37,7 +37,7 @@ export default function Dashboard() {
     return (
         <div>
             <h1 className='text-5xl text-gray-100 font-extrabold'>Your Packs</h1>
-            <div className='flex justify-between mt-6 mb-2'>
+            <div className='flex justify-between mt-6 mb-2 flex-wrap-reverse gap-2'>
                 <PackTypeSelector selectedTypes={selectedTypes} setSelectedTypes={setSelectedTypes}/>
                 <ButtonLink href={'/mint'} leftIcon={<AiOutlinePlus/>}>Create</ButtonLink>
             </div>
