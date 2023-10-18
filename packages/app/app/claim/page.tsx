@@ -42,9 +42,9 @@ const ClaimPage = () => {
                                 variant="navigation" disabled>
                             {step === 2 ? '2' : ''} */}
                             <div className="flex justify-center items-center gap-2 p-[16px]">
-                                {step === 1 || step === 2 ? '1' : ''}
-                                {step === 3 ? '2' : ''}
-                                {step === 4 ? '3' : ''}
+                                {step === 1 || step === 2 ? '1/3' : ''}
+                                {step === 3 ? '2/3' : ''}
+                                {step === 4 ? '3/3' : ''}
                                 <Prog className={'w-10'} hidden={step === 0 || step === 3 || step === 4}/>
                                 <Prog2 className={'w-10'} hidden={step !== 3}/>
                                 <Prog3 className={'w-10'} hidden={step !== 4}/>
@@ -64,11 +64,13 @@ const ClaimPage = () => {
                         </div>
                     }>
                     <div className="flex flex-col items-center gap-2">
-                        <div className="p-2 rounded-full bg-gray-800">
-                            <ClaimProgress className={'h-8'}/>
+                        <div hidden={step === 4} className="p-2 rounded-full bg-gray-800">
+                            <ClaimProgress  className={'h-8'}/>
                         </div>
-                        <h1 className="text-lg">ox123...828c sent you a pack</h1>
-                        <CurrentChain className='my-4'/>
+                        <h1 className="text-lg" hidden={step === 4}>ox123...828c sent you a pack</h1>
+                        <div hidden={step === 4}>
+                            <CurrentChain className='my-4'/>
+                        </div>
                         {step === 0 && <AssetsForm/>}
                         {step === 1 && <SignForm/>}
                         {step === 2 && <ContinueClaim/>}
