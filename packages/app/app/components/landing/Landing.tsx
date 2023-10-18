@@ -3,7 +3,7 @@ import {ConnectButton} from "@rainbow-me/rainbowkit";
 
 
 export default function Landing() {
-    return <div className="flex flex-col items-center text-white mt-10 md:mt-20 lg:mt-40">
+    return <div className="flex flex-col items-center text-black mt-10 md:mt-20 lg:mt-40">
         <h1 className="max-w-3xl text-3xl sm:text-4xl md:text-5xl font-extrabold text-center mb-4">Simplify <span
             className="text-primary-500">Onboarding</span> with <span className="text-primary-500">Onchain</span> Packs
         </h1>
@@ -40,7 +40,7 @@ type HowItWorksItemProps = {
 function HowItWorksItem({number, title, description}: HowItWorksItemProps) {
     return <div className='max-w-[280px] w-full'>
         <div className="flex justify-center items-center font-semibold"><span
-            className="text-7xl text-gray-100 font-extrabold mr-4">{number}.</span><h3
+            className="text-7xl text-gray-600 font-extrabold mr-4">{number}.</span><h3
             className="text-3xl font-extrabold text-center ">{title} </h3></div>
         <p className="mt-4 text-center">{description}</p>
     </div>;
