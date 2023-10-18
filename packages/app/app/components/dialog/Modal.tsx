@@ -13,7 +13,7 @@ export default function Modal({render, isOpen, setIsOpen}: { render: (closeModal
     return (
 
         <Transition appear show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-10" onClose={() => {
+            <Dialog as="div" className="relative z-40" onClose={() => {
             }}>
                 <div className="fixed inset-0 bg-black/30" aria-hidden="true"/>
 
