@@ -11,9 +11,14 @@ import {SignForm} from "@/app/mint/pack/SignForm";
 import {ReviewForm} from "@/app/mint/pack/ReviewForm";
 import {LoadingCard} from "@/app/components/content/LoadingCard";
 import {PackCreatedCard} from "@/app/mint/pack/PackCreatedCard";
+import {useAccount} from "wagmi";
+import {ConnectButton} from "@rainbow-me/rainbowkit";
 
 const MintPage = () => {
     const [step, setStep] = useState(0)
+
+    const { isConnected, isConnecting } = useAccount();
+
     const signMessage = useCallback(() => {
     }, []);
     const next = useCallback(() => {
@@ -33,6 +38,26 @@ const MintPage = () => {
             }, 3000)
         }
     }, [step]);
+
+    if (isConnecting) {
+        return  <LoadingCard
+            title="Connecting"
+            text='Waiting for network...'/>
+    }
+    if (!isConnecting && !isConnected) {
+        return <Card
+            className={'mx-auto w-full'}
+            containerClassName=' overflow-y-auto'
+            controls={<div className="text-center"> Connect to a network</div>}>
+            <div className="flex flex-col items-center pb-4">
+                <div className="p-2 rounded-full bg-gray-800">
+                    <Present className={'h-6 w-6'}/>
+                </div>
+                <h1 className="text-lg sm:text-xl md:text-2xl mb-10">Create new Pack</h1>
+                <ConnectButton />
+            </div>
+        </Card>
+    }
 
     if (step === 4) return (
         <LoadingCard
@@ -67,7 +92,7 @@ const MintPage = () => {
                 <div className="p-2 rounded-full bg-gray-800">
                     <Present className={'h-6 w-6'}/>
                 </div>
-                <h1 className="text-lg">Create new Pack</h1>
+                <h1 className="text-lg sm:text-xl md:text-2xl">Create new Pack</h1>
                 <CurrentChain className='my-4'/>
                 {step === 0 && <AssetsForm/>}
                 {step === 1 && <ApproveForm/>}
