@@ -35,6 +35,10 @@
       {
         "type": "uint256",
         "name": "salt_"
+      },
+      {
+        "type": "address[]",
+        "name": "modulesWhitelist_"
       }
     ]
   },
@@ -207,6 +211,16 @@
     "type": "error",
     "name": "InvalidRefundValue",
     "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ModulesNotWhitelisted",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "modules"
+      }
+    ]
   },
   {
     "type": "error",
@@ -546,6 +560,25 @@
   },
   {
     "type": "function",
+    "name": "modulesWhitelist",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": ""
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "name",
     "constant": true,
     "stateMutability": "view",
@@ -856,6 +889,23 @@
       {
         "type": "bool",
         "name": "approved"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "setModulesWhitelist",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address[]",
+        "name": "modules"
+      },
+      {
+        "type": "bool",
+        "name": "value"
       }
     ],
     "outputs": []

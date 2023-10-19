@@ -76,6 +76,34 @@ describe("PackMain", function () {
         createPack(packMain, alice, keySignManager, value)
       ).to.be.revertedWithCustomError(packMain, "InvalidEthValue");
     });
+    it("Should not mint a new pack with a non-whitelisted Module", async function () {
+      const { packMain, alice, keySignManager } = await loadFixture(setup);
+
+      // Mint pack with a non-whitelisted Module
+      const value = 1;
+      await expect(
+        createPack(packMain, alice, keySignManager, value, [ethers.ZeroAddress])
+      ).to.be.revertedWithCustomError(packMain, "ModulesNotWhitelisted");
+    });
+    it("Should whitelist a new Module", async function () {
+      const { packMain, alice, keySignManager } = await loadFixture(setup);
+
+      // whitelist a new Module
+      await packMain.setModulesWhitelist([ethers.ZeroAddress], true);
+
+      // Check that is whitelisted
+      expect(await packMain.modulesWhitelist(ethers.ZeroAddress)).to.equal(
+        true
+      );
+
+      // Mint pack with a non-whitelisted Module
+      const value = 1;
+
+      // Should still fail but not with the error of modules not whitelisted
+      await expect(
+        createPack(packMain, alice, keySignManager, value, [ethers.ZeroAddress])
+      ).to.be.revertedWithCustomError(packMain, "InvalidLengthOfData");
+    });
 
     it("Should revoke a pack", async function () {
       const value = 1;

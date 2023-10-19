@@ -14,6 +14,7 @@ contract PackNFT is ERC721, ERC721Enumerable {
         Opened, // Indicates that the pack has been opened by a claimer
         Revoked // Indicates that the pack has been revoked by the owner
     }
+
     // ---------- Storage --------------------
     uint256 private _nextTokenId;
     string private _baseTokenURI;

@@ -32,6 +32,7 @@ contract PackMain is PackNFT, Ownable {
     error InvalidRefundValue();
     error InvalidAddress();
     error InvalidLengthOfData(uint256 modulesLength, uint256 moduleDataLength);
+    error ModulesNotWhitelisted(address modules);
 
     // ---------- Constants -------------------
     uint256 public constant VERSION = 1;
@@ -46,6 +47,9 @@ contract PackMain is PackNFT, Ownable {
     mapping(uint256 => address) public claimPublicKey;
     mapping(uint256 => address[]) public packModules;
 
+    // Modules whitelist
+    mapping(address => bool) public modulesWhitelist;
+
     constructor(
         address initialOwner_,
         string memory baseTokenURI_,
@@ -54,7 +58,8 @@ contract PackMain is PackNFT, Ownable {
         address registry_,
         address implementation_,
         uint256 registryChainId_,
-        uint256 salt_
+        uint256 salt_,
+        address[] memory modulesWhitelist_
     ) PackNFT(baseTokenURI_, name_, symbol_) Ownable(initialOwner_) {
         // Check that the registry and implementation are not the zero address
         if (registry_ == address(0) || implementation_ == address(0)) {
@@ -65,6 +70,9 @@ contract PackMain is PackNFT, Ownable {
         implementation = implementation_;
         registryChainId = registryChainId_;
         salt = salt_;
+
+        // Set the modules whitelist
+        setModulesWhitelist(modulesWhitelist_, true);
     }
 
     modifier onlyOwnerOf(uint256 tokenId) {
@@ -87,6 +95,12 @@ contract PackMain is PackNFT, Ownable {
         address[] calldata modules,
         bytes[] calldata moduleData
     ) public payable returns (uint256 tokenId, address newAccount) {
+        // Check that the modules are whitelisted
+        for (uint256 i = 0; i < modules.length; i++) {
+            if (!modulesWhitelist[modules[i]]) {
+                revert ModulesNotWhitelisted(modules[i]);
+            }
+        }
         // Need to check that the modules and moduleData are the same length
         if (modules.length != moduleData.length) {
             revert InvalidLengthOfData(modules.length, moduleData.length);
@@ -202,6 +216,15 @@ contract PackMain is PackNFT, Ownable {
         _transferAndRefund(data);
 
         emit PackOpened(data.tokenId, msg.sender);
+    }
+
+    function setModulesWhitelist(
+        address[] memory modules,
+        bool value
+    ) public onlyOwner {
+        for (uint256 i = 0; i < modules.length; i++) {
+            modulesWhitelist[modules[i]] = value;
+        }
     }
 
     function account(uint256 tokenId) public view returns (address) {
