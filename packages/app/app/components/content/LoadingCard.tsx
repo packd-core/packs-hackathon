@@ -24,7 +24,7 @@ export function LoadingCard({className, children, title, text, transactionHash}:
             <div className="p-2 rounded-full bg-gray-800">
                 <Present className={'h-6 w-6'}/>
             </div>
-            <h1 className="text-lg pt-4">{title}</h1>
+            <h1 className="text-lg sm:text-xl pt-4">{title}</h1>
             {
                 transactionHash &&
                 <ExternalLink href={'https://etherscan.io'}>Track it onchain</ExternalLink>
