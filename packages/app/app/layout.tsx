@@ -24,7 +24,7 @@ export default function RootLayout({
         <html lang="en">
         <body className={clsxm(manrope.className, 'relative')}>
         <div
-            className='-z-10 fixed inset-0 bg-gradient-to-b from-[#F15025] via-[rgba(177,194,218,0.25)] to-[#B1C2DA] min-h-screen'></div>
+            className='-z-10 fixed inset-0 bg-gradient-to-b from-[#F15025] via-[#B1C2DA50] to-[#B1C2DA] min-h-screen'></div>
         <Providers>
             <div data-header-trigger></div>
             <Header/>

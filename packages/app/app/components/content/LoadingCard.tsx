@@ -2,7 +2,7 @@ import Present from "~/present.svg";
 import {ImNewTab} from "react-icons/im";
 import {Card} from "@/app/components/Card";
 import clsxm from "@/src/lib/clsxm";
-import {ExternalLink} from "@/app/components/button/ExternalLink";
+import {ExternalLink} from "@/app/components/links/ExternalLink";
 
 type LoadingCardProps = {
     className?: string;
