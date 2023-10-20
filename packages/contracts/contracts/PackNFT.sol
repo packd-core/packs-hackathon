@@ -35,7 +35,7 @@ contract PackNFT is ERC721, ERC721Enumerable {
     }
 
     // overwrite the _safeMint function to set the state of the Pack
-    function _mintPack(address to, uint256 tokenId) internal {
+    function _mintPack(address to) internal returns (uint256 tokenId) {
         tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
 

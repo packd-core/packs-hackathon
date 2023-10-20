@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import { encodeUrl, decodeUrl } from "../src/lib/encodeUrl";
-import { KeySignManager } from "../../contracts/utils/keySignManager";
-import { ethers } from "ethers";
+
 describe("encode and decode URLs", () => {
   it("should encode and decode URLs", () => {
     const version = 1;

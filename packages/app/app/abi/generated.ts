@@ -50,6 +50,60 @@ export const create2ABI = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Create2Factory
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const create2FactoryABI = [
+  { type: 'error', inputs: [], name: 'Create2EmptyBytecode' },
+  { type: 'error', inputs: [], name: 'Create2FailedDeployment' },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'balance', internalType: 'uint256', type: 'uint256' },
+      { name: 'needed', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'Create2InsufficientBalance',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'salt', internalType: 'bytes32', type: 'bytes32', indexed: true },
+      {
+        name: 'deployed',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'Deployed',
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: 'salt', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'codeHash', internalType: 'bytes32', type: 'bytes32' },
+    ],
+    name: 'computeAddress',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'salt', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'bytecode', internalType: 'bytes', type: 'bytes' },
+      { name: 'callbacks', internalType: 'bytes[]', type: 'bytes[]' },
+    ],
+    name: 'deploy',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+  },
+  { stateMutability: 'payable', type: 'receive' },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ECDSA
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -3690,6 +3744,166 @@ export const stringsABI = [
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link create2FactoryABI}__.
+ */
+export function useCreate2FactoryRead<
+  TFunctionName extends string,
+  TSelectData = ReadContractResult<typeof create2FactoryABI, TFunctionName>,
+>(
+  config: Omit<
+    UseContractReadConfig<typeof create2FactoryABI, TFunctionName, TSelectData>,
+    'abi'
+  > = {} as any,
+) {
+  return useContractRead({
+    abi: create2FactoryABI,
+    ...config,
+  } as UseContractReadConfig<
+    typeof create2FactoryABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link create2FactoryABI}__ and `functionName` set to `"computeAddress"`.
+ */
+export function useCreate2FactoryComputeAddress<
+  TFunctionName extends 'computeAddress',
+  TSelectData = ReadContractResult<typeof create2FactoryABI, TFunctionName>,
+>(
+  config: Omit<
+    UseContractReadConfig<typeof create2FactoryABI, TFunctionName, TSelectData>,
+    'abi' | 'functionName'
+  > = {} as any,
+) {
+  return useContractRead({
+    abi: create2FactoryABI,
+    functionName: 'computeAddress',
+    ...config,
+  } as UseContractReadConfig<
+    typeof create2FactoryABI,
+    TFunctionName,
+    TSelectData
+  >)
+}
+
+/**
+ * Wraps __{@link useContractWrite}__ with `abi` set to __{@link create2FactoryABI}__.
+ */
+export function useCreate2FactoryWrite<
+  TFunctionName extends string,
+  TMode extends WriteContractMode = undefined,
+>(
+  config: TMode extends 'prepared'
+    ? UseContractWriteConfig<
+        PrepareWriteContractResult<
+          typeof create2FactoryABI,
+          string
+        >['request']['abi'],
+        TFunctionName,
+        TMode
+      >
+    : UseContractWriteConfig<typeof create2FactoryABI, TFunctionName, TMode> & {
+        abi?: never
+      } = {} as any,
+) {
+  return useContractWrite<typeof create2FactoryABI, TFunctionName, TMode>({
+    abi: create2FactoryABI,
+    ...config,
+  } as any)
+}
+
+/**
+ * Wraps __{@link useContractWrite}__ with `abi` set to __{@link create2FactoryABI}__ and `functionName` set to `"deploy"`.
+ */
+export function useCreate2FactoryDeploy<
+  TMode extends WriteContractMode = undefined,
+>(
+  config: TMode extends 'prepared'
+    ? UseContractWriteConfig<
+        PrepareWriteContractResult<
+          typeof create2FactoryABI,
+          'deploy'
+        >['request']['abi'],
+        'deploy',
+        TMode
+      > & { functionName?: 'deploy' }
+    : UseContractWriteConfig<typeof create2FactoryABI, 'deploy', TMode> & {
+        abi?: never
+        functionName?: 'deploy'
+      } = {} as any,
+) {
+  return useContractWrite<typeof create2FactoryABI, 'deploy', TMode>({
+    abi: create2FactoryABI,
+    functionName: 'deploy',
+    ...config,
+  } as any)
+}
+
+/**
+ * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link create2FactoryABI}__.
+ */
+export function usePrepareCreate2FactoryWrite<TFunctionName extends string>(
+  config: Omit<
+    UsePrepareContractWriteConfig<typeof create2FactoryABI, TFunctionName>,
+    'abi'
+  > = {} as any,
+) {
+  return usePrepareContractWrite({
+    abi: create2FactoryABI,
+    ...config,
+  } as UsePrepareContractWriteConfig<typeof create2FactoryABI, TFunctionName>)
+}
+
+/**
+ * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link create2FactoryABI}__ and `functionName` set to `"deploy"`.
+ */
+export function usePrepareCreate2FactoryDeploy(
+  config: Omit<
+    UsePrepareContractWriteConfig<typeof create2FactoryABI, 'deploy'>,
+    'abi' | 'functionName'
+  > = {} as any,
+) {
+  return usePrepareContractWrite({
+    abi: create2FactoryABI,
+    functionName: 'deploy',
+    ...config,
+  } as UsePrepareContractWriteConfig<typeof create2FactoryABI, 'deploy'>)
+}
+
+/**
+ * Wraps __{@link useContractEvent}__ with `abi` set to __{@link create2FactoryABI}__.
+ */
+export function useCreate2FactoryEvent<TEventName extends string>(
+  config: Omit<
+    UseContractEventConfig<typeof create2FactoryABI, TEventName>,
+    'abi'
+  > = {} as any,
+) {
+  return useContractEvent({
+    abi: create2FactoryABI,
+    ...config,
+  } as UseContractEventConfig<typeof create2FactoryABI, TEventName>)
+}
+
+/**
+ * Wraps __{@link useContractEvent}__ with `abi` set to __{@link create2FactoryABI}__ and `eventName` set to `"Deployed"`.
+ */
+export function useCreate2FactoryDeployedEvent(
+  config: Omit<
+    UseContractEventConfig<typeof create2FactoryABI, 'Deployed'>,
+    'abi' | 'eventName'
+  > = {} as any,
+) {
+  return useContractEvent({
+    abi: create2FactoryABI,
+    eventName: 'Deployed',
+    ...config,
+  } as UseContractEventConfig<typeof create2FactoryABI, 'Deployed'>)
+}
 
 /**
  * Wraps __{@link useContractRead}__ with `abi` set to __{@link erc165ABI}__.
