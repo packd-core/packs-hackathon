@@ -12,10 +12,13 @@ import {usePackMainAccount, usePackMainPackState} from "@/app/abi/generated";
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
 
 export enum PackState {
-    CREATED = 'created',
-    REVOKED = 'revoked',
-    OPENED = 'opened',
+    EMPTY='Empty',
+    CREATED='Created',
+    OPENED='Opened',
+    REVOKED='Revoked'
+
 }
+
 
 export type Pack = {
     id: string;
@@ -90,29 +93,26 @@ function PackItem({index}: { index: number }) {
     console.log('index:', index, 'owner:', owner);
     const {tokenId, isLoading, isError, refetch} = useTokenOfOwnerByIndex(
         owner!,
-        index
+        BigInt(index)
     );
 
     const {data: rawState, isLoading: isStateLoading} = usePackMainPackState({enabled: tokenId !== undefined, args: [tokenId!], address: addresses.PackMain});
     const {data: account, isLoading: isAccountLoading} = usePackMainAccount({enabled: tokenId !== undefined, args: [tokenId!], address: addresses.PackMain})
     const {data: rawEth, isLoading: isEthLoading} = useBalance({address: account})
-    if (isLoading || isStateLoading || isEthLoading) {
-        return <div>Loading...</div>;
-    }
+    const state = useMemo(() =>  Object.values(PackState)[rawState??0], [rawState]);
 
     return <div className={clsxm('rounded-xl p-4 bg-white/50',
-        rawState && 'bg-[rgba(209,240,234,0.50)]'
+        state && 'bg-[rgba(209,240,234,0.50)]'
     )}>
         <div className='flex items-center'>
-            {/*<PackStateBadge packState={pack.state}/>*/}
-            <div className="text-sm px-2">now...</div>
-            <div className='grow'>tokenAddress: {account}</div>
-            <div className='text-sm pr-2'> token id: {tokenId?.toString()}</div>
-            <div className='text-sm pr-2'> Pack id: {index?.toString()}</div>
-            <PackActionsMenu/>
+            <PackStateBadge packState={state}/>
+            <div className='grow text-xs'>account: {account}</div>
+            <div className='text-sm pr-2'> tokenId: {tokenId?.toString()}</div>
+            <div className='text-sm pr-2'> packId: {index?.toString()}</div>
+            <PackActionsMenu tokenId={tokenId}/>
         </div>
         <div className='mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
-            <PackModuleItem module={['Eth', rawEth?.formatted]}/>
+            <PackModuleItem module={['Eth', rawEth?.formatted ?? 'Loading']}/>
             {/*    {pack.modules.map((module, index) => <PackModuleItem key={index} module={module}/>)}*/}
         </div>
     </div>
@@ -128,7 +128,9 @@ function PackModuleItem({module}: { module: string[] }) {
     </div>
 }
 
+
 function PackStateBadge({packState}: { packState: PackState }) {
+
     return <div className={clsxm('rounded px-1 font-bold',
         packState === PackState.CREATED && 'text-[#AB8707] bg-[rgba(244,211,94,0.20)]',
         packState === PackState.REVOKED && 'text-[#202020] bg-[rgba(32,32,32,0.15)]',
