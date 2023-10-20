@@ -67,6 +67,54 @@ describe("PackMain", function () {
       const aliceBalanceAfter = await ethers.provider.getBalance(alice.address);
       expect(aliceBalanceAfter).to.lte(aliceBalanceBefore);
     });
+    it("Should mint also a second pack", async function () {
+      const value1 = 1;
+      const value2 = 2;
+      const { packMain, alice, keySignManager } = await loadFixture(setup);
+
+      const aliceBalanceBefore = await ethers.provider.getBalance(
+        alice.address
+      );
+
+      // Mint a new pack using createPack function
+      const { packInstance: packInstance1 } = await createPack(
+        packMain,
+        alice,
+        keySignManager,
+        value1
+      );
+
+      // Check correct state
+      expect(await packInstance1.packState(0)).to.equal(1); // 1 is the enum value for Created
+      expect(await packInstance1.ownerOf(0)).to.equal(alice.address);
+      const accountAddress1 = await packInstance1.account(0);
+      const ethBalanceAccount1 =
+        await ethers.provider.getBalance(accountAddress1);
+      expect(ethBalanceAccount1).to.equal(ethers.parseEther(value1.toString()));
+
+      // Mint a new pack using createPack function
+      const { packInstance: packInstance2 } = await createPack(
+        packMain,
+        alice,
+        keySignManager,
+        value2
+      );
+
+      // Check correct state
+      expect(await packInstance2.packState(1)).to.equal(1); // 1 is the enum value for Created
+      expect(await packInstance2.ownerOf(1)).to.equal(alice.address);
+      const accountAddress2 = await packInstance2.account(1);
+      const ethBalanceAccount2 =
+        await ethers.provider.getBalance(accountAddress2);
+      expect(ethBalanceAccount2).to.equal(ethers.parseEther(value2.toString()));
+
+      // The first balance should be the same
+      const ethBalanceAccount1Recheck =
+        await ethers.provider.getBalance(accountAddress1);
+      expect(ethBalanceAccount1Recheck).to.equal(
+        ethers.parseEther(value1.toString())
+      );
+    });
     it("Should not mint a new pack without ETH", async function () {
       const { packMain, alice, keySignManager } = await loadFixture(setup);
 

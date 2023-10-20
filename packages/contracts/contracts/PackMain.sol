@@ -97,7 +97,7 @@ contract PackMain is PackNFT, Ownable {
         }
 
         // Mint the Pack
-        _mintPack(to_, tokenId);
+        tokenId = _mintPack(to_);
 
         // Set params
         claimPublicKey[tokenId] = claimPublicKey_;
