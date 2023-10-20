@@ -85,7 +85,7 @@ export default function RevokePackModal({isOpen, setIsOpen, tokenId}: RevokePack
             return <LoadingCard
                 title={'Revoking your Pack'}
                 text={'Waiting for confirmation...'}
-                transactionHash={'sadasd'}/>
+                transactionHash={data?.hash}/>
         }
         return <Card
             className={'mx-auto w-full bg-green-800'}
@@ -113,7 +113,7 @@ export default function RevokePackModal({isOpen, setIsOpen, tokenId}: RevokePack
                 <p className="text-sm mt-10">The contents of the pack are back in your wallet!</p>
             </div>
         </Card>
-    }, [revokePack, step, isError]);
+    }, [revokePack, step, isError, data?.hash]);
 
     return (
         <Modal render={closeModal => card(closeModal)} isOpen={isOpen} setIsOpen={setIsOpen}/>
