@@ -5,6 +5,11 @@ import {AiOutlinePlus} from "react-icons/ai";
 import ButtonLink from "@/app/components/links/ButtonLink";
 import {FaEthereum} from "react-icons/fa";
 import {PackActionsMenu} from "@/app/components/dashboard/PackActionsMenu";
+import {Address, useAccount, useBalance} from "wagmi";
+import {useBalanceOf} from "@/src/hooks/useBalanceOf";
+import {useTokenOfOwnerByIndex} from "@/src/hooks/useTokenOfOwnerByIndex";
+import {usePackMainAccount, usePackMainPackState} from "@/app/abi/generated";
+import usePackdAddresses from "@/src/hooks/usePackdAddresses";
 
 export enum PackState {
     CREATED = 'created',
@@ -30,6 +35,11 @@ function NoPackFound() {
 
 export default function Dashboard() {
     const [selectedTypes, setSelectedTypes] = useState<PackState[]>([])
+    const {address} = useAccount();
+
+    const {balance, isLoading, isError, refetch} = useBalanceOf(
+        address as Address
+    );
 
     return (
         <div>
@@ -39,53 +49,71 @@ export default function Dashboard() {
                 <ButtonLink href={'/mint'} leftIcon={<AiOutlinePlus/>}>Create</ButtonLink>
             </div>
             <div className='flex rounded-2xl bg-white/40 min-h-[60vh] flex-col p-4'>
-                {!!selectedTypes.length && <NoPackFound/>}
-                {!selectedTypes.length && <PackList/>}
+                {!balance && <NoPackFound/>}
+                {!!balance && <PackList count={balance}/>}
             </div>
         </div>
     )
 }
 
-function PackList() {
-    const items = useMemo<Pack[]>(
-        () => [
-            {
-                id: '1',
-                state: PackState.CREATED,
-                date: new Date(),
-                modules: [['1', '2'], ['4', '5'], ['7', '8']]
-            },
-            {
-                id: '2',
-                state: PackState.OPENED,
-                date: new Date(),
-                modules: [['1', '2'], ['4', '5'], ['7', '8']]
-            },
-            {
-                id: '3',
-                state: PackState.REVOKED,
-                date: new Date(),
-                modules: [['1', '2'], ['4', '5'], ['7', '8']]
-            },
-        ], []
-    )
+function PackList({count}: { count: number }) {
+    // const items = useMemo<Pack[]>(
+    //     () => [
+    //         {
+    //             id: '1',
+    //             state: PackState.CREATED,
+    //             date: new Date(),
+    //             modules: [['1', '2'], ['4', '5'], ['7', '8']]
+    //         },
+    //         {
+    //             id: '2',
+    //             state: PackState.OPENED,
+    //             date: new Date(),
+    //             modules: [['1', '2'], ['4', '5'], ['7', '8']]
+    //         },
+    //         {
+    //             id: '3',
+    //             state: PackState.REVOKED,
+    //             date: new Date(),
+    //             modules: [['1', '2'], ['4', '5'], ['7', '8']]
+    //         },
+    //     ], []
+    // )
     return <div className='flex flex-col gap-4'>
-        {items.map((pack) => <PackItem key={pack.id} pack={pack}/>)}
+        {[...Array(count)].map((_, id) => <PackItem key={id} index={id}/>)}
     </div>
 }
 
-function PackItem({pack}: { pack: Pack }) {
+function PackItem({index}: { index: number }) {
+    const {address: owner} = useAccount();
+    const addresses = usePackdAddresses();
+    console.log('index:', index, 'owner:', owner);
+    const {tokenId, isLoading, isError, refetch} = useTokenOfOwnerByIndex(
+        owner!,
+        index
+    );
+
+    const {data: rawState, isLoading: isStateLoading} = usePackMainPackState({enabled: tokenId !== undefined, args: [tokenId!], address: addresses.PackMain});
+    const {data: account, isLoading: isAccountLoading} = usePackMainAccount({enabled: tokenId !== undefined, args: [tokenId!], address: addresses.PackMain})
+    const {data: rawEth, isLoading: isEthLoading} = useBalance({address: account})
+    if (isLoading || isStateLoading || isEthLoading) {
+        return <div>Loading...</div>;
+    }
+
     return <div className={clsxm('rounded-xl p-4 bg-white/50',
-        pack.state === PackState.OPENED && 'bg-[rgba(209,240,234,0.50)]')}>
+        rawState && 'bg-[rgba(209,240,234,0.50)]'
+    )}>
         <div className='flex items-center'>
-            <PackStateBadge packState={pack.state}/>
-            <div className="text-sm px-2">{pack.date.toDateString()}</div>
-            <div className='grow'></div>
-            <div className='text-sm pr-2'> Pack id: {pack.id}</div>
+            {/*<PackStateBadge packState={pack.state}/>*/}
+            <div className="text-sm px-2">now...</div>
+            <div className='grow'>tokenAddress: {account}</div>
+            <div className='text-sm pr-2'> token id: {tokenId?.toString()}</div>
+            <div className='text-sm pr-2'> Pack id: {index?.toString()}</div>
             <PackActionsMenu/>
         </div>
         <div className='mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
-            {pack.modules.map((module, index) => <PackModuleItem key={index} module={module}/>)}
+            <PackModuleItem module={['Eth', rawEth?.formatted]}/>
+            {/*    {pack.modules.map((module, index) => <PackModuleItem key={index} module={module}/>)}*/}
         </div>
     </div>
 }
