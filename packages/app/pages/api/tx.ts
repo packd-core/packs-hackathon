@@ -56,17 +56,15 @@ export default async function handler(
     console.log('Relay request', tx);
 
     try {
-        const gasCost = await packMain.open.estimateGas({
+        const refundValue = await packMain.open.estimateGas({
             ...tx.args,
             refundValue: tx.args.maxRefundValue
-        }, [])
+        }, []) * BigInt(1.2)
 
-        if (gasCost > BigInt(tx.args.maxRefundValue)) {
+        if (refundValue > BigInt(tx.args.maxRefundValue)) {
             res.status(400).send({ error: 'Transaction will cost more than maxRefundValue' })
             return;
         }
-
-        const refundValue = gasCost * BigInt(1.2)//20% margin?
 
         const openReceipt = await packMain.open({
             ...tx.args,
