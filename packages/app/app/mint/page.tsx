@@ -49,13 +49,17 @@ const MintPage = () => {
                     log.address.toLowerCase() === addresses.PackMain.toLowerCase()
             );
             logs.forEach((log) => {
-                const decodedLog = decodeEventLog({
-                    abi: packMainABI,
-                    data: log.data,
-                    topics: log.topics,
-                });
-                if (decodedLog.eventName === "PackCreated") {
-                    setMintedTokenId((decodedLog.args as any).tokenId);
+                try {
+                    const decodedLog = decodeEventLog({
+                        abi: packMainABI,
+                        data: log.data,
+                        topics: log.topics,
+                    });
+                    if (decodedLog.eventName === "PackCreated") {
+                        setMintedTokenId((decodedLog.args as any).tokenId);
+                    }
+                } catch (e) {
+                    //ignore error
                 }
             });
         }
