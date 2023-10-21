@@ -504,6 +504,25 @@
   },
   {
     "type": "function",
+    "name": "creationBlock",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "getApproved",
     "constant": true,
     "stateMutability": "view",
