@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { PackMain__factory } from '@/app/abi/types/factories/contracts/PackMain__factory'
 import { z } from 'zod';
-import { PackMain } from '@/app/abi/types';
+import { PackMain } from '@/app/abi/types/contracts/PackMain';
 
 export type ResponseData = {
     error: string
