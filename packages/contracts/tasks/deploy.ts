@@ -6,14 +6,14 @@ const info = logger("info", "task");
 
 subtask(
   "deploy",
-  "Deploy the contracts to the selected chain (defaults to localhost)",
+  "Deploy the contracts to the selected chain (defaults to localhost)"
 ).setAction(async (args, hre) => {
   info("Subtask deploy");
   const systemConfig = getSystemConfig(hre);
   return await deploySystem(
     hre,
     await hre.ethers.provider.getSigner(),
-    systemConfig,
+    systemConfig
   );
 });
 
@@ -23,7 +23,7 @@ task("deploy").setAction(async (_, __, runSuper) => {
 
 task(
   "deploy-dev-env",
-  "Deploy all contracts, send ETH  and mint ERC20 to test accounts",
+  "Deploy all contracts, send ETH  and mint ERC20 to test accounts"
 ).setAction(async (args, hre) => {
   info("deploy-dev-env");
   await hre.run("deploy", args);
@@ -41,18 +41,17 @@ task(
       await hre.run("mint:erc20", {
         account: account,
         tokenaddress: "0x7D0B2154C5c709b3Cc8489286e023Cf75a38E0B5",
-        amount: 1,
+        amount: 1000,
       });
       await hre.run("mint:erc20", {
         account: account,
         tokenaddress: "0x416D29fbCf9fc5CA66d792B1f6368221E985ec47",
-        amount: 1,
+        amount: 1000,
       });
 
       await hre.run("mint:erc721", {
         account: account,
         tokenaddress: "0x0106f5483Ace34618dCC1c76EFF7e284e5dE4C6B",
-        amount: 1,
         tokenid: tokenId++,
       });
       await hre.run("mint:erc721", {

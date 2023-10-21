@@ -28,7 +28,7 @@ subtask("send:eth")
 
       log("Transaction hash: ", tx.hash);
       log("New balance: ", balanceNew.toString());
-    },
+    }
   );
 
 task("send:eth").setAction(async (_, __, runSuper) => {
@@ -39,7 +39,7 @@ subtask("mint:erc20")
     "account",
     "Address to send the ERC20Mock to",
     undefined,
-    types.string,
+    types.string
   )
   .addParam("tokenaddress", "Address of the ERC20Mock", undefined, types.string)
   .addOptionalParam("amount", "The amount, default 1000", 1000, types.int)
@@ -55,15 +55,15 @@ subtask("mint:erc20")
       const token = await hre.ethers.getContractAt(
         "ERC20Mock",
         taskArguments.tokenaddress,
-        deployer,
+        deployer
       );
 
-      const tx = await token.mint(wallet, taskArguments.amount);
+      const tx = await token.mint(wallet, amount);
       const balanceNew = await token.balanceOf(wallet);
 
       log("Transaction hash: ", tx.hash);
       log("New balance: ", balanceNew.toString());
-    },
+    }
   );
 task("mint:erc20").setAction(async (_, __, runSuper) => {
   return runSuper();
@@ -73,14 +73,14 @@ subtask("mint:erc721")
     "account",
     "Address to send the ERC721Mock to",
     undefined,
-    types.string,
+    types.string
   )
   .addOptionalParam("tokenid", "The tokenId, default 0", 0, types.int)
   .addParam(
     "tokenaddress",
     "Address of the ERC721Mock",
     undefined,
-    types.string,
+    types.string
   )
   .setAction(
     async (taskArguments: TaskArguments, hre: HardhatRuntimeEnvironment) => {
@@ -92,7 +92,7 @@ subtask("mint:erc721")
       const token = await hre.ethers.getContractAt(
         "ERC721Mock",
         taskArguments.tokenaddress,
-        deployer,
+        deployer
       );
 
       const tx = await token.mint(wallet, taskArguments.tokenid);
@@ -100,7 +100,7 @@ subtask("mint:erc721")
 
       log("Transaction hash: ", tx.hash);
       log("New balance: ", balanceNew.toString());
-    },
+    }
   );
 task("mint:erc721").setAction(async (_, __, runSuper) => {
   return runSuper();
