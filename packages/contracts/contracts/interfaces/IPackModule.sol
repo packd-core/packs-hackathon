@@ -2,11 +2,6 @@
 pragma solidity ^0.8.20;
 
 interface IPackModule {
-    // Events
-    event Created(uint256 tokenId, address account);
-    event Opened(uint256 tokenId, address account);
-    event Revoked(uint256 tokenId, address account);
-
     // Lifecycle functions
     function onCreate(
         uint256 tokenId,

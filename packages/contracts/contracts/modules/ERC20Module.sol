@@ -26,7 +26,7 @@ contract ERC20Module is IPackModule {
 
     // Lifecycle functions
     function onCreate(
-        uint256 tokenId,
+        uint256 /* tokenId */,
         address account,
         bytes calldata additionalData
     ) external payable override {
@@ -46,13 +46,12 @@ contract ERC20Module is IPackModule {
                 tokenData.amount
             );
         }
-        // TODO: Add more data to the event
-        emit Created(tokenId, account);
+
         return;
     }
 
     function onOpen(
-        uint256 tokenId,
+        uint256 /* tokenId */,
         address account,
         address claimer,
         bytes calldata additionalData
@@ -80,12 +79,12 @@ contract ERC20Module is IPackModule {
                 CALL_OPERATION
             );
         }
-        emit Opened(tokenId, account);
+
         return;
     }
 
     function onRevoke(
-        uint256 tokenId,
+        uint256 /* tokenId */,
         address account,
         bytes calldata additionalData
     ) external override {
@@ -113,7 +112,6 @@ contract ERC20Module is IPackModule {
             );
         }
 
-        emit Revoked(tokenId, account);
         return;
     }
 }

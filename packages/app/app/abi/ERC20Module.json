@@ -35,57 +35,6 @@
     ]
   },
   {
-    "type": "event",
-    "anonymous": false,
-    "name": "Created",
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "tokenId",
-        "indexed": false
-      },
-      {
-        "type": "address",
-        "name": "account",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "Opened",
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "tokenId",
-        "indexed": false
-      },
-      {
-        "type": "address",
-        "name": "account",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "Revoked",
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "tokenId",
-        "indexed": false
-      },
-      {
-        "type": "address",
-        "name": "account",
-        "indexed": false
-      }
-    ]
-  },
-  {
     "type": "function",
     "name": "CALL_OPERATION",
     "constant": true,
@@ -122,7 +71,7 @@
     "inputs": [
       {
         "type": "uint256",
-        "name": "tokenId"
+        "name": ""
       },
       {
         "type": "address",
@@ -143,7 +92,7 @@
     "inputs": [
       {
         "type": "uint256",
-        "name": "tokenId"
+        "name": ""
       },
       {
         "type": "address",
@@ -168,7 +117,7 @@
     "inputs": [
       {
         "type": "uint256",
-        "name": "tokenId"
+        "name": ""
       },
       {
         "type": "address",
