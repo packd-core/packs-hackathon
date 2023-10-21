@@ -11,36 +11,67 @@ import {SignForm} from "@/app/mint/pack/SignForm";
 import {ReviewForm} from "@/app/mint/pack/ReviewForm";
 import {LoadingCard} from "@/app/components/content/LoadingCard";
 import {PackCreatedCard} from "@/app/mint/pack/PackCreatedCard";
-import {useAccount} from "wagmi";
+import {Address, useAccount, useWaitForTransaction} from "wagmi";
 import {ConnectButton} from "@rainbow-me/rainbowkit";
+import {useMintStore} from "@/src/stores/useMintStore";
+import {usePackState} from "@/app/mint/usePackState";
+import {useHydrated} from "@/src/hooks/useHydrated";
+import {useMintPackWrite} from "@/src/hooks/useMintPackWrite";
+import {decodeEventLog} from "viem";
+import {packMainABI} from "@/app/abi/generated";
+import usePackdAddresses from "@/src/hooks/usePackdAddresses";
+import {watchContractEvent} from "viem/actions";
 
 const MintPage = () => {
-    const [step, setStep] = useState(0)
 
-    const { isConnected, isConnecting } = useAccount();
+    const step = usePackState(state => state.step);
+    const controls = usePackState(state => state.controls);
 
-    const signMessage = useCallback(() => {
-    }, []);
-    const next = useCallback(() => {
-        if (step === 2) {
-            signMessage()
-        }
-        setStep(step + 1)
-    }, [step, signMessage]);
-    const back = useCallback(() => {
-        setStep(step - 1)
-    }, [step]);
+    const {isConnected, isConnecting, address} = useAccount();
+    const isLoaded = useHydrated()
+    const hash = usePackState(state => state.hash)
+
+    const addresses = usePackdAddresses();
+    const setMintedTokenId = usePackState(state => state.setMintedTokenId);
+    const mintedTokenId = usePackState(state => state.mintedTokenId);
+    const nextStep = usePackState(state => state.nextStep)
+
+    const {
+        data: receipt,
+        isLoading,
+        isSuccess,
+    } = useWaitForTransaction({hash});
 
     useEffect(() => {
-        if (step === 4) {
-            setTimeout(() => {
-                setStep(5)
-            }, 3000)
+        if (receipt?.status === "success") {
+            const logs = receipt.logs.filter(
+                (log) =>
+                    log.address.toLowerCase() === addresses.PackMain.toLowerCase()
+            );
+            logs.forEach((log) => {
+                const decodedLog = decodeEventLog({
+                    abi: packMainABI,
+                    data: log.data,
+                    topics: log.topics,
+                });
+                if (decodedLog.eventName === "PackCreated") {
+                    setMintedTokenId((decodedLog.args as any).tokenId);
+                }
+            });
         }
-    }, [step]);
+    }, [addresses.PackMain, receipt, setMintedTokenId]);
 
-    if (isConnecting) {
-        return  <LoadingCard
+    //
+    // useEffect(() => {
+    //     if (step === 4) {
+    //         setTimeout(() => {
+    //             setStep(5)
+    //         }, 3000)
+    //     }
+    // }, [step]);
+
+    if (isConnecting && !isLoaded) {
+        return <LoadingCard
             title="Connecting"
             text='Waiting for network...'/>
     }
@@ -54,40 +85,26 @@ const MintPage = () => {
                     <Present className={'h-6 w-6'}/>
                 </div>
                 <h1 className="text-lg sm:text-xl md:text-2xl mb-10">Create new Pack</h1>
-                <ConnectButton />
+                <ConnectButton/>
             </div>
         </Card>
     }
 
-    if (step === 4) return (
+    if (isLoading && hash) return (
         <LoadingCard
             title="Your pack is being created..."
             text='Waiting for Comfirmation...'
             transactionHash="askkhn"/>
 
     )
-    if (step === 5) return (
+    if (mintedTokenId !== undefined) return (
         <PackCreatedCard/>
     )
     return (
         <Card
             className={'mx-auto w-full'}
             containerClassName=' overflow-y-auto'
-            controls={
-                <div className='w-full flex justify-between py-1'>
-                    <Button
-                        onClick={back}
-                        variant="navigation" disabled={step == 0}
-                        leftIcon={<FiArrowLeft className='text-inherit inline'/>}>
-                        Back
-                    </Button>
-                    <Button
-                        onClick={next}
-                        variant="navigation" rightIcon={<FiArrowRight className='text-inherit inline'/>}>
-                        {step === 2 ? 'Sign Message' : 'Next'}
-                    </Button>
-                </div>
-            }>
+            controls={controls ?? <div>hello </div>}>
             <div className="flex flex-col items-center gap-2">
                 <div className="p-2 rounded-full bg-gray-800">
                     <Present className={'h-6 w-6'}/>
