@@ -21,7 +21,6 @@ const RelayerRequestSchema = z.object({
         sigOwner: z.string(),
         claimer: z.string(),
         sigClaimer: z.string(),
-        refundValue: z.string(), // bignumber
         maxRefundValue: z.string()
     })
 })
@@ -39,6 +38,7 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<ResponseData>
 ) {
+
     if (req.method !== 'POST') {
         res.status(400).send({ error: '404 not found' })
         return;
@@ -50,11 +50,29 @@ export default async function handler(
     }
 
     const tx = parsedBody.data
+    const packMain = PackMain__factory.connect(getRelayerAccount()).attach(tx.mainContractAddress) as PackMain;// NOt sure why is this changing the type
+
 
     console.log('Relay request', tx);
+
     try {
-        const packMain = PackMain__factory.connect(getRelayerAccount()).attach(tx.mainContractAddress) as PackMain;// NOt sure why is this changing the type
-        const openReceipt = await packMain.open(tx.args, [])
+        const gasCost = await packMain.open.estimateGas({
+            ...tx.args,
+            refundValue: tx.args.maxRefundValue
+        }, [])
+
+        if (gasCost > BigInt(tx.args.maxRefundValue)) {
+            res.status(400).send({ error: 'Transaction will cost more than maxRefundValue' })
+            return;
+        }
+
+        const refundValue = gasCost * BigInt(1.2)//20% margin?
+
+        const openReceipt = await packMain.open({
+            ...tx.args,
+            refundValue: refundValue
+        }, [])
+
         console.log(openReceipt);
         res.status(200).send({
             hash: openReceipt.hash,
@@ -65,3 +83,4 @@ export default async function handler(
         console.log(error);
     }
 }
+
