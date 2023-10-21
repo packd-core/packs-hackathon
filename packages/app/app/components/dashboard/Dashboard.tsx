@@ -109,7 +109,7 @@ function PackItem({index}: { index: number }) {
             <div className='grow text-xs'>account: {account}</div>
             <div className='text-sm pr-2'> tokenId: {tokenId?.toString()}</div>
             <div className='text-sm pr-2'> packId: {index?.toString()}</div>
-            <PackActionsMenu tokenId={tokenId}/>
+            {tokenId !== undefined && <PackActionsMenu tokenId={tokenId}/>}
         </div>
         <div className='mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
             <PackModuleItem module={['Eth', rawEth?.formatted ?? 'Loading']}/>
