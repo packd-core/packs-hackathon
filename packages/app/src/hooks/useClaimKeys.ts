@@ -20,7 +20,7 @@ export function useClaimKeys(balanceOf: number) {
   });
 
   const prepareMessage = useCallback(async () => {
-    console.log('prepareMessage')
+    // console.log('prepareMessage')
     const msg = await keySignManager.prepareMessage(["uint256"], [balanceOf]);
     setMessage(msg);
     setMessagePrepared(true);
@@ -53,7 +53,7 @@ export function useClaimKeys(balanceOf: number) {
             ["uint256"],
             [balanceOf]
           );
-        console.log("Generated private key: ", privkey); // Debugging line
+        // console.log("Generated private key: ", privkey); // Debugging line
         setClaimPublicKey(pubkey);
         setClaimPrivateKey(privkey);
       }
