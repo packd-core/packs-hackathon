@@ -13,7 +13,7 @@ export default function AddTokenModal({isOpen, setIsOpen, onAdd}: { isOpen: bool
     const [tokenAddress, setTokenAddress] = useState<Address>();
     const [amount, setAmount] = useState<bigint>()
     const {address} = useAccount();
-    const {isLoading,data} = useBalance({address, token: tokenAddress, enabled: !!tokenAddress});
+    const {isLoading, data} = useBalance({address, token: tokenAddress, enabled: !!tokenAddress});
 
     const isValidAmount = amount && amount > 0 && (amount < (data?.value ?? BigInt(0)));
     const add = useCallback(() => {
@@ -23,56 +23,56 @@ export default function AddTokenModal({isOpen, setIsOpen, onAdd}: { isOpen: bool
     }, [setIsOpen, onAdd, tokenAddress, amount, isValidAmount]);
     return (
         <Modal render={closeModal => <Card
-        controls={<div className={'flex justify-between'}>
-    <Button
-        variant="navigation"
-    leftIcon={<BsArrowLeft/>}
-    onClick={closeModal}
-        >
-        Cancel
-        </Button>
-        <Button
-    variant="navigation"
-    rightIcon={<BsArrowRight/>}
-    onClick={add}
-        >
-        Add
-        </Button>
-        </div>}>
-        <div className="flex flex-col gap-2">
-    <ContentCard className='self-stretch'>
-    <div className="flex justify-between">
-    <span className='text-card-title'>Token address</span>
-    {tokenAddress && <span className='text-card-title'>Available: {data?.formatted}</span>}
-    </div>
-    <div className="relative">
-    {tokenAddress && <div className="absolute left-0 top-0 bottom-0 flex items-center pl-2">
-        {data?.symbol}
-        </div>}
-        <input className='text-right w-full pl-12 text-xs py-2' onChange={(e) => {
-        const value = e.target.value;
-        if (isAddress(value)) {
-            setTokenAddress(value as Address);
-        } else {
-            setTokenAddress(undefined)
-        }
-    }}/>
-    </div>
+            controls={<div className={'flex justify-between'}>
+                <Button
+                    variant="navigation"
+                    leftIcon={<BsArrowLeft/>}
+                    onClick={closeModal}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    variant="navigation"
+                    rightIcon={<BsArrowRight/>}
+                    onClick={add}
+                >
+                    Add
+                </Button>
+            </div>}>
+            <div className="flex flex-col gap-2">
+                <ContentCard className='self-stretch'>
+                    <div className="flex justify-between">
+                        <span className='text-card-title'>Token address</span>
+                        {tokenAddress && <span className='text-card-title'>Available: {data?.formatted}</span>}
+                    </div>
+                    <div className="relative">
+                        {tokenAddress && <div className="absolute left-0 top-0 bottom-0 flex items-center pl-2">
+                            {data?.symbol}
+                        </div>}
+                        <input className='text-right w-full pl-12 text-xs py-2' onChange={(e) => {
+                            const value = e.target.value;
+                            if (isAddress(value)) {
+                                setTokenAddress(value as Address);
+                            } else {
+                                setTokenAddress(undefined)
+                            }
+                        }}/>
+                    </div>
 
-    <span className='text-card-title'>Amount</span>
-        <input className={clsxm('text-right', !isValidAmount && 'text-red-500')}
-        onChange={(e) => {
-        const value = e.target.value;
-        if (!isNaN(Number(value))) {
-            const val = parseEther(value == '' ? '0' : value as `${number}`)
-            setAmount(val);
-        } else {
-            setAmount(BigInt(-1));
-        }
-    }}/>
-    </ContentCard>
+                    <span className='text-card-title'>Amount</span>
+                    <input className={clsxm('text-right', !isValidAmount && 'text-red-500')}
+                           onChange={(e) => {
+                               const value = e.target.value;
+                               if (!isNaN(Number(value))) {
+                                   const val = parseEther(value == '' ? '0' : value as `${number}`)
+                                   setAmount(val);
+                               } else {
+                                   setAmount(BigInt(-1));
+                               }
+                           }}/>
+                </ContentCard>
 
-    </div>
-    </Card>} isOpen={isOpen} setIsOpen={setIsOpen}/>
+            </div>
+        </Card>} isOpen={isOpen} setIsOpen={setIsOpen}/>
     )
-    }
+}
