@@ -19,7 +19,8 @@ contract PackMain is PackNFT, Ownable {
     event PackCreated(
         uint256 indexed tokenId,
         address owner,
-        address[] modules
+        address[] modules,
+        bytes[] moduleData
     );
     event PackRevoked(uint256 indexed tokenId, address owner);
     event PackOpened(uint256 indexed tokenId, address claimer);
@@ -146,7 +147,7 @@ contract PackMain is PackNFT, Ownable {
             );
         }
 
-        emit PackCreated(tokenId, to_, modules);
+        emit PackCreated(tokenId, to_, modules, moduleData);
     }
 
     function revoke(

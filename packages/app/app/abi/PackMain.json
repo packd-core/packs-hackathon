@@ -341,6 +341,10 @@
       {
         "type": "address[]",
         "name": "modules"
+      },
+      {
+        "type": "bytes[]",
+        "name": "moduleData"
       }
     ]
   },
