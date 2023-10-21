@@ -22,6 +22,9 @@ contract PackNFT is ERC721, ERC721Enumerable {
     mapping(uint256 => PackState) public packState;
     mapping(uint256 => string) public packStateURIs;
 
+    // Store creation block number for each token
+    mapping(uint256 => uint256) public creationBlock;
+
     constructor(
         string memory baseTokenURI_,
         string memory name_,
@@ -42,6 +45,9 @@ contract PackNFT is ERC721, ERC721Enumerable {
 
         // Set state to Created
         packState[tokenId] = PackState.Created;
+
+        // Set creation block number
+        creationBlock[tokenId] = block.number;
     }
 
     function _revokePack(uint256 tokenId) internal {

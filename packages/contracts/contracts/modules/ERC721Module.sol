@@ -38,7 +38,6 @@ contract ERC721Module is IPackModule {
             );
         }
 
-        emit Created(tokenId, account);
         return;
     }
 
@@ -69,7 +68,6 @@ contract ERC721Module is IPackModule {
             );
         }
 
-        emit Opened(tokenId, account);
         return;
     }
 
@@ -99,7 +97,6 @@ contract ERC721Module is IPackModule {
             );
         }
 
-        emit Revoked(tokenId, account);
         return;
     }
 }
