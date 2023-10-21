@@ -76,7 +76,10 @@ export default function RevokePackModal({isOpen, setIsOpen, tokenId}: RevokePack
                     <div className='text-center pb-8'>
                         <h2 className="text-2xl font-bold ">Revoke Pack</h2>
                     </div>
-                    <ReviewForm hideTitle={true}/>
+                    <div>
+                        details...
+                    </div>
+                    {/*<ReviewForm hideTitle={true}/>*/}
 
                 </div>
             </Card>
