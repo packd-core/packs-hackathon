@@ -26,10 +26,17 @@ export function useClaimKeys(balanceOf: number) {
     setMessagePrepared(true);
   }, [balanceOf, keySignManager]);
 
+  useEffect(() => {
+    if (isMessagePrepared){
+        signMessage();
+    }
+  }, [isMessagePrepared, signMessage]);
+
   const handlePrepareAndSignMessage = useCallback(async () => {
     try {
-      await prepareMessage();
-      if (isMessagePrepared) {
+      if (!isMessagePrepared) {
+        await prepareMessage();
+      }else {
         signMessage();
       }
     } catch (error) {
