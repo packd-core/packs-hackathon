@@ -9,7 +9,7 @@ describe("encode and decode URLs", () => {
     const chainId = 1; // ETHEREUM MAINNET
     const tokenId = 1;
 
-    const encodedUrl = encodeUrl(version, privateKey, chainId, tokenId);
+    const encodedUrl = encodeUrl(version, privateKey, chainId, BigInt(tokenId));
     console.log(encodedUrl);
     const decodedUrl = decodeUrl(encodedUrl);
 
@@ -25,7 +25,7 @@ describe("encode and decode URLs", () => {
     const chainId = 534351; // Scroll Sepolia
     const tokenId = 12341;
 
-    const encodedUrl = encodeUrl(version, privateKey, chainId, tokenId);
+    const encodedUrl = encodeUrl(version, privateKey, chainId, BigInt(tokenId));
     console.log(encodedUrl);
     const decodedUrl = decodeUrl(encodedUrl);
 
@@ -41,7 +41,7 @@ describe("encode and decode URLs", () => {
     const chainId = 534351599; // Some other chain
     const tokenId = 92332341999;
 
-    const encodedUrl = encodeUrl(version, privateKey, chainId, tokenId);
+    const encodedUrl = encodeUrl(version, privateKey, chainId, BigInt(tokenId));
     console.log(encodedUrl);
     const decodedUrl = decodeUrl(encodedUrl);
 

@@ -8,7 +8,7 @@
     "scripts": {
         "start": "hardhat node",
         "start:dev": "concurrently -c \"auto\"  \"yarn start\" \"yarn task deploy-dev-env\"",
-        
+        "start:deploy-env": "yarn task deploy-dev-env --network localhost",
         "test": "hardhat test",
         "deploy": "hardhat typechain && hardhat deploy",
         "deploy:local": "yarn deploy --network localhost ",
