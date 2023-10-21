@@ -4,10 +4,10 @@ import {BiLogoTwitter} from "react-icons/bi";
 
 export default function PackLinkDetails({claimKey}: { claimKey: string}) {
     const link = 'https://packd.io/claim/'+claimKey;
-    return <div className='flex flex-col gap-8 items-center'>
+    return <div className='flex flex-col gap-8 items-center max-w-full'>
         <p>Copy and share the Claim Link:</p>
-        <div className="bg-gray-600 px-2 py-1 rounded-lg font-semibold text-white text-sm flex items-center">
-            {link}
+        <div className="bg-gray-600 px-2 py-1 rounded-lg font-semibold text-white text-sm flex items-center max-w-full ">
+            <div className="shrink grow break-all ">{link}</div>
             <CopyTextButton classNames="pl-2" text={link}/>
         </div>
         <HelpItem title="Careful with the claim Link">

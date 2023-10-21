@@ -1,26 +1,56 @@
-import {Dialog, Transition} from '@headlessui/react'
-import {Fragment, useCallback, useMemo, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {Card} from "@/app/components/Card";
 import {LoadingCard} from "@/app/components/content/LoadingCard";
-import {AssetsForm} from "@/app/mint/pack/AssetsForm";
 import {ReviewForm} from "@/app/mint/pack/ReviewForm";
-import Present from "~/present.svg";
 import {BsArrowLeft, BsArrowRight, BsX} from "react-icons/bs";
 import Modal from "@/app/components/dialog/Modal";
 import Button from "@/app/components/button/Button";
-import {ExternalLink} from "@/app/components/links/ExternalLink";
 import {IoIosCheckmark} from "react-icons/io";
+import {usePackMainRevoke, usePreparePackMainRevoke} from "@/app/abi/generated";
+import usePackdAddresses from "@/src/hooks/usePackdAddresses";
+import {useWaitForTransaction} from "wagmi";
+import {ErrorCard} from "@/app/components/content/ErrorCard";
 
-export default function RevokePackModal({isOpen, setIsOpen}: { isOpen: boolean, setIsOpen: (isOpen: boolean) => void }) {
+type RevokePackModalProps = {
+    tokenId: bigint,
+    isOpen: boolean,
+    setIsOpen: (isOpen: boolean) => void
+}
+export default function RevokePackModal({isOpen, setIsOpen, tokenId}: RevokePackModalProps ) {
     const [step, setStep] = useState(0)
+    const addresses = usePackdAddresses();
+    const {
+        config: config,
+        error: prepareError,
+        isError: isPrepareError,
+    } = usePreparePackMainRevoke({address: addresses.PackMain, args: [tokenId, []],})
+    const { write, data, error, isLoading, isError } = usePackMainRevoke(config);
+
+    const {
+        data: receipt,
+        isLoading: isPending,
+        isSuccess: isSuccess,
+    } = useWaitForTransaction({ hash: data?.hash });
+
+
     const revokePack = useCallback(() => {
-        setStep(1);
-        setTimeout(() => {
-            setStep(2)
-        }, 3000);
-    }, []);
+        write && write();
+    }, [write]);
+    useEffect(() => {
+        if (isPending) {
+            setStep(1);
+        }
+    }, [isPending]);
+    useEffect(() => {
+        if (isSuccess) {
+            setStep(2);
+        }
+    }, [isSuccess]);
 
     const card = useCallback((closeModal: () => void) => {
+        if (isError) {
+            return <ErrorCard onCloseClick={closeModal}></ErrorCard>
+        }
         if (step === 0) {
             return <Card
                 controls={<div className={'flex justify-between'}>
@@ -46,7 +76,10 @@ export default function RevokePackModal({isOpen, setIsOpen}: { isOpen: boolean, 
                     <div className='text-center pb-8'>
                         <h2 className="text-2xl font-bold ">Revoke Pack</h2>
                     </div>
-                    <ReviewForm hideTitle={true}/>
+                    <div>
+                        details...
+                    </div>
+                    {/*<ReviewForm hideTitle={true}/>*/}
 
                 </div>
             </Card>
@@ -55,7 +88,7 @@ export default function RevokePackModal({isOpen, setIsOpen}: { isOpen: boolean, 
             return <LoadingCard
                 title={'Revoking your Pack'}
                 text={'Waiting for confirmation...'}
-                transactionHash={'sadasd'}/>
+                transactionHash={data?.hash}/>
         }
         return <Card
             className={'mx-auto w-full bg-green-800'}
@@ -83,7 +116,7 @@ export default function RevokePackModal({isOpen, setIsOpen}: { isOpen: boolean, 
                 <p className="text-sm mt-10">The contents of the pack are back in your wallet!</p>
             </div>
         </Card>
-    }, [revokePack, step]);
+    }, [revokePack, step, isError, data?.hash]);
 
     return (
         <Modal render={closeModal => card(closeModal)} isOpen={isOpen} setIsOpen={setIsOpen}/>

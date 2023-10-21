@@ -8,12 +8,12 @@ import RevokePackModal from "@/app/components/dashboard/RevokePackModal";
 import ClaimLinkModal from "@/app/components/dashboard/ClaimLinkModal";
 
 
-export function PackActionsMenu() {
+export function PackActionsMenu({tokenId}: {tokenId:bigint}) {
     const [isRevokeOpen, setIsRevokeOpen] = useState(false)
     const [isClaimOpen, setIsClaimOpen] = useState(false)
     return (
         <Menu >
-            {isRevokeOpen && <RevokePackModal isOpen={isRevokeOpen} setIsOpen={setIsRevokeOpen}/>}
+            {isRevokeOpen && <RevokePackModal tokenId={tokenId} isOpen={isRevokeOpen} setIsOpen={setIsRevokeOpen}/>}
             {isClaimOpen && <ClaimLinkModal isOpen={isClaimOpen} setIsOpen={setIsClaimOpen}/>}
             <Menu.Button ><FcSettings/></Menu.Button>
 

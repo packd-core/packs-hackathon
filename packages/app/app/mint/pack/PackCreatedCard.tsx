@@ -3,8 +3,17 @@ import Present from "~/present.svg";
 import {IoIosCheckmark} from "react-icons/io";
 import {Card} from "@/app/components/Card";
 import PackLinkDetails from "@/app/mint/pack/PackLinkDetails";
+import {useUrlEncodeDecode} from "@/src/hooks/useUrlEncodeDecode";
+import {usePackState} from "@/app/mint/usePackState";
+import {useMintStore} from "@/src/stores/useMintStore";
 
 export function PackCreatedCard() {
+    const claimPrivateKey = useMintStore(state => state.claimKey?.private);
+    const mintedTokenId = usePackState(state => state.mintedTokenId);
+    const { urlEncoded, urlDecoded, decodedTokenId } = useUrlEncodeDecode(
+        claimPrivateKey!,
+        mintedTokenId!
+    );
     return <Card
         className={'mx-auto w-full bg-green-800'}
         controls={
@@ -23,7 +32,7 @@ export function PackCreatedCard() {
                 <IoIosCheckmark className='bg-green-800 w-5 h-5 rounded-full absolute bottom-0 right-0 translate-x-1/4'/>
             </div>
             <h1 className="text-xl">Pack Created!</h1>
-            <PackLinkDetails claimKey={'9oiaskdbgiowsdboghisbadokgh'}/>
+            <PackLinkDetails claimKey={urlEncoded}/>
         </div>
     </Card>
 }
