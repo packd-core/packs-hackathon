@@ -40,7 +40,7 @@ export function encodeUrl(
   version: number,
   privateKey: string,
   chainId: number,
-  tokenId: number
+  tokenId: bigint
 ) {
   const hexVersion = version.toString(16).padStart(2, "0"); // Convert version to hexadecimal string
   const hexChainId = chainId.toString(16).padStart(8, "0"); // Convert chainId to hexadecimal string
