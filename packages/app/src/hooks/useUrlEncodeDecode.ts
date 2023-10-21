@@ -4,7 +4,7 @@ import {useNetwork} from "wagmi";
 
 export function useUrlEncodeDecode(
     claimPrivateKey: string,
-    mintedTokenId: number
+    mintedTokenId: bigint
 ) {
     const [urlEncoded, setUrlEncoded] = useState("");
     const [urlDecoded, setUrlDecoded] = useState("");
