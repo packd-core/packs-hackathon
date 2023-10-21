@@ -1,76 +1,37 @@
-import type {Address} from "wagmi";
-import {useEffect, useState} from "react";
-import {
-    useContractWrite,
-    usePrepareContractWrite,
-    useWaitForTransaction,
-} from "wagmi";
-import {decodeEventLog} from "viem";
-import {packMainABI, usePackMainPack, usePreparePackMainPack} from "@/app/abi/generated";
+import {Address, useAccount} from "wagmi";
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
+import {useMintStore} from "@/src/stores/useMintStore";
+import {useEffect, useMemo, useState} from "react";
+import {useMintPackWrite} from "@/src/hooks/useMintPackWrite";
+import {ethers} from "ethers";
 
-export function useMintPack(
-    ethAmount: BigInt,
-    address: Address,
-    claimPublicKey: `0x${string}`,
-    moduleList: Address[],
-    additionalData: readonly `0x${string}`[]
-) {
-    const [mintedTokenId, setMintedTokenId] = useState(0);
-    const addresses = usePackdAddresses()
-    const {
-        config,
-        error: prepareError,
-        isError: isPrepareError,
-    } = usePreparePackMainPack({
-        address: addresses.PackMain,
-        value: ethAmount as any,
-        enabled: !!addresses.PackMain,
-        args: [address, claimPublicKey, moduleList, additionalData],
-    });
-
+export default function useMintPack() {
+    const {address} = useAccount();
+    const ethAmount = useMintStore(state => state.eth)
+    const modules = useMintStore(state => state.modules)
+    const claimPublicKey = useMintStore(state => state.claimKey?.public)
+    const moduleList = useMemo(() => modules.map((module) => module.moduleAddress), [modules]);
+    const moduleDataPromise = useMemo(() => Promise.all(modules.map((module) => generateMintData([[module.address, module.value]]))), [modules]);
+    const [moduleData,setModuleData] = useState<string[]>([])
     useEffect(() => {
-        console.log(address, claimPublicKey, moduleList, additionalData)
-    }, [address, claimPublicKey, moduleList, additionalData])
+        moduleDataPromise.then((data) => {
+            setModuleData(data)
+        })
+    }, [moduleDataPromise]);
+    return useMintPackWrite(
+        ethAmount,
+        address!,
+        claimPublicKey as `0x${string}`,
+        moduleList,
+        moduleData as readonly `0x${string}`[]
+    );
+}
 
-    const {write, data, error, isLoading, isError} = usePackMainPack(config);
+export async function encodeData(types: string[], values: any[]) {
+    const coder = ethers.AbiCoder.defaultAbiCoder();
+    return coder.encode(types, values);
+}
 
-    const {
-        data: receipt,
-        isLoading: isPending,
-        isSuccess,
-    } = useWaitForTransaction({hash: data?.hash});
-
-    useEffect(() => {
-        if (receipt?.status === "success") {
-            const logs = receipt.logs.filter(
-                (log) =>
-                    log.address.toLowerCase() === addresses.PackMain.toLowerCase()
-            );
-            logs.forEach((log) => {
-                const decodedLog = decodeEventLog({
-                    abi: packMainABI,
-                    data: log.data,
-                    topics: log.topics,
-                });
-                if (decodedLog.eventName === "PackCreated") {
-                    setMintedTokenId(Number((decodedLog.args as any).tokenId));
-                }
-            });
-        }
-    }, [addresses.PackMain, receipt]);
-
-    return {
-        write,
-        mintedTokenId,
-        prepareError,
-        isPrepareError,
-        data,
-        error,
-        isLoading,
-        isError,
-        receipt,
-        isPending,
-        isSuccess,
-    };
+export async function generateMintData(data: Array<[Address, bigint]>) {
+    return encodeData(["tuple(address,uint256)[]"], [data]);
 }
