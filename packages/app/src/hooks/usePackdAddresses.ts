@@ -1,4 +1,3 @@
-import {KeySignManager} from "packs-contracts/utils/keySignManager";
 import addresses from "../../app/abi/addresses.json";
 import {Address, useNetwork} from "wagmi";
 import {useMemo} from "react";
@@ -15,12 +14,8 @@ function getAddressesByChainId(chainId: number) {
     const id = chainId + '';
     if (addresses.hasOwnProperty(id)) {
         // @ts-ignore
-        console.log(addresses[id] as Record<Contracts, Address>)
-
-        // @ts-ignore
         return addresses[id] as Record<Contracts, Address>;
     }
-    console.log(addresses.hasOwnProperty(id))
     return {} as Record<Contracts, Address>;
 }
 
