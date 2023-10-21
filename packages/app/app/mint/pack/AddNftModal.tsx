@@ -69,7 +69,7 @@ export default function AddNftModal({isOpen, setIsOpen, onAdd}: { isOpen: boolea
                     <div className="flex justify-between">
 
                         <span className='text-card-title'>TokenID</span>
-                        {!isOwnerLoading && <span
+                        {!isOwnerLoading && !!nftAddress && <span
                             className={clsxm(!hasToken && 'text-red-500', 'text-xs font-semibold')}>Available: {hasToken ? 'yes' : 'You don\'t own this token'}</span>}
                     </div>
                     <input className={clsxm('text-right', ((tokenId ?? -1) < 0 || !hasToken) && 'text-red-500')}
