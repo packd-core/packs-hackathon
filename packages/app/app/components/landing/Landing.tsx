@@ -3,12 +3,12 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function Landing() {
   return (
-    <div className="flex flex-col items-center text-black mt-10 md:mt-20 lg:mt-40">
+    <div className="flex flex-col items-center text-gray-900 mt-10 md:mt-20 lg:mt-40">
       <h1 className="max-w-3xl text-3xl sm:text-4xl md:text-5xl font-extrabold text-center mb-4">
-        Simplify <span className="text-primary-500">Onboarding</span> with{" "}
-        <span className="text-primary-500">Onchain</span> Packs
+        Simplify <span className="text-primary-600">Onboarding</span> with{" "}
+        <span className="text-primary-600">Onchain</span> Packs
       </h1>
-      <p className="max-w-xl text-center">
+      <p className="max-w-xl text-center text-gray-900">
         Create and distribute Packs effortlessly. Enable your users to claim
         their essentials without worrying about gas fees.
       </p>
@@ -50,12 +50,14 @@ function HowItWorksItem({ number, title, description }: HowItWorksItemProps) {
   return (
     <div className="max-w-[280px] w-full">
       <div className="flex justify-center items-center font-semibold">
-        <span className="text-7xl text-gray-600 font-extrabold mr-4">
+        <span className="text-7xl text-gray-300 font-extrabold mr-4">
           {number}.
         </span>
-        <h3 className="text-3xl font-extrabold text-center ">{title} </h3>
+        <h3 className="text-3xl font-extrabold text-center text-gray-900">
+          {title}{" "}
+        </h3>
       </div>
-      <p className="mt-4 text-center">{description}</p>
+      <p className="mt-4 text-center text-gray-900">{description}</p>
     </div>
   );
 }
