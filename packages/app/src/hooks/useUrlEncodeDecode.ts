@@ -13,7 +13,7 @@ export function useUrlEncodeDecode(
 
     // Convert claimPrivateKey to base64
     useEffect(() => {
-        if (claimPrivateKey && mintedTokenId && chain) {
+        if (claimPrivateKey && chain) {
             setUrlEncoded(encodeUrl(1, claimPrivateKey, chain.id, mintedTokenId));
         }
     }, [claimPrivateKey, mintedTokenId, chain]);
