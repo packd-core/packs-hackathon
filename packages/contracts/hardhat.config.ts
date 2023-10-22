@@ -41,9 +41,9 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
-      scrollSepolia: "V5MJWDUHF1JD9A4EXJEB12T95XRQVRTMNJ", // https://docs.scroll.io/en/developers/verifying-smart-contracts/
+      scrollSepolia: process.env.ETHERSCAN_SCROLL || "", // https://docs.scroll.io/en/developers/verifying-smart-contracts/
       mantleTest: "abc",
-      polygonZkEVMTestnet: "8X9Q6ZVWVKKZA5DR9CEWRH3TYK7UJFM71W",
+      polygonZkEVMTestnet: process.env.ETHERSCAN_POLYGON_ZKEVM || "",
     },
     customChains: [
       {
