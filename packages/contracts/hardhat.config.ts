@@ -41,16 +41,17 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
-      scrollSepolia: "abc", // https://docs.scroll.io/en/developers/verifying-smart-contracts/
+      scrollSepolia: "V5MJWDUHF1JD9A4EXJEB12T95XRQVRTMNJ", // https://docs.scroll.io/en/developers/verifying-smart-contracts/
       mantleTest: "abc",
+      polygonZkEVMTestnet: "8X9Q6ZVWVKKZA5DR9CEWRH3TYK7UJFM71W",
     },
     customChains: [
       {
         network: "scrollSepolia",
         chainId: 534351,
         urls: {
-          apiURL: "https://sepolia-blockscout.scroll.io/api",
-          browserURL: "https://sepolia-blockscout.scroll.io/",
+          apiURL: "https://api-sepolia.scrollscan.com/api",
+          browserURL: "https://sepolia.scrollscan.dev/",
         },
       },
       {
@@ -59,6 +60,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://explorer.testnet.mantle.xyz/api",
           browserURL: "https://explorer.testnet.mantle.xyz",
+        },
+      },
+      {
+        network: "polygonZkEVMTestnet",
+        chainId: 1442,
+        urls: {
+          apiURL: "https://api-testnet-zkevm.polygonscan.com/api",
+          browserURL: "https://testnet-zkevm.polygonscan.com/",
         },
       },
     ],
