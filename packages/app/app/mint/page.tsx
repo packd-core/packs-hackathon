@@ -98,7 +98,7 @@ const MintPage = () => {
         <LoadingCard
             title="Your pack is being created..."
             text='Waiting for Comfirmation...'
-            transactionHash="askkhn"/>
+            transactionHash={hash}/>
 
     )
     if (mintedTokenId !== undefined) return (

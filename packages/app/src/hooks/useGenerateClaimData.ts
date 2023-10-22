@@ -4,24 +4,24 @@ import useKeySignManager from "@/src/hooks/useKeySignManager";
 
 export const useGenerateClaimData = (
   address: Address,
-  maxRefundValue: number,
+  maxRefundValue: bigint,
   sigClaimer: string,
-  tokenId: number,
+  tokenId: bigint,
   privateKeyDecoded: string
 ) => {
   const [claimData, setClaimData] = useState({
-    tokenId: 0,
+    tokenId: 0n,
     sigOwner: "",
     claimer: address,
     sigClaimer,
-    refundValue: 0,
+    refundValue: BigInt(0),
     maxRefundValue,
   });
   const keySignManager = useKeySignManager();
 
   useEffect(() => {
     const generateSignature = async () => {
-      if (!tokenId || !privateKeyDecoded) {
+      if (tokenId==undefined || !privateKeyDecoded) {
         return;
       }
       console.log("privateKeyDecoded", privateKeyDecoded);
@@ -31,16 +31,18 @@ export const useGenerateClaimData = (
         [Number(tokenId), address]
       );
       const sigOwnerResolved = await sigOwner.claimSignature;
-      setClaimData((prev) => ({
-        ...prev,
-        tokenId,
-        sigOwner: sigOwnerResolved,
-        sigClaimer,
-      }));
+      setClaimData((prev) => {
+        return ({
+          ...prev,
+          tokenId,
+          sigOwner: sigOwnerResolved,
+          sigClaimer,
+        });
+      });
     };
 
     generateSignature();
-  }, [address, tokenId, privateKeyDecoded, sigClaimer]);
+  }, [address, tokenId, privateKeyDecoded, sigClaimer, keySignManager]);
 
-  return { claimData };
+  return claimData;
 };

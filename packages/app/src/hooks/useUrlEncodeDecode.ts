@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useMemo} from "react";
 import {encodeUrl, decodeUrl} from "../lib/encodeUrl";
 import {useNetwork} from "wagmi";
 
@@ -27,4 +27,8 @@ export function useUrlEncodeDecode(
     }, [urlEncoded]);
 
     return {urlEncoded, urlDecoded, decodedTokenId};
+}
+
+export function useDecodeUrl(url: string) {
+    return useMemo(() => decodeUrl(url), [url])
 }

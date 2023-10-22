@@ -1,15 +1,22 @@
-import {useMemo, useState} from "react";
+import {ReactNode, useMemo, useState} from "react";
 import clsxm from "@/src/lib/clsxm";
 import {PackTypeSelector} from "@/app/components/dashboard/PackTypeSelector";
 import {AiOutlinePlus} from "react-icons/ai";
 import ButtonLink from "@/app/components/links/ButtonLink";
 import {FaEthereum} from "react-icons/fa";
 import {PackActionsMenu} from "@/app/components/dashboard/PackActionsMenu";
-import {Address, useAccount, useBalance} from "wagmi";
+import {Address, useAccount, useBalance, useToken} from "wagmi";
 import {useBalanceOf} from "@/src/hooks/useBalanceOf";
 import {useTokenOfOwnerByIndex} from "@/src/hooks/useTokenOfOwnerByIndex";
-import {usePackMainAccount, usePackMainPackState} from "@/app/abi/generated";
+import {useErc721Name, usePackMainAccount, usePackMainPackState} from "@/app/abi/generated";
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
+import {usePackCreatedByTokenId} from "@/src/hooks/usePackCreatedByTokenId";
+import { formatUnits} from "ethers";
+import {ContentCard} from "@/app/components/content/ContentCard";
+import {ContentTitle} from "@/app/components/content/ContentRow";
+import {Module} from "@/src/stores/useMintStore";
+import {GiToken} from "react-icons/gi";
+import {RiNftLine} from "react-icons/ri";
 
 export enum PackState {
     EMPTY='Empty',
@@ -36,6 +43,7 @@ function NoPackFound() {
     </div>;
 }
 
+
 export default function Dashboard() {
     const [selectedTypes, setSelectedTypes] = useState<PackState[]>([])
     const {address} = useAccount();
@@ -60,28 +68,6 @@ export default function Dashboard() {
 }
 
 function PackList({count}: { count: number }) {
-    // const items = useMemo<Pack[]>(
-    //     () => [
-    //         {
-    //             id: '1',
-    //             state: PackState.CREATED,
-    //             date: new Date(),
-    //             modules: [['1', '2'], ['4', '5'], ['7', '8']]
-    //         },
-    //         {
-    //             id: '2',
-    //             state: PackState.OPENED,
-    //             date: new Date(),
-    //             modules: [['1', '2'], ['4', '5'], ['7', '8']]
-    //         },
-    //         {
-    //             id: '3',
-    //             state: PackState.REVOKED,
-    //             date: new Date(),
-    //             modules: [['1', '2'], ['4', '5'], ['7', '8']]
-    //         },
-    //     ], []
-    // )
     return <div className='flex flex-col gap-4'>
         {[...Array(count)].map((_, id) => <PackItem key={id} index={id}/>)}
     </div>
@@ -112,19 +98,55 @@ function PackItem({index}: { index: number }) {
             {tokenId !== undefined && <PackActionsMenu tokenId={tokenId}/>}
         </div>
         <div className='mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
-            <PackModuleItem module={['Eth', rawEth?.formatted ?? 'Loading']}/>
+            <PackModuleItem name='Eth' value={rawEth?.formatted ?? 'Loading'}/>
+            {tokenId !== undefined && <Modules tokenId={tokenId}/>}
             {/*    {pack.modules.map((module, index) => <PackModuleItem key={index} module={module}/>)}*/}
         </div>
     </div>
 }
 
-function PackModuleItem({module}: { module: string[] }) {
+function Modules({tokenId}: { tokenId: bigint}){
+    const addresses = usePackdAddresses();
+    const {data, isError, isLoading} = usePackCreatedByTokenId(tokenId)
+    const modules = data?.fullModuleData ?? [];
+    if (isLoading) return <div>loading...</div>
+    if (isError) return <div>error...</div>
+    return <> {modules.map((module, index) => {
+        if (module.moduleAddress === addresses.ERC721Module) {
+            return <PackModuleErc721 key={module.address + module.value}
+                               module={module}/>
+        }
+        if (module.moduleAddress === addresses.ERC20Module) {
+            return <PackModuleErc20 key={module.address + module.value}
+                              module={module}/>
+        }
+
+        return <ContentCard key={module.address + module.value}>
+            <ContentTitle>Unknown module</ContentTitle>
+        </ContentCard>;
+    })}</>
+}
+
+function PackModuleErc20({module}: { module: Module }) {
+    const {data: tokenData} = useToken({address: module.address})
+    return <PackModuleItem
+        icon={<GiToken/>}
+        value={formatUnits(module.value?.toString(), tokenData?.decimals ?? 18)} name={tokenData?.symbol ?? 'Loading...'}/>
+}
+function PackModuleErc721({module}: { module: Module }) {
+    const {data: tokenName} = useErc721Name({address: module.address});
+    return <PackModuleItem
+        icon={<RiNftLine/>}
+        value={module.value.toString()} name={tokenName ?? 'Loading...'}/>
+}
+
+function PackModuleItem({name, value, icon}: { name: string, value:string, icon?: ReactNode }) {
     return <div className="text-black p-2 rounded bg-white border border-gray-500/50 flex items-center">
         <div className='p-2 aspect-square rounded-full bg-blue-500'>
-            <FaEthereum/>
+            {icon ?? <FaEthereum/>}
         </div>
-        <div className='grow p-2'>{module[0]}</div>
-        <div>{module[1]}</div>
+        <div className='grow p-2'>{name}</div>
+        <div>{value}</div>
     </div>
 }
 
