@@ -21,7 +21,8 @@ type RawCreationData = {
     tokenId?: string;
     owner?: string;
     modules?: Address[];
-    moduleData?: any[][];
+    moduleData?: string[];
+    decodedModuleData?: any[][];
     fullModuleData?: Module[]
 }
 
@@ -80,7 +81,7 @@ export async function fetchPackCreatedByTokenId(tokenId: bigint | undefined, pac
             const el = (e as EventLog)
             return {
                 transactionHash: e.transactionHash, blockNumber: e.blockNumber,
-                tokenId: el.args.getValue("tokenId") as string, owner: el.args.getValue("owner") as string, modules: el.args.getValue("modules") as Address[], moduleData: await Promise.all(el.args.getValue("moduleData").map(async (md: string) => await getOriginalData(md)))
+                tokenId: el.args.getValue("tokenId") as string, owner: el.args.getValue("owner") as string, modules: el.args.getValue("modules") as Address[], moduleData: el.args.getValue("moduleData"),decodedModuleData: await Promise.all(el.args.getValue("moduleData").map(async (md: string) => await getOriginalData(md)))
             }
         })[0].catch(e => {
             return undefined
@@ -99,7 +100,7 @@ export async function fetchPackCreatedByTokenId(tokenId: bigint | undefined, pac
 
         // Returns
         const modules = packCreatedEvent?.modules;
-        const moduleData = packCreatedEvent?.moduleData;
+        const moduleData = packCreatedEvent?.decodedModuleData;
 
         if (modules && moduleData && modules.length === moduleData.length) {
             packCreatedEvent.fullModuleData = modules.map((module: any, i: number) => {
