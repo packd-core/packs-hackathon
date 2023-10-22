@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+/**
+ * @title ClaimData
+ * @dev Struct for storing claim related data
+ */
 struct ClaimData {
-    uint256 tokenId;
+    uint256 tokenId; // ID of the token
     bytes sigOwner; // Signature from the Pack owner
     address claimer; // Address of the claimer
     bytes sigClaimer; // Signature from the claimer
