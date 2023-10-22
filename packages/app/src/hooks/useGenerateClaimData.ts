@@ -6,11 +6,11 @@ export const useGenerateClaimData = (
   address: Address,
   maxRefundValue: bigint,
   sigClaimer: string,
-  tokenId: number,
+  tokenId: bigint,
   privateKeyDecoded: string
 ) => {
   const [claimData, setClaimData] = useState({
-    tokenId: 0,
+    tokenId: 0n,
     sigOwner: "",
     claimer: address,
     sigClaimer,

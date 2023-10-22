@@ -12,12 +12,15 @@ import {ReviewData} from "@/app/mint/pack/ReviewForm";
 import {ContentTitle} from "@/app/components/content/ContentRow";
 import {useClaim} from "@/src/hooks/useClaim";
 import {useGenerateClaimData} from "@/src/hooks/useGenerateClaimData";
+import usePackdAddresses from "@/src/hooks/usePackdAddresses";
+import {RelayerRequest} from '@/pages/api/claim';
 
-
+BigInt.prototype.toJSON = function() { return this.toString() }
 export default function ReviewClaimForm() {
     const nextStep = useClaimState(state => state.nextStep)
     const previousStep = useClaimState(state => state.previousStep)
     const setControls = useClaimState(state => state.setControls)
+    const addresses = usePackdAddresses();
     const {openConnectModal} = useConnectModal()
     const {address} = useAccount()
     const {chain} = useNetwork()
@@ -32,7 +35,7 @@ export default function ReviewClaimForm() {
         address!,
         maxRefundValue,
         signedData!,
-        Number(tokenId),
+        tokenId!,
         privateKey!
     );
 
@@ -41,6 +44,18 @@ export default function ReviewClaimForm() {
         data,
         isLoading,
     } = useClaim(claimData, isTokenDataLoading? undefined : (packData?.moduleData??[]));
+
+    const writeToRelayer = useCallback(async () => {
+        const body = {
+            mainContractAddress: addresses.PackMain,
+            args: claimData
+        }
+        const res = await fetch('/api/claim', {body: JSON.stringify(body), method: 'POST'});
+        if (res.ok){
+            const data = await res.json();
+            setLoading(data.hash);
+        }
+    }, [addresses.PackMain, claimData, setLoading]);
 
     useEffect(() => {
         if (data?.hash) {
@@ -56,13 +71,13 @@ export default function ReviewClaimForm() {
 
             <Button
                 isLoading={isLoading}
-                onClick={() => write && write()}
+                onClick={() => writeToRelayer()}
                 variant="navigation" rightIcon={<FiArrowRight className='text-inherit inline'/>}>
                 Confirm Claim
             </Button>
 
         </div>)
-    }, [write, nextStep, setControls, previousStep, address, openConnectModal, isLoading]);
+    }, [writeToRelayer, nextStep, setControls, previousStep, address, openConnectModal, isLoading]);
     return <div className="flex flex-col w-full gap-2 items-stretch">
         <div className='flex p-2 rounded-full bg-gray-800 items-center justify-around gap-4'>
             <div className="p-2 text-sm">
