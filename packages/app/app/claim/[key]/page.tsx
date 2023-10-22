@@ -31,7 +31,6 @@ export default function ClaimPage({params: { key }}: any) {
     const isLoaded = useHydrated()
 
     const step = useClaimState(state => state.step);
-    const controls = useClaimState(state => state.controls);
 
     const hash = useClaimState(state => state.hash)
 
@@ -40,7 +39,11 @@ export default function ClaimPage({params: { key }}: any) {
         isLoading,
         isSuccess,
     } = useWaitForTransaction({hash});
-
+    useEffect(() => {
+        if (isSuccess) {
+            useClaimState.getState().nextStep();
+        }
+    }, [isSuccess]);
 
     if (isConnecting || !isLoaded || mintedTokenId == undefined) {
         return <LoadingCard
@@ -60,7 +63,7 @@ export default function ClaimPage({params: { key }}: any) {
     return <Card
         className={'mx-auto w-full'}
         containerClassName=' overflow-y-auto'
-        controls={ controls}>
+        controls={ <Controls/>}>
         <div className="flex flex-col items-center gap-2">
             <div className="p-2 rounded-full bg-gray-800 flex justify-center items-center">
                 <SenderToUser className='w-20 h-10'/>
@@ -76,4 +79,9 @@ export default function ClaimPage({params: { key }}: any) {
 
         </div>
     </Card>
+}
+
+
+function Controls() {
+    return useClaimState(state => state.controls);
 }

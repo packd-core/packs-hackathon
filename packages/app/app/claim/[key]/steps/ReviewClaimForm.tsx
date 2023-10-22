@@ -22,13 +22,13 @@ export default function ReviewClaimForm() {
     const {address} = useAccount()
     const {chain} = useNetwork()
     const tokenId = useClaimState(state => state.mintedTokenId);
-    const {packData,rawEth, isLoading} = usePackDataByTokenId(tokenId!);
+    const {packData,rawEth, isLoading: isTokenDataLoading} = usePackDataByTokenId(tokenId!);
     const setLoading = useClaimState(state => state.setLoading);
 
     const maxRefundValue = useClaimState(state => state.maxRefundValue);
     const signedData = useClaimState(state => state.signedMessage);
     const privateKey = useClaimState(state => state.privateKey);
-    const { claimData } = useGenerateClaimData(
+    const  claimData  = useGenerateClaimData(
         address!,
         maxRefundValue,
         signedData!,
@@ -39,7 +39,9 @@ export default function ReviewClaimForm() {
     const {
         write,
         data,
-    } = useClaim(claimData);
+        isLoading,
+    } = useClaim(claimData, isTokenDataLoading? undefined : (packData?.moduleData??[]));
+
     useEffect(() => {
         if (data?.hash) {
             setLoading(data!.hash)
@@ -47,27 +49,20 @@ export default function ReviewClaimForm() {
         },[data, data?.hash, setLoading]
     )
 
-    const handleClaim = useCallback(
-        async (e: any) => {
-            e.preventDefault();
-            write?.();
-        },
-        [write]
-    );
-
 
     useEffect(() => {
         setControls(<div className='w-full flex justify-between py-1 items-center'>
             <StepperIndicator step={2}/>
 
             <Button
-                onClick={handleClaim}
+                isLoading={isLoading}
+                onClick={() => write && write()}
                 variant="navigation" rightIcon={<FiArrowRight className='text-inherit inline'/>}>
                 Confirm Claim
             </Button>
 
         </div>)
-    }, [nextStep, setControls, previousStep, address, openConnectModal]);
+    }, [write, nextStep, setControls, previousStep, address, openConnectModal, isLoading]);
     return <div className="flex flex-col w-full gap-2 items-stretch">
         <div className='flex p-2 rounded-full bg-gray-800 items-center justify-around gap-4'>
             <div className="p-2 text-sm">
@@ -82,7 +77,7 @@ export default function ReviewClaimForm() {
         </div>
         <ContentTitle>Contents</ContentTitle>
 
-        <div>
+        <div className="flex flex-col gap-2">
             {<ReviewData eth={rawEth?.value ?? BigInt(0)}
                          modules={packData?.fullModuleData ?? []}/>}
         </div>

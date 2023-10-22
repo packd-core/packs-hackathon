@@ -17,9 +17,8 @@ export const SignForm = () => {
     const {address} = useAccount();
     const {
         signData,
-        isSignError,
-        isSignLoading,
-        isSignSuccess,
+        isLoading: isSignLoading,
+        isSuccess: isSignSuccess,
         handlePrepareAndSignMessage,
     } = usePrepareAndSignMessage(Number(tokenId), maxRefundValue);
 

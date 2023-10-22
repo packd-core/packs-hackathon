@@ -25,9 +25,8 @@ export default function InitialForm() {
         </div>)
     }, [nextStep, setControls, previousStep]);
     return  <div className="flex flex-col w-full gap-2">
-        <div>
+
             {<ReviewData eth={rawEth?.value ?? BigInt(0)}
                                        modules={packData?.fullModuleData ?? []}/>}
-        </div>
     </div>
 }
