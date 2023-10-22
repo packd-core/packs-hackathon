@@ -13,16 +13,27 @@ import ConnectWalletForm from "@/app/claim/[key]/steps/ConnectWalletForm";
 import {SignForm} from "@/app/claim/[key]/steps/SignForm";
 import ReviewClaimForm from "@/app/claim/[key]/steps/ReviewClaimForm";
 import {PackClaimedCard} from "@/app/claim/[key]/steps/PackClaimedCard";
+import {useDecodeUrl} from "@/src/hooks/useUrlEncodeDecode";
+import {useEffect} from "react";
 
 
 export default function ClaimPage({params: { key }}: any) {
     const {isConnected, isConnecting, address} = useAccount();
+    const {tokenId,version,chainId,privateKey} = useDecodeUrl(key);
+    const setMintedTokenId = useClaimState(state => state.setMintedTokenId);
+    const mintedTokenId = useClaimState(state => state.mintedTokenId);
+    const resetStepper = useClaimState(state => state.reset);
+    useEffect(() => {
+        resetStepper();
+        setMintedTokenId(BigInt(tokenId))
+    }, [resetStepper, setMintedTokenId, tokenId]);
+
     const isLoaded = useHydrated()
 
     const step = useClaimState(state => state.step);
     const controls = useClaimState(state => state.controls);
 
-    if (isConnecting && !isLoaded) {
+    if (isConnecting || !isLoaded || mintedTokenId == undefined) {
         return <LoadingCard
             title="Connecting"
             text='Waiting for network...'/>

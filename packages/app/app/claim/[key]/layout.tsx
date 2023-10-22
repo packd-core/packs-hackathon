@@ -10,7 +10,7 @@ export default function ClaimLayout({children}: {
 }) {
     const resetStepper = useClaimState(state => state.reset);
     useEffect(() => {
-        resetStepper();
+        // resetStepper();
         // eslint-disable-next-line
     }, []);
 
