@@ -51,60 +51,93 @@ export async function deployMocks(
   const deploymentOverrides = {
     gasPrice: hre.ethers.parseUnits("1.0", "gwei"),
   };
-  const deployCreate2Options = {
-    overrides: deploymentOverrides,
-    create2Options: { amount: 0, salt: "test", callbacks: [] },
-    waitForBlocks: 0,
-  };
-  const withSalt = (salt: string) => ({
-    ...deployCreate2Options,
-    create2Options: { ...deployCreate2Options.create2Options, salt },
-  });
 
-  const erc20MockA = await deployContractWithCreate2<
-    ERC20Mock,
-    ERC20Mock__factory
-  >(
-    hre,
-    new ERC20Mock__factory(signer),
-    create2Factory,
-    "ERC20MockA",
-    [],
-    withSalt("ERC20MockA")
-  );
-  const erc20MockB = await deployContractWithCreate2<
-    ERC20Mock,
-    ERC20Mock__factory
-  >(
-    hre,
-    new ERC20Mock__factory(signer),
-    create2Factory,
-    "ERC20MockB",
-    [],
-    withSalt("ERC20MockB")
-  );
-  const erc721MockA = await deployContractWithCreate2<
-    ERC721Mock,
-    ERC721Mock__factory
-  >(
-    hre,
-    new ERC721Mock__factory(signer),
-    create2Factory,
-    "ERC721MockA",
-    [],
-    withSalt("ERC721MockA")
-  );
-  const erc721MockB = await deployContractWithCreate2<
-    ERC721Mock,
-    ERC721Mock__factory
-  >(
-    hre,
-    new ERC721Mock__factory(signer),
-    create2Factory,
-    "ERC721MockB",
-    [],
-    withSalt("ERC721MockB")
-  );
+  let erc20MockA: ERC20Mock;
+  let erc20MockB: ERC20Mock;
+  let erc721MockA: ERC721Mock;
+  let erc721MockB: ERC721Mock;
+
+  if (hre.network.name === "hardhat" || hre.network.name === "localhost") {
+    // Deploy mocks with create2
+    const deployCreate2Options = {
+      overrides: deploymentOverrides,
+      create2Options: { amount: 0, salt: "test", callbacks: [] },
+      waitForBlocks: 0,
+    };
+    const withSalt = (salt: string) => ({
+      ...deployCreate2Options,
+      create2Options: { ...deployCreate2Options.create2Options, salt },
+    });
+
+    erc20MockA = await deployContractWithCreate2<ERC20Mock, ERC20Mock__factory>(
+      hre,
+      new ERC20Mock__factory(signer),
+      create2Factory,
+      "ERC20MockA",
+      [],
+      withSalt("ERC20MockA")
+    );
+    erc20MockB = await deployContractWithCreate2<ERC20Mock, ERC20Mock__factory>(
+      hre,
+      new ERC20Mock__factory(signer),
+      create2Factory,
+      "ERC20MockB",
+      [],
+      withSalt("ERC20MockB")
+    );
+    erc721MockA = await deployContractWithCreate2<
+      ERC721Mock,
+      ERC721Mock__factory
+    >(
+      hre,
+      new ERC721Mock__factory(signer),
+      create2Factory,
+      "ERC721MockA",
+      [],
+      withSalt("ERC721MockA")
+    );
+    erc721MockB = await deployContractWithCreate2<
+      ERC721Mock,
+      ERC721Mock__factory
+    >(
+      hre,
+      new ERC721Mock__factory(signer),
+      create2Factory,
+      "ERC721MockB",
+      [],
+      withSalt("ERC721MockB")
+    );
+  } else {
+    // Deploy mocks without create2
+    erc20MockA = await deployContract<ERC20Mock>(
+      hre,
+      signer,
+      "ERC20Mock",
+      [],
+      deploymentOverrides
+    );
+    erc20MockB = await deployContract<ERC20Mock>(
+      hre,
+      signer,
+      "ERC20Mock",
+      [],
+      deploymentOverrides
+    );
+    erc721MockA = await deployContract<ERC721Mock>(
+      hre,
+      signer,
+      "ERC721Mock",
+      [],
+      deploymentOverrides
+    );
+    erc721MockB = await deployContract<ERC721Mock>(
+      hre,
+      signer,
+      "ERC721Mock",
+      [],
+      deploymentOverrides
+    );
+  }
   return {
     erc20MockA,
     erc20MockB,
@@ -119,10 +152,10 @@ export async function deploySystem(
 ): Promise<SystemDeployed> {
   info("Deploying System");
   const { packConfig } = getSystemConfig(hre);
-
-  const deploymentOverrides = {
+  let deploymentOverrides = {
     gasPrice: hre.ethers.parseUnits("1.0", "gwei"),
   };
+
   const create2Factory = await deployContract<Create2Factory>(
     hre,
     signer,

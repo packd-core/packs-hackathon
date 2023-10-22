@@ -490,63 +490,6 @@ export const erc20ModuleABI = [
     name: 'SafeERC20FailedOperation',
   },
   {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'tokenId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-    ],
-    name: 'Created',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'tokenId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-    ],
-    name: 'Opened',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'tokenId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-    ],
-    name: 'Revoked',
-  },
-  {
     stateMutability: 'view',
     type: 'function',
     inputs: [],
@@ -564,7 +507,7 @@ export const erc20ModuleABI = [
     stateMutability: 'payable',
     type: 'function',
     inputs: [
-      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: '', internalType: 'uint256', type: 'uint256' },
       { name: 'account', internalType: 'address', type: 'address' },
       { name: 'additionalData', internalType: 'bytes', type: 'bytes' },
     ],
@@ -575,7 +518,7 @@ export const erc20ModuleABI = [
     stateMutability: 'nonpayable',
     type: 'function',
     inputs: [
-      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: '', internalType: 'uint256', type: 'uint256' },
       { name: 'account', internalType: 'address', type: 'address' },
       { name: 'claimer', internalType: 'address', type: 'address' },
       { name: 'additionalData', internalType: 'bytes', type: 'bytes' },
@@ -587,7 +530,7 @@ export const erc20ModuleABI = [
     stateMutability: 'nonpayable',
     type: 'function',
     inputs: [
-      { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+      { name: '', internalType: 'uint256', type: 'uint256' },
       { name: 'account', internalType: 'address', type: 'address' },
       { name: 'additionalData', internalType: 'bytes', type: 'bytes' },
     ],
@@ -1326,63 +1269,6 @@ export const erc721MockABI = [
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const erc721ModuleABI = [
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'tokenId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-    ],
-    name: 'Created',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'tokenId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-    ],
-    name: 'Opened',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'tokenId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-    ],
-    name: 'Revoked',
-  },
   {
     stateMutability: 'view',
     type: 'function',
@@ -2556,63 +2442,6 @@ export const ierc721ReceiverABI = [
 
 export const iPackModuleABI = [
   {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'tokenId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-    ],
-    name: 'Created',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'tokenId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-    ],
-    name: 'Opened',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'tokenId',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: false,
-      },
-    ],
-    name: 'Revoked',
-  },
-  {
     stateMutability: 'payable',
     type: 'function',
     inputs: [
@@ -2802,6 +2631,11 @@ export const packMainABI = [
       { name: 'implementation_', internalType: 'address', type: 'address' },
       { name: 'registryChainId_', internalType: 'uint256', type: 'uint256' },
       { name: 'salt_', internalType: 'uint256', type: 'uint256' },
+      {
+        name: 'modulesWhitelist_',
+        internalType: 'address[]',
+        type: 'address[]',
+      },
     ],
   },
   {
@@ -2880,6 +2714,11 @@ export const packMainABI = [
   },
   { type: 'error', inputs: [], name: 'InvalidOwnerSignature' },
   { type: 'error', inputs: [], name: 'InvalidRefundValue' },
+  {
+    type: 'error',
+    inputs: [{ name: 'modules', internalType: 'address', type: 'address' }],
+    name: 'ModulesNotWhitelisted',
+  },
   {
     type: 'error',
     inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
@@ -2986,6 +2825,12 @@ export const packMainABI = [
         type: 'address[]',
         indexed: false,
       },
+      {
+        name: 'moduleData',
+        internalType: 'bytes[]',
+        type: 'bytes[]',
+        indexed: false,
+      },
     ],
     name: 'PackCreated',
   },
@@ -3090,6 +2935,13 @@ export const packMainABI = [
   {
     stateMutability: 'view',
     type: 'function',
+    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'creationBlock',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
     inputs: [{ name: 'tokenId', internalType: 'uint256', type: 'uint256' }],
     name: 'getApproved',
     outputs: [{ name: '', internalType: 'address', type: 'address' }],
@@ -3109,6 +2961,13 @@ export const packMainABI = [
       { name: 'operator', internalType: 'address', type: 'address' },
     ],
     name: 'isApprovedForAll',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'modulesWhitelist',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
   },
   {
@@ -3266,6 +3125,16 @@ export const packMainABI = [
       { name: 'approved', internalType: 'bool', type: 'bool' },
     ],
     name: 'setApprovalForAll',
+    outputs: [],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      { name: 'modules', internalType: 'address[]', type: 'address[]' },
+      { name: 'value', internalType: 'bool', type: 'bool' },
+    ],
+    name: 'setModulesWhitelist',
     outputs: [],
   },
   {
@@ -3478,6 +3347,13 @@ export const packNftABI = [
     type: 'function',
     inputs: [{ name: 'owner', internalType: 'address', type: 'address' }],
     name: 'balanceOf',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'creationBlock',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
   },
   {
@@ -4900,69 +4776,6 @@ export function usePrepareErc20ModuleOnRevoke(
     functionName: 'onRevoke',
     ...config,
   } as UsePrepareContractWriteConfig<typeof erc20ModuleABI, 'onRevoke'>)
-}
-
-/**
- * Wraps __{@link useContractEvent}__ with `abi` set to __{@link erc20ModuleABI}__.
- */
-export function useErc20ModuleEvent<TEventName extends string>(
-  config: Omit<
-    UseContractEventConfig<typeof erc20ModuleABI, TEventName>,
-    'abi'
-  > = {} as any,
-) {
-  return useContractEvent({
-    abi: erc20ModuleABI,
-    ...config,
-  } as UseContractEventConfig<typeof erc20ModuleABI, TEventName>)
-}
-
-/**
- * Wraps __{@link useContractEvent}__ with `abi` set to __{@link erc20ModuleABI}__ and `eventName` set to `"Created"`.
- */
-export function useErc20ModuleCreatedEvent(
-  config: Omit<
-    UseContractEventConfig<typeof erc20ModuleABI, 'Created'>,
-    'abi' | 'eventName'
-  > = {} as any,
-) {
-  return useContractEvent({
-    abi: erc20ModuleABI,
-    eventName: 'Created',
-    ...config,
-  } as UseContractEventConfig<typeof erc20ModuleABI, 'Created'>)
-}
-
-/**
- * Wraps __{@link useContractEvent}__ with `abi` set to __{@link erc20ModuleABI}__ and `eventName` set to `"Opened"`.
- */
-export function useErc20ModuleOpenedEvent(
-  config: Omit<
-    UseContractEventConfig<typeof erc20ModuleABI, 'Opened'>,
-    'abi' | 'eventName'
-  > = {} as any,
-) {
-  return useContractEvent({
-    abi: erc20ModuleABI,
-    eventName: 'Opened',
-    ...config,
-  } as UseContractEventConfig<typeof erc20ModuleABI, 'Opened'>)
-}
-
-/**
- * Wraps __{@link useContractEvent}__ with `abi` set to __{@link erc20ModuleABI}__ and `eventName` set to `"Revoked"`.
- */
-export function useErc20ModuleRevokedEvent(
-  config: Omit<
-    UseContractEventConfig<typeof erc20ModuleABI, 'Revoked'>,
-    'abi' | 'eventName'
-  > = {} as any,
-) {
-  return useContractEvent({
-    abi: erc20ModuleABI,
-    eventName: 'Revoked',
-    ...config,
-  } as UseContractEventConfig<typeof erc20ModuleABI, 'Revoked'>)
 }
 
 /**
@@ -6776,69 +6589,6 @@ export function usePrepareErc721ModuleOnRevoke(
     functionName: 'onRevoke',
     ...config,
   } as UsePrepareContractWriteConfig<typeof erc721ModuleABI, 'onRevoke'>)
-}
-
-/**
- * Wraps __{@link useContractEvent}__ with `abi` set to __{@link erc721ModuleABI}__.
- */
-export function useErc721ModuleEvent<TEventName extends string>(
-  config: Omit<
-    UseContractEventConfig<typeof erc721ModuleABI, TEventName>,
-    'abi'
-  > = {} as any,
-) {
-  return useContractEvent({
-    abi: erc721ModuleABI,
-    ...config,
-  } as UseContractEventConfig<typeof erc721ModuleABI, TEventName>)
-}
-
-/**
- * Wraps __{@link useContractEvent}__ with `abi` set to __{@link erc721ModuleABI}__ and `eventName` set to `"Created"`.
- */
-export function useErc721ModuleCreatedEvent(
-  config: Omit<
-    UseContractEventConfig<typeof erc721ModuleABI, 'Created'>,
-    'abi' | 'eventName'
-  > = {} as any,
-) {
-  return useContractEvent({
-    abi: erc721ModuleABI,
-    eventName: 'Created',
-    ...config,
-  } as UseContractEventConfig<typeof erc721ModuleABI, 'Created'>)
-}
-
-/**
- * Wraps __{@link useContractEvent}__ with `abi` set to __{@link erc721ModuleABI}__ and `eventName` set to `"Opened"`.
- */
-export function useErc721ModuleOpenedEvent(
-  config: Omit<
-    UseContractEventConfig<typeof erc721ModuleABI, 'Opened'>,
-    'abi' | 'eventName'
-  > = {} as any,
-) {
-  return useContractEvent({
-    abi: erc721ModuleABI,
-    eventName: 'Opened',
-    ...config,
-  } as UseContractEventConfig<typeof erc721ModuleABI, 'Opened'>)
-}
-
-/**
- * Wraps __{@link useContractEvent}__ with `abi` set to __{@link erc721ModuleABI}__ and `eventName` set to `"Revoked"`.
- */
-export function useErc721ModuleRevokedEvent(
-  config: Omit<
-    UseContractEventConfig<typeof erc721ModuleABI, 'Revoked'>,
-    'abi' | 'eventName'
-  > = {} as any,
-) {
-  return useContractEvent({
-    abi: erc721ModuleABI,
-    eventName: 'Revoked',
-    ...config,
-  } as UseContractEventConfig<typeof erc721ModuleABI, 'Revoked'>)
 }
 
 /**
@@ -9878,69 +9628,6 @@ export function usePrepareIPackModuleOnRevoke(
 }
 
 /**
- * Wraps __{@link useContractEvent}__ with `abi` set to __{@link iPackModuleABI}__.
- */
-export function useIPackModuleEvent<TEventName extends string>(
-  config: Omit<
-    UseContractEventConfig<typeof iPackModuleABI, TEventName>,
-    'abi'
-  > = {} as any,
-) {
-  return useContractEvent({
-    abi: iPackModuleABI,
-    ...config,
-  } as UseContractEventConfig<typeof iPackModuleABI, TEventName>)
-}
-
-/**
- * Wraps __{@link useContractEvent}__ with `abi` set to __{@link iPackModuleABI}__ and `eventName` set to `"Created"`.
- */
-export function useIPackModuleCreatedEvent(
-  config: Omit<
-    UseContractEventConfig<typeof iPackModuleABI, 'Created'>,
-    'abi' | 'eventName'
-  > = {} as any,
-) {
-  return useContractEvent({
-    abi: iPackModuleABI,
-    eventName: 'Created',
-    ...config,
-  } as UseContractEventConfig<typeof iPackModuleABI, 'Created'>)
-}
-
-/**
- * Wraps __{@link useContractEvent}__ with `abi` set to __{@link iPackModuleABI}__ and `eventName` set to `"Opened"`.
- */
-export function useIPackModuleOpenedEvent(
-  config: Omit<
-    UseContractEventConfig<typeof iPackModuleABI, 'Opened'>,
-    'abi' | 'eventName'
-  > = {} as any,
-) {
-  return useContractEvent({
-    abi: iPackModuleABI,
-    eventName: 'Opened',
-    ...config,
-  } as UseContractEventConfig<typeof iPackModuleABI, 'Opened'>)
-}
-
-/**
- * Wraps __{@link useContractEvent}__ with `abi` set to __{@link iPackModuleABI}__ and `eventName` set to `"Revoked"`.
- */
-export function useIPackModuleRevokedEvent(
-  config: Omit<
-    UseContractEventConfig<typeof iPackModuleABI, 'Revoked'>,
-    'abi' | 'eventName'
-  > = {} as any,
-) {
-  return useContractEvent({
-    abi: iPackModuleABI,
-    eventName: 'Revoked',
-    ...config,
-  } as UseContractEventConfig<typeof iPackModuleABI, 'Revoked'>)
-}
-
-/**
  * Wraps __{@link useContractRead}__ with `abi` set to __{@link ownableABI}__.
  */
 export function useOwnableRead<
@@ -10462,6 +10149,25 @@ export function usePackMainClaimPublicKey<
 }
 
 /**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link packMainABI}__ and `functionName` set to `"creationBlock"`.
+ */
+export function usePackMainCreationBlock<
+  TFunctionName extends 'creationBlock',
+  TSelectData = ReadContractResult<typeof packMainABI, TFunctionName>,
+>(
+  config: Omit<
+    UseContractReadConfig<typeof packMainABI, TFunctionName, TSelectData>,
+    'abi' | 'functionName'
+  > = {} as any,
+) {
+  return useContractRead({
+    abi: packMainABI,
+    functionName: 'creationBlock',
+    ...config,
+  } as UseContractReadConfig<typeof packMainABI, TFunctionName, TSelectData>)
+}
+
+/**
  * Wraps __{@link useContractRead}__ with `abi` set to __{@link packMainABI}__ and `functionName` set to `"getApproved"`.
  */
 export function usePackMainGetApproved<
@@ -10514,6 +10220,25 @@ export function usePackMainIsApprovedForAll<
   return useContractRead({
     abi: packMainABI,
     functionName: 'isApprovedForAll',
+    ...config,
+  } as UseContractReadConfig<typeof packMainABI, TFunctionName, TSelectData>)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link packMainABI}__ and `functionName` set to `"modulesWhitelist"`.
+ */
+export function usePackMainModulesWhitelist<
+  TFunctionName extends 'modulesWhitelist',
+  TSelectData = ReadContractResult<typeof packMainABI, TFunctionName>,
+>(
+  config: Omit<
+    UseContractReadConfig<typeof packMainABI, TFunctionName, TSelectData>,
+    'abi' | 'functionName'
+  > = {} as any,
+) {
+  return useContractRead({
+    abi: packMainABI,
+    functionName: 'modulesWhitelist',
     ...config,
   } as UseContractReadConfig<typeof packMainABI, TFunctionName, TSelectData>)
 }
@@ -11011,6 +10736,37 @@ export function usePackMainSetApprovalForAll<
 }
 
 /**
+ * Wraps __{@link useContractWrite}__ with `abi` set to __{@link packMainABI}__ and `functionName` set to `"setModulesWhitelist"`.
+ */
+export function usePackMainSetModulesWhitelist<
+  TMode extends WriteContractMode = undefined,
+>(
+  config: TMode extends 'prepared'
+    ? UseContractWriteConfig<
+        PrepareWriteContractResult<
+          typeof packMainABI,
+          'setModulesWhitelist'
+        >['request']['abi'],
+        'setModulesWhitelist',
+        TMode
+      > & { functionName?: 'setModulesWhitelist' }
+    : UseContractWriteConfig<
+        typeof packMainABI,
+        'setModulesWhitelist',
+        TMode
+      > & {
+        abi?: never
+        functionName?: 'setModulesWhitelist'
+      } = {} as any,
+) {
+  return useContractWrite<typeof packMainABI, 'setModulesWhitelist', TMode>({
+    abi: packMainABI,
+    functionName: 'setModulesWhitelist',
+    ...config,
+  } as any)
+}
+
+/**
  * Wraps __{@link useContractWrite}__ with `abi` set to __{@link packMainABI}__ and `functionName` set to `"transferFrom"`.
  */
 export function usePackMainTransferFrom<
@@ -11189,6 +10945,22 @@ export function usePreparePackMainSetApprovalForAll(
     functionName: 'setApprovalForAll',
     ...config,
   } as UsePrepareContractWriteConfig<typeof packMainABI, 'setApprovalForAll'>)
+}
+
+/**
+ * Wraps __{@link usePrepareContractWrite}__ with `abi` set to __{@link packMainABI}__ and `functionName` set to `"setModulesWhitelist"`.
+ */
+export function usePreparePackMainSetModulesWhitelist(
+  config: Omit<
+    UsePrepareContractWriteConfig<typeof packMainABI, 'setModulesWhitelist'>,
+    'abi' | 'functionName'
+  > = {} as any,
+) {
+  return usePrepareContractWrite({
+    abi: packMainABI,
+    functionName: 'setModulesWhitelist',
+    ...config,
+  } as UsePrepareContractWriteConfig<typeof packMainABI, 'setModulesWhitelist'>)
 }
 
 /**
@@ -11383,6 +11155,25 @@ export function usePackNftBalanceOf<
   return useContractRead({
     abi: packNftABI,
     functionName: 'balanceOf',
+    ...config,
+  } as UseContractReadConfig<typeof packNftABI, TFunctionName, TSelectData>)
+}
+
+/**
+ * Wraps __{@link useContractRead}__ with `abi` set to __{@link packNftABI}__ and `functionName` set to `"creationBlock"`.
+ */
+export function usePackNftCreationBlock<
+  TFunctionName extends 'creationBlock',
+  TSelectData = ReadContractResult<typeof packNftABI, TFunctionName>,
+>(
+  config: Omit<
+    UseContractReadConfig<typeof packNftABI, TFunctionName, TSelectData>,
+    'abi' | 'functionName'
+  > = {} as any,
+) {
+  return useContractRead({
+    abi: packNftABI,
+    functionName: 'creationBlock',
     ...config,
   } as UseContractReadConfig<typeof packNftABI, TFunctionName, TSelectData>)
 }

@@ -13,6 +13,8 @@
         "deploy": "hardhat typechain && hardhat deploy",
         "deploy:local": "yarn deploy --network localhost ",
         "deploy:scrollSepolia": "yarn deploy --network scrollSepolia",
+        "deploy:polygonZkEVMTestnet": "yarn deploy --network polygonZkEVMTestnet",
+        "deploy:mantleTestnet": "yarn deploy --network mantleTestnet",
         "verify": "hardhat verify",
         "verify:scrollSepolia": "yarn verify --network scrollSepolia",
         "format": "prettier --write \"./contracts/**/*.sol\" --plugin prettier-plugin-solidity && prettier --write \"./**/*.ts\"",
