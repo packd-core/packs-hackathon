@@ -18,7 +18,7 @@ contract ERC721Module is IPackModule {
 
     // Lifecycle functions
     function onCreate(
-        uint256 tokenId,
+        uint256 /* tokenId */,
         address account,
         bytes calldata additionalData
     ) external payable override {
@@ -42,7 +42,7 @@ contract ERC721Module is IPackModule {
     }
 
     function onOpen(
-        uint256 tokenId,
+        uint256 /* tokenId */,
         address account,
         address claimer,
         bytes calldata additionalData
@@ -72,7 +72,7 @@ contract ERC721Module is IPackModule {
     }
 
     function onRevoke(
-        uint256 tokenId,
+        uint256 /* tokenId */,
         address account,
         bytes calldata additionalData
     ) external override {
