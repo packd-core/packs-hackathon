@@ -22,6 +22,7 @@ const config: HardhatUserConfig = {
     scrollSepolia: {
       url: "https://sepolia-rpc.scroll.io/" || "",
       accounts: accounts,
+      chainId: 534351,
     },
 
     //  https://faucet.polygon.technology/
@@ -37,7 +38,19 @@ const config: HardhatUserConfig = {
     },
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      scrollSepolia: "abc", // https://docs.scroll.io/en/developers/verifying-smart-contracts/
+    },
+    customChains: [
+      {
+        network: "scrollSepolia",
+        chainId: 534351,
+        urls: {
+          apiURL: "https://sepolia-blockscout.scroll.io/api",
+          browserURL: "https://sepolia-blockscout.scroll.io/",
+        },
+      },
+    ],
   },
 };
 
