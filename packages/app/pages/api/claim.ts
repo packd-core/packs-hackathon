@@ -43,7 +43,7 @@ export default async function handler(
         res.status(400).send({ error: '404 not found' })
         return;
     }
-    const parsedBody = RelayerRequestSchema.safeParse(req.body)
+    const parsedBody = RelayerRequestSchema.safeParse(JSON.parse(req.body))
     if (!parsedBody.success) {
         res.status(400).send({ error: 'Invalid body parameters', details: parsedBody.error })
         return;
