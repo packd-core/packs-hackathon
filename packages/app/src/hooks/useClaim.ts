@@ -2,7 +2,7 @@
 import {usePackMainOpen, usePreparePackMainOpen} from "@/app/abi/generated";
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
 
-export const useClaim = (claimData: any) => {
+export const useClaim = (claimData: any,  moduleData?: string[][]) => {
     const addresses = usePackdAddresses();
     const {
         config,
@@ -10,10 +10,13 @@ export const useClaim = (claimData: any) => {
         isError: isPrepareError,
     } = usePreparePackMainOpen({
         address: addresses.PackMain,
-        args: [claimData, []],
+        args: [claimData, moduleData],
+        enabled: !!claimData.sigOwner && moduleData !== undefined,
+
     });
 
-    const {write, data, error, isLoading, isError} = usePackMainOpen(config);
+    const {write, data, error, isLoading, isError}
+        = usePackMainOpen(config);
 
     return {
         write,

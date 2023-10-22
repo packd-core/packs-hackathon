@@ -21,7 +21,7 @@ export const useGenerateClaimData = (
 
   useEffect(() => {
     const generateSignature = async () => {
-      if (!tokenId || !privateKeyDecoded) {
+      if (tokenId==undefined || !privateKeyDecoded) {
         return;
       }
       console.log("privateKeyDecoded", privateKeyDecoded);
@@ -31,16 +31,18 @@ export const useGenerateClaimData = (
         [Number(tokenId), address]
       );
       const sigOwnerResolved = await sigOwner.claimSignature;
-      setClaimData((prev) => ({
-        ...prev,
-        tokenId,
-        sigOwner: sigOwnerResolved,
-        sigClaimer,
-      }));
+      setClaimData((prev) => {
+        return ({
+          ...prev,
+          tokenId,
+          sigOwner: sigOwnerResolved,
+          sigClaimer,
+        });
+      });
     };
 
     generateSignature();
   }, [address, tokenId, privateKeyDecoded, sigClaimer, keySignManager]);
 
-  return { claimData };
+  return claimData;
 };
