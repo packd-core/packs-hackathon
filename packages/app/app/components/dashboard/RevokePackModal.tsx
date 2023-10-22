@@ -6,11 +6,11 @@ import {BsArrowLeft, BsArrowRight, BsX} from "react-icons/bs";
 import Modal from "@/app/components/dialog/Modal";
 import Button from "@/app/components/button/Button";
 import {IoIosCheckmark} from "react-icons/io";
-import {usePackMainAccount, usePackMainRevoke, usePreparePackMainRevoke} from "@/app/abi/generated";
-import usePackdAddresses from "@/src/hooks/usePackdAddresses";
-import {useBalance, useWaitForTransaction} from "wagmi";
+import {usePackMainRevoke, usePreparePackMainRevoke} from "@/app/abi/generated";
+import {useWaitForTransaction} from "wagmi";
 import {ErrorCard} from "@/app/components/content/ErrorCard";
-import {usePackCreatedByTokenId} from "@/src/hooks/usePackCreatedByTokenId";
+import {usePackDataByTokenId} from "@/src/hooks/usePackDataByTokenId";
+import usePackdAddresses from "@/src/hooks/usePackdAddresses";
 
 type RevokePackModalProps = {
     tokenId: bigint,
@@ -19,11 +19,8 @@ type RevokePackModalProps = {
 }
 export default function RevokePackModal({isOpen, setIsOpen, tokenId}: RevokePackModalProps ) {
     const [step, setStep] = useState(0)
+    const {packData,rawEth} = usePackDataByTokenId(tokenId);
     const addresses = usePackdAddresses();
-    const {data: packData, isLoading: isPackDataLoading} = usePackCreatedByTokenId(tokenId);
-    useEffect(() => {
-        console.log('packData', packData);
-    }, [packData]);
 
     const {
         config: config,
@@ -38,8 +35,6 @@ export default function RevokePackModal({isOpen, setIsOpen, tokenId}: RevokePack
         isSuccess: isSuccess,
     } = useWaitForTransaction({ hash: data?.hash });
 
-    const {data: account, isLoading: isAccountLoading} = usePackMainAccount({enabled: tokenId !== undefined, args: [tokenId!], address: addresses.PackMain})
-    const {data: rawEth, isLoading: isEthLoading} = useBalance({address: account})
 
 
     const revokePack = useCallback(() => {
