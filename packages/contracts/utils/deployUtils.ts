@@ -77,9 +77,9 @@ export const deployContract = async <T extends BaseContract>(
   // Verify the contract on Etherscan if not local network
   if (
     hre.network.name !== "hardhat" &&
-    hre.network.name !== "localhost" &&
-    hre.network.name !== "scrollSepolia" &&
-    hre.network.name !== "polygonZkEVMTestnet"
+    hre.network.name !== "localhost"
+    // hre.network.name !== "scrollSepolia" &&
+    // hre.network.name !== "polygonZkEVMTestnet"
     // hre.network.name !== "mantleTestnet"
   ) {
     await hre.run("verify:verify", {
