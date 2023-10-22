@@ -1,15 +1,16 @@
 import {useCallback, useEffect, useState} from 'react'
 import {Card} from "@/app/components/Card";
 import {LoadingCard} from "@/app/components/content/LoadingCard";
-import {ReviewForm} from "@/app/mint/pack/ReviewForm";
+import {ReviewData, ReviewForm} from "@/app/mint/pack/ReviewForm";
 import {BsArrowLeft, BsArrowRight, BsX} from "react-icons/bs";
 import Modal from "@/app/components/dialog/Modal";
 import Button from "@/app/components/button/Button";
 import {IoIosCheckmark} from "react-icons/io";
-import {usePackMainRevoke, usePreparePackMainRevoke} from "@/app/abi/generated";
+import {usePackMainAccount, usePackMainRevoke, usePreparePackMainRevoke} from "@/app/abi/generated";
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
-import {useWaitForTransaction} from "wagmi";
+import {useBalance, useWaitForTransaction} from "wagmi";
 import {ErrorCard} from "@/app/components/content/ErrorCard";
+import {usePackCreatedByTokenId} from "@/src/hooks/usePackCreatedByTokenId";
 
 type RevokePackModalProps = {
     tokenId: bigint,
@@ -19,11 +20,16 @@ type RevokePackModalProps = {
 export default function RevokePackModal({isOpen, setIsOpen, tokenId}: RevokePackModalProps ) {
     const [step, setStep] = useState(0)
     const addresses = usePackdAddresses();
+    const {data: packData, isLoading: isPackDataLoading} = usePackCreatedByTokenId(tokenId);
+    useEffect(() => {
+        console.log('packData', packData);
+    }, [packData]);
+
     const {
         config: config,
         error: prepareError,
         isError: isPrepareError,
-    } = usePreparePackMainRevoke({address: addresses.PackMain, args: [tokenId, []],})
+    } = usePreparePackMainRevoke({address: addresses.PackMain, args: [tokenId, (packData?.moduleData  ?? []) as `0x${string}`[]], enabled: !!packData})
     const { write, data, error, isLoading, isError } = usePackMainRevoke(config);
 
     const {
@@ -31,6 +37,9 @@ export default function RevokePackModal({isOpen, setIsOpen, tokenId}: RevokePack
         isLoading: isPending,
         isSuccess: isSuccess,
     } = useWaitForTransaction({ hash: data?.hash });
+
+    const {data: account, isLoading: isAccountLoading} = usePackMainAccount({enabled: tokenId !== undefined, args: [tokenId!], address: addresses.PackMain})
+    const {data: rawEth, isLoading: isEthLoading} = useBalance({address: account})
 
 
     const revokePack = useCallback(() => {
@@ -76,10 +85,9 @@ export default function RevokePackModal({isOpen, setIsOpen, tokenId}: RevokePack
                     <div className='text-center pb-8'>
                         <h2 className="text-2xl font-bold ">Revoke Pack</h2>
                     </div>
-                    <div>
-                        details...
-                    </div>
-                    {/*<ReviewForm hideTitle={true}/>*/}
+                    {packData && <ReviewData
+                        eth={rawEth?.value ?? BigInt(1)}
+                        modules={packData.fullModuleData ?? []}/>}
 
                 </div>
             </Card>
