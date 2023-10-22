@@ -119,10 +119,10 @@ export async function deploySystem(
 ): Promise<SystemDeployed> {
   info("Deploying System");
   const { packConfig } = getSystemConfig(hre);
-
-  const deploymentOverrides = {
+  let deploymentOverrides = {
     gasPrice: hre.ethers.parseUnits("1.0", "gwei"),
   };
+
   const create2Factory = await deployContract<Create2Factory>(
     hre,
     signer,

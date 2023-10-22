@@ -56,6 +56,13 @@ export const deployContract = async <T extends BaseContract>(
     return contract;
   }
 
+  // If Mantle testnet, set gas limit to 0x1000000 (workaround)
+  if (hre.network.name === "mantleTestnet") {
+    overrides = {
+      gasLimit: "0x1000000",
+    };
+  }
+
   const contract = (await contractInstance.deploy(
     ...constructorArguments,
     overrides
@@ -65,13 +72,15 @@ export const deployContract = async <T extends BaseContract>(
     contract.interface.encodeDeploy(constructorArguments);
 
   log(`Deployed ${contractName} to ${await contract.getAddress()}`);
+  await saveAddress(hre, contract, contractName);
+
   // Verify the contract on Etherscan if not local network
   if (
     hre.network.name !== "hardhat" &&
     hre.network.name !== "localhost" &&
     hre.network.name !== "scrollSepolia" &&
-    hre.network.name !== "polygonZkEVMTestnet" &&
-    hre.network.name !== "mantleTestnet"
+    hre.network.name !== "polygonZkEVMTestnet"
+    // hre.network.name !== "mantleTestnet"
   ) {
     await hre.run("verify:verify", {
       address: await contract.getAddress(),
@@ -80,8 +89,6 @@ export const deployContract = async <T extends BaseContract>(
   }
   if (constructorArguments.length > 0)
     log(`ABI encoded args: ${abiEncodedConstructorArgs.slice(2)}`);
-
-  await saveAddress(hre, contract, contractName);
 
   return contract;
 };
@@ -104,7 +111,7 @@ export const deployContractWithCreate2 = async <
     waitForBlocks: undefined,
   }
 ): Promise<T> => {
-  const { overrides, create2Options, waitForBlocks } = options;
+  let { overrides, create2Options, waitForBlocks } = options;
 
   const salt = create2Options?.salt ?? contractName;
 
@@ -122,6 +129,13 @@ export const deployContractWithCreate2 = async <
     create2Salt,
     unsignedTx.data
   );
+
+  if (hre.network.name === "mantleTestnet") {
+    overrides = {
+      ...overrides,
+      gasLimit: "0x1000000",
+    };
+  }
 
   const deployTransaction = await create2Factory.deploy(
     create2Options?.amount ?? 0,

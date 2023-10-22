@@ -34,7 +34,7 @@ const config: HardhatUserConfig = {
 
     // Faucets, RPC, etc: https://windranger-io.notion.site/Developer-Starter-Guide-9e9de7a4e60a49dc97dd786c48ffd455
     mantleTestnet: {
-      url: "https://rpc.testnet.mantle.xyz/" || "",
+      url: "https://rpc.testnet.mantle.xyz" || "",
       accounts: accounts,
       chainId: 5001,
     },
@@ -42,6 +42,7 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: {
       scrollSepolia: "abc", // https://docs.scroll.io/en/developers/verifying-smart-contracts/
+      mantleTest: "abc",
     },
     customChains: [
       {
@@ -50,6 +51,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://sepolia-blockscout.scroll.io/api",
           browserURL: "https://sepolia-blockscout.scroll.io/",
+        },
+      },
+      {
+        network: "mantleTest",
+        chainId: 5001,
+        urls: {
+          apiURL: "https://explorer.testnet.mantle.xyz/api",
+          browserURL: "https://explorer.testnet.mantle.xyz",
         },
       },
     ],
