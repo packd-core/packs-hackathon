@@ -1,5 +1,4 @@
 import {useEffect} from "react";
-import StepperIndicator from "@/app/claim/[key]/steps/components/StepperIndicator";
 import Button from "@/app/components/button/Button";
 import {FiArrowRight} from "react-icons/fi";
 import {useClaimState} from "@/app/claim/[key]/useClaimState";
@@ -11,9 +10,11 @@ export default function InitialForm() {
     const previousStep = useClaimState(state => state.previousStep)
     const setControls = useClaimState(state => state.setControls)
     const tokenId = useClaimState(state => state.mintedTokenId);
-    console.log(tokenId)
     const {packData,rawEth, isLoading} = usePackDataByTokenId(tokenId!);
-
+    const setMaxRefundValue = useClaimState(state => state.setMaxRefundValue);
+    useEffect(() => {
+        setMaxRefundValue(rawEth?.value ?? BigInt(0))
+    }, [rawEth,setMaxRefundValue]);
     useEffect(() => {
         setControls(<div className='w-full flex justify-end py-1'>
                 <Button

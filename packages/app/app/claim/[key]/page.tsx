@@ -1,12 +1,10 @@
 "use client"
 import {LoadingCard} from "@/app/components/content/LoadingCard";
-import {useAccount} from "wagmi";
+import {useAccount, useWaitForTransaction} from "wagmi";
 import {useHydrated} from "@/src/hooks/useHydrated";
 import CurrentChain from "@/app/components/web3/CurrentChain";
 import {Card} from "@/app/components/Card";
 import SenderToUser from '~/claimprogress.svg'
-import Button from "@/app/components/button/Button";
-import {BsArrowRight} from "react-icons/bs";
 import {useClaimState} from "@/app/claim/[key]/useClaimState";
 import InitialForm from "@/app/claim/[key]/steps/InitialForm";
 import ConnectWalletForm from "@/app/claim/[key]/steps/ConnectWalletForm";
@@ -23,21 +21,39 @@ export default function ClaimPage({params: { key }}: any) {
     const setMintedTokenId = useClaimState(state => state.setMintedTokenId);
     const mintedTokenId = useClaimState(state => state.mintedTokenId);
     const resetStepper = useClaimState(state => state.reset);
+    const setPrivateKey = useClaimState(state => state.setPrivateKey);
     useEffect(() => {
         resetStepper();
         setMintedTokenId(BigInt(tokenId))
-    }, [resetStepper, setMintedTokenId, tokenId]);
+        setPrivateKey(privateKey)
+    }, [privateKey, resetStepper, setMintedTokenId, setPrivateKey, tokenId]);
 
     const isLoaded = useHydrated()
 
     const step = useClaimState(state => state.step);
     const controls = useClaimState(state => state.controls);
 
+    const hash = useClaimState(state => state.hash)
+
+    const {
+        data: receipt,
+        isLoading,
+        isSuccess,
+    } = useWaitForTransaction({hash});
+
+
     if (isConnecting || !isLoaded || mintedTokenId == undefined) {
         return <LoadingCard
             title="Connecting"
             text='Waiting for network...'/>
     }
+    if (isLoading && hash) return (
+        <LoadingCard
+            title="Your pack is on the way..."
+            text='Waiting for Comfirmation...'
+            transactionHash={hash}/>
+
+    )
     if (step === 4){
         return <PackClaimedCard/>
     }

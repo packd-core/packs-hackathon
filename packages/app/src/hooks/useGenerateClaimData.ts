@@ -4,7 +4,7 @@ import useKeySignManager from "@/src/hooks/useKeySignManager";
 
 export const useGenerateClaimData = (
   address: Address,
-  maxRefundValue: number,
+  maxRefundValue: bigint,
   sigClaimer: string,
   tokenId: number,
   privateKeyDecoded: string
@@ -14,7 +14,7 @@ export const useGenerateClaimData = (
     sigOwner: "",
     claimer: address,
     sigClaimer,
-    refundValue: 0,
+    refundValue: BigInt(0),
     maxRefundValue,
   });
   const keySignManager = useKeySignManager();
@@ -40,7 +40,7 @@ export const useGenerateClaimData = (
     };
 
     generateSignature();
-  }, [address, tokenId, privateKeyDecoded, sigClaimer]);
+  }, [address, tokenId, privateKeyDecoded, sigClaimer, keySignManager]);
 
   return { claimData };
 };

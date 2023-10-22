@@ -1,40 +1,34 @@
 import {HelpItem} from "@/app/components/content/HelpItem";
-import {usePackState} from "@/app/mint/usePackState";
 import {useEffect} from "react";
 import Button from "@/app/components/button/Button";
-import {FiArrowLeft, FiArrowRight} from "react-icons/fi";
-import {useClaimKeys} from "@/src/hooks/useClaimKeys";
-import {useBalanceOf} from "@/src/hooks/useBalanceOf";
+import { FiArrowRight} from "react-icons/fi";
 import {useAccount} from "wagmi";
-import {useMintStore} from "@/src/stores/useMintStore";
 import {useClaimState} from "@/app/claim/[key]/useClaimState";
 import StepperIndicator from "@/app/claim/[key]/steps/components/StepperIndicator";
+import {usePrepareAndSignMessage} from "@/src/hooks/usePrepareAndSignMessage";
 
 export const SignForm = () => {
     const nextStep = useClaimState(state => state.nextStep)
     const previousStep = useClaimState(state => state.previousStep)
     const setControls = useClaimState(state => state.setControls)
-    // const setClaimKey = useClaimState(state => state.setClaimKey)
+    const maxRefundValue = useClaimState(state => state.maxRefundValue);
+    const tokenId = useClaimState(state => state.mintedTokenId);
+    const setSignedMessage = useClaimState(state => state.setSignedMessage);
     const {address} = useAccount();
     const {
-        balance: balanceOf,
-        // isLoading: isBalanceOfLoading,
-        // isError: isBalanceOfError,
-    } = useBalanceOf(address!);
-    const {
-        claimPublicKey,
-        claimPrivateKey,
-        handlePrepareAndSignMessage,
+        signData,
+        isSignError,
         isSignLoading,
         isSignSuccess,
-    } = useClaimKeys(balanceOf);
+        handlePrepareAndSignMessage,
+    } = usePrepareAndSignMessage(Number(tokenId), maxRefundValue);
 
     useEffect(() => {
-        if (isSignSuccess && claimPrivateKey && claimPublicKey) {
-            // setClaimKey({private: claimPrivateKey, public: claimPublicKey})
+        if (isSignSuccess && signData) {
+            setSignedMessage(signData)
             nextStep()
         }
-    }, [claimPrivateKey, claimPublicKey, isSignSuccess, nextStep]);
+    }, [signData, isSignSuccess, nextStep, setSignedMessage]);
 
     useEffect(() => {
         setControls(<div className='w-full flex justify-between py-1 items-center'>

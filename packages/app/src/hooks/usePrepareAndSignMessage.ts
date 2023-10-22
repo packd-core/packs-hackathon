@@ -4,7 +4,7 @@ import useKeySignManager from "@/src/hooks/useKeySignManager";
 
 export const usePrepareAndSignMessage = (
   tokenId: number | null,
-  maxRefundValue: number
+  maxRefundValue: bigint
 ) => {
   const [message, setMessage] = useState<string | undefined>(undefined);
   const keySignManager = useKeySignManager();
@@ -30,7 +30,7 @@ export const usePrepareAndSignMessage = (
     } catch (error) {
       console.error("Error preparing message:", error);
     }
-  }, [tokenId, maxRefundValue, signMessage]);
+  }, [keySignManager, tokenId, maxRefundValue, signMessage]);
 
   return {
     signData,
