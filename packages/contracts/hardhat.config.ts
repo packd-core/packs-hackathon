@@ -29,12 +29,14 @@ const config: HardhatUserConfig = {
     polygonZkEVMTestnet: {
       url: "https://rpc.public.zkevm-test.net" || "",
       accounts: accounts,
+      chainId: 1442,
     },
 
     // Faucets, RPC, etc: https://windranger-io.notion.site/Developer-Starter-Guide-9e9de7a4e60a49dc97dd786c48ffd455
     mantleTestnet: {
       url: "https://rpc.testnet.mantle.xyz/" || "",
       accounts: accounts,
+      chainId: 5001,
     },
   },
   etherscan: {

@@ -69,7 +69,9 @@ export const deployContract = async <T extends BaseContract>(
   if (
     hre.network.name !== "hardhat" &&
     hre.network.name !== "localhost" &&
-    hre.network.name !== "scrollSepolia"
+    hre.network.name !== "scrollSepolia" &&
+    hre.network.name !== "polygonZkEVMTestnet" &&
+    hre.network.name !== "mantleTestnet"
   ) {
     await hre.run("verify:verify", {
       address: await contract.getAddress(),
