@@ -15,6 +15,7 @@ import {useGenerateClaimData} from "@/src/hooks/useGenerateClaimData";
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
 import {RelayerRequest} from '@/pages/api/claim';
 
+// @ts-ignore
 BigInt.prototype.toJSON = function() { return this.toString() }
 export default function ReviewClaimForm() {
     const nextStep = useClaimState(state => state.nextStep)
