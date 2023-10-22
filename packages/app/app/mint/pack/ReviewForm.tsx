@@ -5,12 +5,11 @@ import {FiArrowLeft, FiArrowRight} from "react-icons/fi";
 import {usePackState} from "@/app/mint/usePackState";
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
 import {useNetwork} from "wagmi";
-import {useMintStore} from "@/src/stores/useMintStore";
+import {useMintStore, Module} from "@/src/stores/useMintStore";
 import Erc721Card from "@/app/mint/modules/Erc721Module";
 import Erc20Card from "@/app/mint/modules/Erc20Module";
 import {ContentCard} from "@/app/components/content/ContentCard";
 import useMintPack from "@/src/hooks/useMintPack";
-import {BsX} from "react-icons/bs";
 import {formatEther} from "ethers";
 
 
@@ -50,27 +49,9 @@ export const ReviewForm = () => {
                 <h2 className="text-2xl font-bold ">Review Pack Content</h2>
             </div>
             <ContentTitle>Contents</ContentTitle>
-            <ContentCard className="self-stretch">
-                <div className="flex justify-between">
-                    <span className="text-card-title">Eth</span>
-                </div>
-                <input className="text-right w-full " disabled={true}
-                       value={formatEther(amountEth ?? 0)}/>
-            </ContentCard>
-            {modules.map((module, index) => {
-                if (module.moduleAddress === addresses.ERC721Module) {
-                    return <Erc721Card key={module.address + module.value}
-                                       module={module}/>
-                }
-                if (module.moduleAddress === addresses.ERC20Module) {
-                    return <Erc20Card key={module.address + module.value}
-                                      module={module}/>
-                }
-                return <ContentCard key={module.address + module.value}>
-                    <ContentTitle>Unknown module</ContentTitle>
-                </ContentCard>;
-            })
-            }
+            <ReviewData
+            eth={amountEth}
+            modules={modules}/>
             <table className="font-semibold mt-4">
                 <tbody>
                 <tr>
@@ -84,4 +65,31 @@ export const ReviewForm = () => {
                 </tbody>
             </table>
         </div>);
+};
+
+export function ReviewData({eth, modules}: { eth: bigint, modules: Module[] }) {
+    const addresses = usePackdAddresses();
+    return <>
+        <ContentCard className="self-stretch">
+            <div className="flex justify-between">
+                <span className="text-card-title">Eth</span>
+            </div>
+            <input className="text-right w-full " disabled={true}
+                   value={formatEther(eth ?? 0)}/>
+        </ContentCard>
+        {modules.map((module, index) => {
+            if (module.moduleAddress === addresses.ERC721Module) {
+                return <Erc721Card key={module.address + module.value}
+                                   module={module}/>
+            }
+            if (module.moduleAddress === addresses.ERC20Module) {
+                return <Erc20Card key={module.address + module.value}
+                                  module={module}/>
+            }
+            return <ContentCard key={module.address + module.value}>
+                <ContentTitle>Unknown module</ContentTitle>
+            </ContentCard>;
+        })
+        }
+    </>
 }
