@@ -18,7 +18,7 @@ export function PackCreatedCard() {
         className={'mx-auto w-full bg-green-800'}
         controls={
             <div className='w-full flex justify-between py-1 px-2'>
-                <div>Claimed!</div>
+                <div>Created!</div>
                 <CheckMyWalletButton/>
             </div>
         }>
