@@ -13,6 +13,7 @@ import ReviewClaimForm from "@/app/claim/[key]/steps/ReviewClaimForm";
 import {PackClaimedCard} from "@/app/claim/[key]/steps/PackClaimedCard";
 import {useDecodeUrl} from "@/src/hooks/useUrlEncodeDecode";
 import {useEffect} from "react";
+import formatAddress from "@/src/lib/addressFormatter";
 
 
 export default function ClaimPage({params: { key }}: any) {
@@ -33,6 +34,8 @@ export default function ClaimPage({params: { key }}: any) {
     const step = useClaimState(state => state.step);
 
     const hash = useClaimState(state => state.hash)
+
+    const owner = useClaimState(state => state.owner)
 
     const {
         data: receipt,
@@ -68,7 +71,7 @@ export default function ClaimPage({params: { key }}: any) {
             <div className="p-2 rounded-full bg-gray-800 flex justify-center items-center">
                 <SenderToUser className='w-20 h-10'/>
             </div>
-            <h1 className="text-lg sm:text-xl md:text-2xl">XYZ sent you a pack</h1>
+            <h1 className="text-lg sm:text-xl md:text-2xl"><span className="text-red-500">{formatAddress(owner)}</span> sent you a pack</h1>
             <CurrentChain className='my-4'/>
             {step === 0 && <InitialForm/>}
             {step === 1 && <ConnectWalletForm/>}
