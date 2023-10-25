@@ -3,7 +3,8 @@ import {HelpItem} from "@/app/components/content/HelpItem";
 import {BiLogoTwitter} from "react-icons/bi";
 
 export default function PackLinkDetails({claimKey}: { claimKey: string}) {
-    const link = 'https://packd.io/claim/'+claimKey;
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const link = origin + '/claim/' +claimKey;
     return <div className='flex flex-col gap-8 items-center max-w-full'>
         <p>Copy and share the Claim Link:</p>
         <div className="bg-gray-600 px-2 py-1 rounded-lg font-semibold text-white text-sm flex items-center max-w-full ">
