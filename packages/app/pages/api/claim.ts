@@ -42,7 +42,6 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<ResponseData>
 ) {
-
     if (req.method !== 'POST') {
         res.status(400).send({ error: '404 not found' })
         return;
@@ -59,21 +58,36 @@ export default async function handler(
     const packMain = PackMain__factory.connect(account, signer).attach(tx.mainContractAddress) as PackMain;// NOt sure why is this changing the type
 
 
-    console.log('Relay request', tx);
+    console.log('****************  Relay request *****************')
+    console.log(tx)
 
     try {
+        const feeData = await signer.provider?.getFeeData()
+        console.log('Fee data', feeData);
+        const gasCostEstimate = await tryEstimateGas()
+        const weiEstimate = gasCostEstimate * (feeData?.gasPrice ?? 1n)
 
-        const refundValue = await tryEstimateGas(tx.args.maxRefundValue)
+     
 
-        if (refundValue > BigInt(tx.args.maxRefundValue)) {
+        if (weiEstimate > BigInt(tx.args.maxRefundValue)) {
             res.status(400).send({ error: 'Transaction will cost more than maxRefundValue' })
             return;
         }
 
+        console.log('Estimates', {
+            gasCostEstimate,
+            weiEstiamte: weiEstimate,
+            maxRefundValue: tx.args.maxRefundValue,
+            refundValue: weiEstimate
+        })
+
+        console.log('Gas limit', gasCostEstimate)
         const openReceipt = await packMain.open({
             ...tx.args,
-            refundValue: refundValue
-        }, tx.moduleData)
+            refundValue: weiEstimate
+        }, tx.moduleData, {
+            gasLimit: gasCostEstimate,
+        })
 
         console.log(openReceipt);
         return res.status(200).send({
@@ -86,16 +100,17 @@ export default async function handler(
         return res.status(500).send({ error: error })
     }
 
-    async function tryEstimateGas(maxRefundValue: string): Promise<bigint> {
+    async function tryEstimateGas(): Promise<bigint> {
         try {
             return await packMain.open.estimateGas({
                 ...tx.args,
                 refundValue: tx.args.maxRefundValue
             }, []) * BigInt(1.2);
         } catch (e) {
-            console.error(e)
+            //console.error(e)
+            console.log('failed to estimate gas')
         }
-        return BigInt(maxRefundValue)
+        return BigInt(15_000_000)
     }
 }
 
