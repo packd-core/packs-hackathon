@@ -54,7 +54,7 @@ export default async function handler(
 
     const tx = parsedBody.data
 
-    const { account, signer } = getSigner();
+    const { account, signer } = getSigner(tx.chainId);
     const packMain = PackMain__factory.connect(account, signer).attach(tx.mainContractAddress) as PackMain;// NOt sure why is this changing the type
 
 
@@ -67,13 +67,6 @@ export default async function handler(
         const gasCostEstimate = await tryEstimateGas()
         const weiEstimate = gasCostEstimate * (feeData?.gasPrice ?? 1n)
 
-     
-
-        if (weiEstimate > BigInt(tx.args.maxRefundValue)) {
-            res.status(400).send({ error: 'Transaction will cost more than maxRefundValue' })
-            return;
-        }
-
         console.log('Estimates', {
             gasCostEstimate,
             weiEstiamte: weiEstimate,
@@ -81,7 +74,13 @@ export default async function handler(
             refundValue: weiEstimate
         })
 
-        console.log('Gas limit', gasCostEstimate)
+        if (weiEstimate > BigInt(tx.args.maxRefundValue)) {
+            res.status(400).send({ error: 'Transaction will cost more than maxRefundValue' })
+            return;
+        }
+
+
+
         const openReceipt = await packMain.open({
             ...tx.args,
             refundValue: weiEstimate
@@ -105,18 +104,29 @@ export default async function handler(
             return await packMain.open.estimateGas({
                 ...tx.args,
                 refundValue: tx.args.maxRefundValue
-            }, []) * BigInt(1.2);
+            }, []) * 12n / 10n
         } catch (e) {
-            //console.error(e)
-            console.log('failed to estimate gas')
+            console.error('failed to estimate gas', e)
         }
         return BigInt(15_000_000)
     }
 }
 
-function getSigner() {
+function getSigner(chainId: number) {
+    function getRpcUrl() {
+        switch (chainId) {
+            case 1337:
+            case 31337: return 'http://localhost:8545';
+            case 1442: return 'https://rpc.public.zkevm-test.net';
+            case 5001: return 'https://rpc.testnet.mantle.xyz';
+            case 534351: return 'https://sepolia-rpc.scroll.io';
+            default:
+                throw new Error(`Unsupported chainId: ${chainId}`)
+        }
+    }
+
     const pk = getRelayerAccount();
-    const provider = new JsonRpcProvider('http://localhost:8545');
+    const provider = new JsonRpcProvider(getRpcUrl());
     const signer = new Wallet(pk, provider)
     //const signer = new JsonRpcSigner(provider, account);
     return { account: signer.address, signer };
