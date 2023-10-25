@@ -48,6 +48,7 @@ export default function AddTokenModal({isOpen, setIsOpen, onAdd}: { isOpen: bool
                         token={tokenAddress}
                         onValueChanged={setAmount}
                         value={amount}
+                        autoOpenModal={true}
                         />
 
 

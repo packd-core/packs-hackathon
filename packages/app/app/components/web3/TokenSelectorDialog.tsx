@@ -9,14 +9,20 @@ import {isAddress} from "viem";
 import {formatUnits, parseUnits} from "ethers";
 import clsxm from "@/src/lib/clsxm";
 
-export default function TokenInput({token, value, onTokenSelected, onValueChanged}: {
+export default function TokenInput({token, value, onTokenSelected, onValueChanged, autoOpenModal}: {
     token?: Address,
     value?: bigint,
     onTokenSelected?: (address: Address) => void,
-    onValueChanged?: (value: bigint) => void
+    onValueChanged?: (value: bigint) => void,
+    autoOpenModal?: boolean
 }) {
     const {address} = useAccount()
     const [isOpen, setIsOpen] = useState(false);
+    useEffect(() => {
+        if (autoOpenModal && !token) {
+            setIsOpen(true);
+        }
+    }, [autoOpenModal, token]);
     const {data: tokenData} = useToken({address: token, enabled: !!token})
     const {data: balance, isLoading} = useBalance({
         address: address as Address,
