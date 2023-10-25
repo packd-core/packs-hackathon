@@ -13,7 +13,6 @@ import { ContentTitle } from "@/app/components/content/ContentRow";
 import { useClaim } from "@/src/hooks/useClaim";
 import { useGenerateClaimData } from "@/src/hooks/useGenerateClaimData";
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
-import { RelayerRequest } from '@/pages/api/claim';
 
 // @ts-ignore
 BigInt.prototype.toJSON = function () { return this.toString() }
@@ -71,7 +70,13 @@ export default function ReviewClaimForm() {
     useEffect(() => {
         setControls(<div className='w-full flex justify-between py-1 items-center'>
             <StepperIndicator step={2} />
-
+            {/*//TODO: needs to be removed*/}
+            <Button
+                isLoading={isLoading}
+                onClick={() => write && write()}
+                variant="navigation" rightIcon={<FiArrowRight className='text-inherit inline' />}>
+                Confirm Claim Test
+            </Button>
             <Button
                 isLoading={isLoading}
                 onClick={() => writeToRelayer()}
@@ -80,7 +85,7 @@ export default function ReviewClaimForm() {
             </Button>
 
         </div>)
-    }, [writeToRelayer, nextStep, setControls, previousStep, address, openConnectModal, isLoading]);
+    }, [writeToRelayer, write, nextStep, setControls, previousStep, address, openConnectModal, isLoading]);
     return <div className="flex flex-col w-full gap-2 items-stretch">
         <div className='flex p-2 rounded-full bg-gray-800 items-center justify-around gap-4'>
             <div className="p-2 text-sm">
