@@ -1,7 +1,7 @@
 import { ZeroAddress } from "ethers";
 import type { HardhatRuntimeEnvironment } from "hardhat/types";
 
-const DEFAULT_CHAIN_ID = 1337;
+const DEFAULT_CHAIN_ID = 31337;
 
 export interface SystemConfig {
   packConfig: {
