@@ -94,7 +94,7 @@ export default function ReviewClaimForm() {
         <ContentTitle>Contents</ContentTitle>
 
         <div className="flex flex-col gap-2">
-            {<ReviewData eth={rawEth?.value ?? BigInt(0)}
+            {<ReviewData eth={rawEth ?? BigInt(0)}
                          modules={packData?.fullModuleData ?? []}/>}
         </div>
         <table className="font-semibold mt-4">

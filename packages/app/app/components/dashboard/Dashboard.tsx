@@ -10,8 +10,8 @@ import {useBalanceOf} from "@/src/hooks/useBalanceOf";
 import {useTokenOfOwnerByIndex} from "@/src/hooks/useTokenOfOwnerByIndex";
 import {useErc721Name, usePackMainAccount, usePackMainPackState} from "@/app/abi/generated";
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
-import {usePackCreatedByTokenId} from "@/src/hooks/usePackCreatedByTokenId";
-import { formatUnits} from "ethers";
+import {RawCreationData, usePackCreatedByTokenId} from "@/src/hooks/usePackCreatedByTokenId";
+import {formatEther, formatUnits} from "ethers";
 import {ContentCard} from "@/app/components/content/ContentCard";
 import {ContentTitle} from "@/app/components/content/ContentRow";
 import {Module} from "@/src/stores/useMintStore";
@@ -19,10 +19,10 @@ import {GiToken} from "react-icons/gi";
 import {RiNftLine} from "react-icons/ri";
 
 export enum PackState {
-    EMPTY='Empty',
-    CREATED='Created',
-    OPENED='Opened',
-    REVOKED='Revoked'
+    EMPTY = 'Empty',
+    CREATED = 'Created',
+    OPENED = 'Opened',
+    REVOKED = 'Revoked'
 
 }
 
@@ -82,10 +82,17 @@ function PackItem({index}: { index: number }) {
         BigInt(index)
     );
 
-    const {data: rawState, isLoading: isStateLoading} = usePackMainPackState({enabled: tokenId !== undefined, args: [tokenId!], address: addresses.PackMain});
-    const {data: account, isLoading: isAccountLoading} = usePackMainAccount({enabled: tokenId !== undefined, args: [tokenId!], address: addresses.PackMain})
-    const {data: rawEth, isLoading: isEthLoading} = useBalance({address: account})
-    const state = useMemo(() =>  Object.values(PackState)[rawState??0], [rawState]);
+    const {data: rawState, isLoading: isStateLoading} = usePackMainPackState({
+        enabled: tokenId !== undefined,
+        args: [tokenId!],
+        address: addresses.PackMain
+    });
+    const {data: account, isLoading: isAccountLoading} = usePackMainAccount({
+        enabled: tokenId !== undefined,
+        args: [tokenId!],
+        address: addresses.PackMain
+    })
+    const state = useMemo(() => Object.values(PackState)[rawState ?? 0], [rawState]);
 
     return <div className={clsxm('rounded-xl p-4 bg-white/50',
         state && 'bg-[rgba(209,240,234,0.50)]'
@@ -98,27 +105,33 @@ function PackItem({index}: { index: number }) {
             {tokenId !== undefined && <PackActionsMenu tokenId={tokenId}/>}
         </div>
         <div className='mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
-            <PackModuleItem name='Eth' value={rawEth?.formatted ?? 'Loading'}/>
-            {tokenId !== undefined && <Modules tokenId={tokenId}/>}
-            {/*    {pack.modules.map((module, index) => <PackModuleItem key={index} module={module}/>)}*/}
+            {tokenId != undefined && <PackContent tokenId={tokenId}/>}
         </div>
     </div>
 }
 
-function Modules({tokenId}: { tokenId: bigint}){
-    const addresses = usePackdAddresses();
+function PackContent({tokenId}: { tokenId: bigint }) {
     const {data, isError, isLoading} = usePackCreatedByTokenId(tokenId)
+
+    return <>
+        <PackModuleItem name='Eth' value={!!data?.ethValue ? formatEther(data!.ethValue!) : 'Loading'}/>
+        {tokenId !== undefined && <Modules data={data} isLoading={isLoading} isError={isError}/>}
+    </>
+}
+
+function Modules({data, isError, isLoading}: { data?: RawCreationData, isLoading?: boolean, isError?: boolean }) {
+    const addresses = usePackdAddresses();
     const modules = data?.fullModuleData ?? [];
     if (isLoading) return <div>loading...</div>
     if (isError) return <div>error...</div>
     return <> {modules.map((module, index) => {
         if (module.moduleAddress === addresses.ERC721Module) {
             return <PackModuleErc721 key={module.address + module.value}
-                               module={module}/>
+                                     module={module}/>
         }
         if (module.moduleAddress === addresses.ERC20Module) {
             return <PackModuleErc20 key={module.address + module.value}
-                              module={module}/>
+                                    module={module}/>
         }
 
         return <ContentCard key={module.address + module.value}>
@@ -131,8 +144,10 @@ function PackModuleErc20({module}: { module: Module }) {
     const {data: tokenData} = useToken({address: module.address})
     return <PackModuleItem
         icon={<GiToken/>}
-        value={formatUnits(module.value?.toString(), tokenData?.decimals ?? 18)} name={tokenData?.symbol ?? 'Loading...'}/>
+        value={formatUnits(module.value?.toString(), tokenData?.decimals ?? 18)}
+        name={tokenData?.symbol ?? 'Loading...'}/>
 }
+
 function PackModuleErc721({module}: { module: Module }) {
     const {data: tokenName} = useErc721Name({address: module.address});
     return <PackModuleItem
@@ -140,7 +155,7 @@ function PackModuleErc721({module}: { module: Module }) {
         value={module.value.toString()} name={tokenName ?? 'Loading...'}/>
 }
 
-function PackModuleItem({name, value, icon}: { name: string, value:string, icon?: ReactNode }) {
+function PackModuleItem({name, value, icon}: { name: string, value: string, icon?: ReactNode }) {
     return <div className="text-black p-2 rounded bg-white border border-gray-500/50 flex items-center">
         <div className='p-2 aspect-square rounded-full bg-blue-500'>
             {icon ?? <FaEthereum/>}
