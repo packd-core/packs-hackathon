@@ -45,7 +45,7 @@ subtask("mint:erc20")
   .addOptionalParam("amount", "The amount, default 1000", 1000, types.int)
   .setAction(
     async (taskArguments: TaskArguments, hre: HardhatRuntimeEnvironment) => {
-      info(`Subtask mint:erc20 ${taskArguments.account}`);
+      info(`Subtask mint:erc20  Token: ${taskArguments.tokenaddress}  Account: ${taskArguments.account}`);
       const deployer = await getDeployer(hre);
       const wallet = taskArguments.account;
       const amount = hre.ethers.parseEther(taskArguments.amount.toString());
