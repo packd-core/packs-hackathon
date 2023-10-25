@@ -1,8 +1,8 @@
-import {packMainABI} from "@/app/abi/generated";
+import {packMainABI, usePackNftCreationBlock} from "@/app/abi/generated";
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
 import {BrowserProvider, ethers, EventLog, JsonRpcSigner} from 'ethers';
 import {useEthersSigner} from "./useEthersSigner";
-import {Address} from "wagmi";
+import {Address, useContractRead} from "wagmi";
 import {useEffect, useState} from "react";
 import {Module} from "../stores/useMintStore";
 
@@ -39,22 +39,28 @@ export async function generateMintData(data: Array<[string, bigint]>) {
 export function usePackCreatedByTokenId(tokenId: bigint | undefined) {
     const addresses = usePackdAddresses();
     const ethersSigner = useEthersSigner();
+    const {data: creationBlock,isSuccess:isCreationBlockLoaded} = usePackNftCreationBlock({
+        address: addresses.PackMain,
+        args: [tokenId!],
+        enabled: tokenId != undefined
+    })
+
     const [data, setData] = useState<RawCreationData | undefined>();
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
 
     useEffect(() => {
-        if (!ethersSigner || !addresses.PackMain) {
+        if (!ethersSigner || !addresses.PackMain || !isCreationBlockLoaded) {
             return;
         }
         setIsLoading(true)
-        fetchPackCreatedByTokenId(tokenId, addresses.PackMain, addresses.PackRegistry, ethersSigner).then(result => {
+        fetchPackCreatedByTokenId(tokenId, addresses.PackMain, addresses.PackRegistry, ethersSigner, creationBlock!).then(result => {
             setData(result);
         }).catch(e => {
             setIsError(true);
             setIsLoading(false)
         }).finally(() => setIsLoading(false));
-    }, [tokenId, addresses, ethersSigner])
+    }, [tokenId, addresses, ethersSigner,creationBlock,isCreationBlockLoaded])
 
     return {data, isLoading, isError}
 
@@ -64,7 +70,7 @@ export function usePackCreatedByTokenId(tokenId: bigint | undefined) {
 export async function fetchPackCreatedByTokenId(tokenId: bigint | undefined, packMainAddress: Address, registryAddress: Address, ethersSigner: {
     signer: JsonRpcSigner,
     provider: BrowserProvider
-}) {
+}, creationBlock: bigint) {
 
 
     if (ethersSigner && ethersSigner.signer && tokenId !== undefined) {
@@ -72,7 +78,8 @@ export async function fetchPackCreatedByTokenId(tokenId: bigint | undefined, pac
         const packMain = new ethers.Contract(packMainAddress, packMainABI, signer);
 
         const filterByTokenId = packMain.filters.PackCreated(tokenId)
-        const packCreatedEvents = await packMain.queryFilter(filterByTokenId);
+        console.log('creation bloc: ', creationBlock)
+        const packCreatedEvents = await packMain.queryFilter(filterByTokenId, creationBlock, creationBlock);
         const transfers = []
         if (packCreatedEvents.length === 0) return undefined
 
