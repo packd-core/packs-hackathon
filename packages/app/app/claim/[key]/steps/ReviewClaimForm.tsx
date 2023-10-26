@@ -3,7 +3,7 @@ import Button from "@/app/components/button/Button";
 import {FiArrowRight} from "react-icons/fi";
 import {useClaimState} from "@/app/claim/[key]/useClaimState";
 import {useConnectModal} from "@rainbow-me/rainbowkit";
-import {useAccount, useNetwork} from "wagmi";
+import {Address, useAccount, useNetwork} from "wagmi";
 import StepperIndicator from "@/app/claim/[key]/steps/components/StepperIndicator";
 import Arrow from '~/arrow.svg'
 import formatAddress from "@/src/lib/addressFormatter";
@@ -82,7 +82,7 @@ export default function ReviewClaimForm() {
         </div>)
     }, [writeToRelayer, nextStep, setControls, previousStep, address, openConnectModal, isLoading]);
 
-    const ownerName = useEnsOrFormattedAddress(owner);
+    const ownerName = useEnsOrFormattedAddress(owner as Address);
     const claimerName = useEnsOrFormattedAddress(address);
     return <div className="flex flex-col w-full gap-2 items-stretch">
         <div className='flex p-2 rounded-full bg-gray-800 items-center justify-around gap-4'>
