@@ -14,6 +14,7 @@ import {useClaim} from "@/src/hooks/useClaim";
 import {useGenerateClaimData} from "@/src/hooks/useGenerateClaimData";
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
 import {RelayerRequest} from '@/pages/api/claim';
+import useEnsOrFormattedAddress from "@/src/hooks/useEnsOrAddress";
 
 // @ts-ignore
 BigInt.prototype.toJSON = function() { return this.toString() }
@@ -80,16 +81,19 @@ export default function ReviewClaimForm() {
 
         </div>)
     }, [writeToRelayer, nextStep, setControls, previousStep, address, openConnectModal, isLoading]);
+
+    const ownerName = useEnsOrFormattedAddress(owner);
+    const claimerName = useEnsOrFormattedAddress(address);
     return <div className="flex flex-col w-full gap-2 items-stretch">
         <div className='flex p-2 rounded-full bg-gray-800 items-center justify-around gap-4'>
             <div className="p-2 text-sm">
                 <div className='text-gray-400'>From</div>
-                {formatAddress(owner)}
+                {ownerName}
             </div>
             <Arrow className="h-12 w-8"/>
             <div className="p-2 text-sm">
                 <div className="text-right text-gray-400">To</div>
-                {formatAddress(address)}
+                {claimerName}
             </div>
         </div>
         <ContentTitle>Contents</ContentTitle>
