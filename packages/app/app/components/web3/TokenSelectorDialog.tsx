@@ -91,10 +91,10 @@ export function TokenSelectorFrom({closeModal, onAdd}: {
     const data = useMemo(() => [
         {name: 'Mock Token A', symbol: 'MTK A', address: addresses?.ERC20MockA},
         {name: 'Mock Token B', symbol: 'MTK B', address: addresses?.ERC20MockB},
-    ], [addresses?.PackMain])
+    ].filter(value => !!value.address), [addresses?.PackMain])
 
     const [filteredTokens, setFilteredTokens] = useState(data)
-    const normalizeToken = (s :string)=> s.toLowerCase().replace(/\s+/g, '');
+    const normalizeToken = (s?:string)=> s?.toLowerCase()?.replace(/\s+/g, '') ?? '';
     const includesQuery = (prop:string) => normalizeToken(prop).includes(normalizeToken(query));
     const bySymbolNameOrAddress = (item:{name:string, symbol:string, address:string}) => Object.values(item).some(includesQuery)
     useEffect(() => {
@@ -108,7 +108,7 @@ export function TokenSelectorFrom({closeModal, onAdd}: {
     }, [query, filteredTokens]);
 
     return (
-        <div className='flex flex-col bg-gray-900 rounded-3xl gap-2 text-white p-4'>
+        <div className='flex flex-col bg-[#202020] rounded-3xl gap-2 text-white p-4'>
             <div className="flex justify-between">
                 <span className='text-card-title'>Select token</span>
                 <button className="hover:text-primary-500 pl-2" onClick={closeModal}><BsX/></button>
