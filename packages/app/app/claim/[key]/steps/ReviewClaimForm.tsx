@@ -21,6 +21,7 @@ export default function ReviewClaimForm() {
     const nextStep = useClaimState(state => state.nextStep)
     const previousStep = useClaimState(state => state.previousStep)
     const setControls = useClaimState(state => state.setControls)
+    const owner = useClaimState(state => state.owner)
     const addresses = usePackdAddresses();
     const {openConnectModal} = useConnectModal()
     const {address} = useAccount()
@@ -83,7 +84,7 @@ export default function ReviewClaimForm() {
         <div className='flex p-2 rounded-full bg-gray-800 items-center justify-around gap-4'>
             <div className="p-2 text-sm">
                 <div className='text-gray-400'>From</div>
-                {formatAddress(address)}
+                {formatAddress(owner)}
             </div>
             <Arrow className="h-12 w-8"/>
             <div className="p-2 text-sm">

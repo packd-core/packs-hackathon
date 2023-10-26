@@ -89,31 +89,22 @@ export function TokenSelectorFrom({closeModal, onAdd}: {
     const [query, setQuery] = useState('')
     const addresses = usePackdAddresses();
     const data = useMemo(() => [
-        {name: 'MKT A', address: addresses?.ERC20MockA},
-        {name: 'MKT B', address: addresses?.ERC20MockB},
+        {name: 'Mock Token A', symbol: 'MTK A', address: addresses?.ERC20MockA},
+        {name: 'Mock Token B', symbol: 'MTK B', address: addresses?.ERC20MockB},
     ], [addresses?.PackMain])
 
     const [filteredTokens, setFilteredTokens] = useState(data)
-
-
+    const normalizeToken = (s :string)=> s.toLowerCase().replace(/\s+/g, '');
+    const includesQuery = (prop:string) => normalizeToken(prop).includes(normalizeToken(query));
+    const bySymbolNameOrAddress = (item:{name:string, symbol:string, address:string}) => Object.values(item).some(includesQuery)
     useEffect(() => {
-        setFilteredTokens(query === ''
-            ? data
-            : data.filter((item) =>
-                item.name
-                    .toLowerCase()
-                    .replace(/\s+/g, '')
-                    .includes(query.toLowerCase().replace(/\s+/g, '')) || item.address
-                    .toLowerCase()
-                    .replace(/\s+/g, '')
-                    .includes(query.toLowerCase().replace(/\s+/g, ''))
-            ))
+        setFilteredTokens(query === ''? data :data.filter(bySymbolNameOrAddress))
     }, [query, data]);
 
     useEffect(() => {
         console.log(isAddress(query), filteredTokens.length)
         if (isAddress(query) && filteredTokens.length === 0) {
-            setFilteredTokens([{name: 'Unknown', address: query}])
+            setFilteredTokens([{name: 'Unknown',symbol: 'unknown', address: query}])
         }
     }, [query, filteredTokens]);
 

@@ -4,17 +4,8 @@ import {ToggleButton} from "@/app/components/button/ToggleButton";
 
 export function PackTypeSelector({selectedTypes, setSelectedTypes}: { selectedTypes: PackState[], setSelectedTypes: (types: PackState[]) => void }) {
     const toggleType = useCallback((type: PackState) => {
-        if (selectedTypes.includes(type)) {
-            setSelectedTypes(selectedTypes.filter(t => t !== type))
-        } else {
-            const newValue = [...selectedTypes, type];
-            if (newValue.length == Object.keys(PackState).length) {
-                setSelectedTypes([])
-            } else {
-                setSelectedTypes(newValue)
-            }
-        }
-    }, [selectedTypes])
+        setSelectedTypes([type])
+    }, [setSelectedTypes])
     const setAllTypes = useCallback(() => {
         setSelectedTypes([])
     }, [setSelectedTypes])

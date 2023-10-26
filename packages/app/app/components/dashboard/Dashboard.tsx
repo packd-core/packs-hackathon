@@ -61,19 +61,19 @@ export default function Dashboard() {
             </div>
             <div className='flex rounded-2xl bg-white/40 min-h-[60vh] flex-col p-4'>
                 {!balance && <NoPackFound/>}
-                {!!balance && <PackList count={balance}/>}
+                {!!balance && <PackList count={balance} selectedTypes={selectedTypes}/>}
             </div>
         </div>
     )
 }
 
-function PackList({count}: { count: number }) {
+function PackList({count,selectedTypes}: { count: number, selectedTypes: PackState[] }) {
     return <div className='flex flex-col gap-4'>
-        {[...Array(count)].map((_, id) => <PackItem key={id} index={id}/>)}
+        {[...Array(count)].map((_, id) => <PackItem key={id} index={id} selectedTypes={selectedTypes} />)}
     </div>
 }
 
-function PackItem({index}: { index: number }) {
+function PackItem({index, selectedTypes}: { index: number, selectedTypes: PackState[] }) {
     const {address: owner} = useAccount();
     const addresses = usePackdAddresses();
     console.log('index:', index, 'owner:', owner);
@@ -93,10 +93,11 @@ function PackItem({index}: { index: number }) {
         address: addresses.PackMain
     })
     const state = useMemo(() => Object.values(PackState)[rawState ?? 0], [rawState]);
+    const visibility = selectedTypes.length ===0 || selectedTypes.includes(state);
 
-    return <div className={clsxm('rounded-xl p-4 bg-white/50',
+    return visibility? (<div className={clsxm('rounded-xl p-4 bg-white/50',
         state && 'bg-[rgba(209,240,234,0.50)]'
-    )}>
+    )} >
         <div className='flex items-center'>
             <PackStateBadge packState={state}/>
             <div className='grow text-xs'>account: {account}</div>
@@ -107,14 +108,14 @@ function PackItem({index}: { index: number }) {
         <div className='mt-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
             {tokenId != undefined && <PackContent tokenId={tokenId}/>}
         </div>
-    </div>
+    </div>) : <></>
 }
 
 function PackContent({tokenId}: { tokenId: bigint }) {
     const {data, isError, isLoading} = usePackCreatedByTokenId(tokenId)
 
     return <>
-        <PackModuleItem name='Eth' value={!!data?.ethValue ? formatEther(data!.ethValue!) : 'Loading'}/>
+        <PackModuleItem name='ETH' value={!!data?.ethValue ? formatEther(data!.ethValue!) : 'Loading'}/>
         {tokenId !== undefined && <Modules data={data} isLoading={isLoading} isError={isError}/>}
     </>
 }

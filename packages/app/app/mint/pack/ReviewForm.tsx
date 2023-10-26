@@ -72,7 +72,7 @@ export function ReviewData({eth, modules}: { eth: bigint, modules: Module[] }) {
     return <>
         <ContentCard className="self-stretch">
             <div className="flex justify-between">
-                <span className="text-card-title">Eth</span>
+                <span className="text-card-title">ETH</span>
             </div>
             <input className="text-right w-full " disabled={true}
                    value={formatEther(eth ?? 0)}/>
