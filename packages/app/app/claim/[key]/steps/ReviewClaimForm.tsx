@@ -73,13 +73,6 @@ export default function ReviewClaimForm() {
     useEffect(() => {
         setControls(<div className='w-full flex justify-between py-1 items-center'>
             <StepperIndicator step={2} />
-            {/*//TODO: needs to be removed*/}
-            <Button
-                isLoading={isLoading}
-                onClick={() => write && write()}
-                variant="navigation" rightIcon={<FiArrowRight className='text-inherit inline' />}>
-                Confirm Claim Test
-            </Button>
             <Button
                 isLoading={isLoading}
                 onClick={() => writeToRelayer()}
@@ -88,7 +81,7 @@ export default function ReviewClaimForm() {
             </Button>
 
         </div>)
-    }, [writeToRelayer, write, nextStep, setControls, previousStep, address, openConnectModal, isLoading]);
+    }, [writeToRelayer, nextStep, setControls, previousStep, address, openConnectModal, isLoading]);
 
     const ownerName = useEnsOrFormattedAddress(owner as Address);
     const claimerName = useEnsOrFormattedAddress(address);
