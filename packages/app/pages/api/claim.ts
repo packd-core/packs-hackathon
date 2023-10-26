@@ -75,7 +75,7 @@ export default async function handler(
         })
 
         if (weiEstimate > BigInt(tx.args.maxRefundValue)) {
-            res.status(400).send({ error: 'Transaction will cost more than maxRefundValue' })
+            res.status(400).send({ error: `Transaction will cost more than maxRefundValue.`, details: { weiEstimate, maxRefundValue: tx.args.maxRefundValue } })
             return;
         }
 
