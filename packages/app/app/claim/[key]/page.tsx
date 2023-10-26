@@ -38,6 +38,8 @@ export default function ClaimPage({params: { key }}: any) {
 
     const owner = useClaimState(state => state.owner)
 
+    const isSendingToRelayer = useClaimState(state => state.sendingToRelayer)
+
     const {
         data: receipt,
         isLoading,
@@ -65,6 +67,11 @@ export default function ClaimPage({params: { key }}: any) {
     )
     if (step === 4){
         return <PackClaimedCard/>
+    }
+    if (isSendingToRelayer) {
+        return <LoadingCard
+            title={'Your pack is on the way'}
+            text="Sending to Relayer"/>
     }
     return <Card
         className={'mx-auto w-full'}

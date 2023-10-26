@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import {useCallback, useEffect, useState} from "react";
 import Button from "@/app/components/button/Button";
 import { FiArrowRight } from "react-icons/fi";
 import { useClaimState } from "@/app/claim/[key]/useClaimState";
@@ -6,14 +6,12 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Address, useAccount, useNetwork } from "wagmi";
 import StepperIndicator from "@/app/claim/[key]/steps/components/StepperIndicator";
 import Arrow from '~/arrow.svg'
-import formatAddress from "@/src/lib/addressFormatter";
 import { usePackDataByTokenId } from "@/src/hooks/usePackDataByTokenId";
 import { ReviewData } from "@/app/mint/pack/ReviewForm";
 import { ContentTitle } from "@/app/components/content/ContentRow";
 import { useClaim } from "@/src/hooks/useClaim";
 import { useGenerateClaimData } from "@/src/hooks/useGenerateClaimData";
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
-import {RelayerRequest} from '@/pages/api/claim';
 import useEnsOrFormattedAddress from "@/src/hooks/useEnsOrAddress";
 
 // @ts-ignore
@@ -30,6 +28,7 @@ export default function ReviewClaimForm() {
     const tokenId = useClaimState(state => state.mintedTokenId);
     const { packData, rawEth, isLoading: isTokenDataLoading } = usePackDataByTokenId(tokenId!);
     const setLoading = useClaimState(state => state.setLoading);
+    const setSendingToRelayer = useClaimState(state => state.setSendingToRelayer);
 
     const maxRefundValue = useClaimState(state => state.maxRefundValue);
     const signedData = useClaimState(state => state.signedMessage);
@@ -49,6 +48,7 @@ export default function ReviewClaimForm() {
     } = useClaim(claimData, isTokenDataLoading ? undefined : (packData?.moduleData ?? []));
 
     const writeToRelayer = useCallback(async () => {
+        setSendingToRelayer(true);
         const body = {
             mainContractAddress: addresses.PackMain,
             chainId: chain?.id,
@@ -60,13 +60,15 @@ export default function ReviewClaimForm() {
             const data = await res.json();
             setLoading(data.hash);
         }
+        setSendingToRelayer(false);
+
     }, [addresses.PackMain, claimData, setLoading]);
 
     useEffect(() => {
         if (data?.hash) {
             setLoading(data!.hash)
         }
-    }, [data, data?.hash, setLoading]
+    }, [data, data?.hash, setLoading, setSendingToRelayer]
     )
 
 
