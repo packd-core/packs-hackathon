@@ -90,7 +90,7 @@ export default function RevokePackModal({isOpen, setIsOpen, tokenId}: RevokePack
         if (step === 1) {
             return <LoadingCard
                 title={'Revoking your Pack'}
-                text={'Waiting for confirmation...'}
+                text={'Waiting for Confirmation...'}
                 transactionHash={data?.hash}/>
         }
         return <Card
