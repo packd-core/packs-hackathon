@@ -12,9 +12,13 @@ export default function InitialForm() {
     const tokenId = useClaimState(state => state.mintedTokenId);
     const {packData,rawEth, isLoading} = usePackDataByTokenId(tokenId!);
     const setMaxRefundValue = useClaimState(state => state.setMaxRefundValue);
+    const setOwner = useClaimState(state => state.setOwner);
     useEffect(() => {
-        setMaxRefundValue(rawEth?.value ?? BigInt(0))
+        setMaxRefundValue(rawEth ?? BigInt(0))
     }, [rawEth,setMaxRefundValue]);
+    useEffect(() => {
+        setOwner(packData?.owner ?? '');
+    }, [packData,setOwner]);
     useEffect(() => {
         setControls(<div className='w-full flex justify-end py-1'>
                 <Button
@@ -26,7 +30,7 @@ export default function InitialForm() {
     }, [nextStep, setControls, previousStep]);
     return  <div className="flex flex-col w-full gap-2">
 
-            {<ReviewData eth={rawEth?.value ?? BigInt(0)}
+            {<ReviewData eth={rawEth ?? BigInt(0)}
                                        modules={packData?.fullModuleData ?? []}/>}
     </div>
 }

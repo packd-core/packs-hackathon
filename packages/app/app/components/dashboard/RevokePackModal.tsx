@@ -81,7 +81,7 @@ export default function RevokePackModal({isOpen, setIsOpen, tokenId}: RevokePack
                         <h2 className="text-2xl font-bold ">Revoke Pack</h2>
                     </div>
                     {packData && <ReviewData
-                        eth={rawEth?.value ?? BigInt(1)}
+                        eth={rawEth ?? BigInt(1)}
                         modules={packData.fullModuleData ?? []}/>}
 
                 </div>
