@@ -102,7 +102,6 @@ export function TokenSelectorFrom({closeModal, onAdd}: {
     }, [query, data]);
 
     useEffect(() => {
-        console.log(isAddress(query), filteredTokens.length)
         if (isAddress(query) && filteredTokens.length === 0) {
             setFilteredTokens([{name: 'Unknown',symbol: 'unknown', address: query}])
         }
