@@ -61,7 +61,7 @@ export default function ClaimPage({params: { key }}: any) {
     if (isLoading && hash) return (
         <LoadingCard
             title="Your pack is on the way..."
-            text='Waiting for Comfirmation...'
+            text='Waiting for Confirmation...'
             transactionHash={hash}/>
 
     )
@@ -71,7 +71,7 @@ export default function ClaimPage({params: { key }}: any) {
     if (isSendingToRelayer) {
         return <LoadingCard
             title={'Your pack is on the way'}
-            text="Sending to Relayer"/>
+            text="Sending to Relayer..."/>
     }
     return <Card
         className={'mx-auto w-full'}

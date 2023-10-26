@@ -97,7 +97,7 @@ const MintPage = () => {
     if (isLoading && hash) return (
         <LoadingCard
             title="Your pack is being created..."
-            text='Waiting for Comfirmation...'
+            text='Waiting for Confirmation...'
             transactionHash={hash}/>
 
     )
