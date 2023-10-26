@@ -60,7 +60,7 @@ export const ReviewForm = () => {
                 </tr>
                 <tr>
                     <td className='text-gray-500'>Gas fees</td>
-                    <td className='text-right'>$1.00</td>
+                    <td className="text-right">~0.000493 ETH</td>
                 </tr>
                 </tbody>
             </table>

@@ -149,7 +149,7 @@ export default function ReviewClaimForm() {
           </tr>
           <tr>
             <td className="text-gray-500">Gas fees</td>
-            <td className="text-right">$1.00</td>
+            <td className="text-right">0 ETH (Pack-Funded)</td>
           </tr>
         </tbody>
       </table>
