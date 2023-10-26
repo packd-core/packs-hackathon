@@ -59,7 +59,7 @@ export default function Dashboard() {
                 <PackTypeSelector selectedTypes={selectedTypes} setSelectedTypes={setSelectedTypes}/>
                 <ButtonLink href={'/mint'} leftIcon={<AiOutlinePlus/>}>Create</ButtonLink>
             </div>
-            <div className='flex rounded-2xl bg-white/40 min-h-[60vh] flex-col p-4'>
+            <div className='flex rounded-2xl bg-[#FDE0D933] min-h-[60vh] flex-col p-4'>
                 {!balance && <NoPackFound/>}
                 {!!balance && <PackList count={balance} selectedTypes={selectedTypes}/>}
             </div>
