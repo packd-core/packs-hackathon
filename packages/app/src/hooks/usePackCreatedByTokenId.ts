@@ -12,7 +12,7 @@ import {Module} from "../stores/useMintStore";
 //     const found = events.map(e => ({ transactionHash: e.transactionHash, blockNumber: e.blockNumber, tokenId: e.args[0], owner: e.args[1], modules: e.args[2] }))
 // }
 
-type RawCreationData = {
+export type RawCreationData = {
     // transfers: {
     //     address: string; from: any; to: any; amountOrTokenID: bigint;
     // }[];
@@ -23,7 +23,8 @@ type RawCreationData = {
     modules?: Address[];
     moduleData?: string[];
     decodedModuleData?: any[][];
-    fullModuleData?: Module[]
+    fullModuleData?: Module[];
+    ethValue?: bigint;
 }
 
 export async function encodeData(types: string[], values: any[]) {
@@ -86,6 +87,13 @@ export async function fetchPackCreatedByTokenId(tokenId: bigint | undefined, pac
         })[0].catch(e => {
             return undefined
         })
+        if (packCreatedEvent?.transactionHash) {
+            const txReceipt = await provider.getTransaction(packCreatedEvent?.transactionHash);
+            if (txReceipt) {
+                packCreatedEvent.ethValue = txReceipt.value;
+            }
+        }
+
 
 
         // // With the creation event , get the rest of the events on the same transaction

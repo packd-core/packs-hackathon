@@ -3,7 +3,7 @@ import Button from "@/app/components/button/Button";
 import {FiArrowRight} from "react-icons/fi";
 import {useClaimState} from "@/app/claim/[key]/useClaimState";
 import {useConnectModal} from "@rainbow-me/rainbowkit";
-import {useAccount, useNetwork} from "wagmi";
+import {Address, useAccount, useNetwork} from "wagmi";
 import StepperIndicator from "@/app/claim/[key]/steps/components/StepperIndicator";
 import Arrow from '~/arrow.svg'
 import formatAddress from "@/src/lib/addressFormatter";
@@ -14,6 +14,7 @@ import {useClaim} from "@/src/hooks/useClaim";
 import {useGenerateClaimData} from "@/src/hooks/useGenerateClaimData";
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
 import {RelayerRequest} from '@/pages/api/claim';
+import useEnsOrFormattedAddress from "@/src/hooks/useEnsOrAddress";
 
 // @ts-ignore
 BigInt.prototype.toJSON = function() { return this.toString() }
@@ -21,6 +22,7 @@ export default function ReviewClaimForm() {
     const nextStep = useClaimState(state => state.nextStep)
     const previousStep = useClaimState(state => state.previousStep)
     const setControls = useClaimState(state => state.setControls)
+    const owner = useClaimState(state => state.owner)
     const addresses = usePackdAddresses();
     const {openConnectModal} = useConnectModal()
     const {address} = useAccount()
@@ -79,22 +81,25 @@ export default function ReviewClaimForm() {
 
         </div>)
     }, [writeToRelayer, nextStep, setControls, previousStep, address, openConnectModal, isLoading]);
+
+    const ownerName = useEnsOrFormattedAddress(owner as Address);
+    const claimerName = useEnsOrFormattedAddress(address);
     return <div className="flex flex-col w-full gap-2 items-stretch">
         <div className='flex p-2 rounded-full bg-gray-800 items-center justify-around gap-4'>
             <div className="p-2 text-sm">
                 <div className='text-gray-400'>From</div>
-                {formatAddress(address)}
+                {ownerName}
             </div>
             <Arrow className="h-12 w-8"/>
             <div className="p-2 text-sm">
                 <div className="text-right text-gray-400">To</div>
-                {formatAddress(address)}
+                {claimerName}
             </div>
         </div>
         <ContentTitle>Contents</ContentTitle>
 
         <div className="flex flex-col gap-2">
-            {<ReviewData eth={rawEth?.value ?? BigInt(0)}
+            {<ReviewData eth={rawEth ?? BigInt(0)}
                          modules={packData?.fullModuleData ?? []}/>}
         </div>
         <table className="font-semibold mt-4">

@@ -3,6 +3,7 @@ import {ImNewTab} from "react-icons/im";
 import {Card} from "@/app/components/Card";
 import clsxm from "@/src/lib/clsxm";
 import {ExternalLink} from "@/app/components/links/ExternalLink";
+import {useTxExplorer} from "@/src/hooks/useBlockExplorer";
 
 type LoadingCardProps = {
     className?: string;
@@ -13,6 +14,7 @@ type LoadingCardProps = {
 }
 
 export function LoadingCard({className, children, title, text, transactionHash}: LoadingCardProps) {
+    const url = useTxExplorer(transactionHash as `0x${string}`)
     return <Card
         className={clsxm('mx-auto w-full bg-gray-800', className)}
         containerClassName='max-h-[60vh] overflow-y-auto'
@@ -27,7 +29,7 @@ export function LoadingCard({className, children, title, text, transactionHash}:
             <h1 className="text-lg sm:text-xl pt-4">{title}</h1>
             {
                 transactionHash &&
-                <ExternalLink href={'https://etherscan.io'}>Track it onchain</ExternalLink>
+                <ExternalLink href={url}>Track it OnChain</ExternalLink>
             }
             {children}
         </div>

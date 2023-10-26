@@ -1,12 +1,8 @@
-import {ExternalLink} from "@/app/components/links/ExternalLink";
 import Present from "~/present.svg";
 import {IoIosCheckmark} from "react-icons/io";
 import {Card} from "@/app/components/Card";
-import PackLinkDetails from "@/app/mint/pack/PackLinkDetails";
-import {useUrlEncodeDecode} from "@/src/hooks/useUrlEncodeDecode";
-import {usePackState} from "@/app/mint/usePackState";
-import {useMintStore} from "@/src/stores/useMintStore";
 import {BiLogoTwitter} from "react-icons/bi";
+import {CheckMyWalletButton} from "@/app/components/web3/CheckMyWalletButton";
 
 export function PackClaimedCard() {
 
@@ -15,11 +11,7 @@ export function PackClaimedCard() {
         controls={
             <div className='w-full flex justify-between py-1 px-2'>
                 <div>Claimed!</div>
-                <ExternalLink
-                    href={'https://etherscan.io'}
-                    className='text-white'>
-                    Check My Wallet
-                </ExternalLink>
+                <CheckMyWalletButton/>
             </div>
         }>
         <div className="flex flex-col items-center gap-8">
