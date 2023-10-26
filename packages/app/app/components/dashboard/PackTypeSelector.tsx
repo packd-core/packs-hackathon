@@ -22,7 +22,7 @@ export function PackTypeSelector({selectedTypes, setSelectedTypes}: { selectedTy
                       onClick={() => toggleType(PackState.CREATED)}>Created</ToggleButton>
         <ToggleButton selected={isSelected(PackState.OPENED)}
                       onClick={() => toggleType(PackState.OPENED)}>Claimed</ToggleButton>
-        <ToggleButton selected={isSelected(PackState.REVOKED)}
-                      onClick={() => toggleType(PackState.REVOKED)}>Revoked</ToggleButton>
+        {/*<ToggleButton selected={isSelected(PackState.REVOKED)}*/}
+        {/*              onClick={() => toggleType(PackState.REVOKED)}>Revoked</ToggleButton>*/}
     </div>
 }
