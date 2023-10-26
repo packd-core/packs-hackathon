@@ -1,12 +1,15 @@
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
-import {useMemo} from "react";
-import {KeySignManager} from "@/src/lib/keySignManager";
+import { useMemo } from "react";
+import { KeySignManager } from "@/src/lib/keySignManager";
+import { useNetwork } from "wagmi";
 
 export default function useKeySignManager() {
     const addresses = usePackdAddresses();
+    const network = useNetwork()
+
     return useMemo(() => new KeySignManager(
-        1337,
+        network.chain?.id ?? 31337,
         0,
         addresses.PackMain
-    ), [addresses.PackMain]);
+    ), [network.chain?.id, addresses.PackMain]);
 }
