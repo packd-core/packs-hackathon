@@ -28,7 +28,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
   ],
 );
 const { connectors } = getDefaultWallets({
-  appName: "Solidity Next.js Starter",
+  appName: "Packd",
   projectId: process.env.NEXT_PUBLIC_RAINBOWKIT_PROJECT_ID ?? "",
   chains,
 });

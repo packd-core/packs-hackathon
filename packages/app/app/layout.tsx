@@ -10,9 +10,9 @@ import clsxm from "@/src/lib/clsxm";
 
 const manrope = Manrope({subsets: ["latin"]});
 export const metadata: Metadata = {
-    title: "Solidity Next.js Starter",
+    title: "Packd",
     description:
-        "A starter kit for building full stack Ethereum dApps with Solidity and Next.js",
+        "Simplify Onboarding with Onchain Packs. Create and distribute Packs effortlessly. Enable your users to claim their essentials without worrying about gas fees.",
 };
 
 export default function RootLayout({
