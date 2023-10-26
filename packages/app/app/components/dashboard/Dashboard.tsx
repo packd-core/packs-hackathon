@@ -45,7 +45,7 @@ function NoPackFound() {
 
 
 export default function Dashboard() {
-    const [selectedTypes, setSelectedTypes] = useState<PackState[]>([])
+    const [selectedTypes, setSelectedTypes] = useState<PackState[]>([PackState.CREATED])
     const {address} = useAccount();
 
     const {balance, isLoading, isError, refetch} = useBalanceOf(
