@@ -6,7 +6,6 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Address, useAccount, useNetwork } from "wagmi";
 import StepperIndicator from "@/app/claim/[key]/steps/components/StepperIndicator";
 import Arrow from '~/arrow.svg'
-import { usePackDataByTokenId } from "@/src/hooks/usePackDataByTokenId";
 import { ReviewData } from "@/app/mint/pack/ReviewForm";
 import { ContentTitle } from "@/app/components/content/ContentRow";
 import { useClaim } from "@/src/hooks/useClaim";
@@ -26,10 +25,9 @@ export default function ReviewClaimForm() {
     const { address } = useAccount()
     const { chain } = useNetwork()
     const tokenId = useClaimState(state => state.mintedTokenId);
-    const { packData, rawEth, isLoading: isTokenDataLoading } = usePackDataByTokenId(tokenId!);
     const setLoading = useClaimState(state => state.setLoading);
     const setSendingToRelayer = useClaimState(state => state.setSendingToRelayer);
-
+    const packData = useClaimState(state => state.packData);
     const maxRefundValue = useClaimState(state => state.maxRefundValue);
     const signedData = useClaimState(state => state.signedMessage);
     const privateKey = useClaimState(state => state.privateKey);
@@ -45,7 +43,7 @@ export default function ReviewClaimForm() {
         write,
         data,
         isLoading,
-    } = useClaim(claimData, isTokenDataLoading ? undefined : (packData?.moduleData ?? []));
+    } = useClaim(claimData,  (packData?.moduleData ?? []));
 
     const writeToRelayer = useCallback(async () => {
         setSendingToRelayer(true);
@@ -102,7 +100,7 @@ export default function ReviewClaimForm() {
         <ContentTitle>Contents</ContentTitle>
 
         <div className="flex flex-col gap-2">
-            {<ReviewData eth={rawEth ?? BigInt(0)}
+            {<ReviewData eth={packData?.ethValue ?? BigInt(0)}
                          modules={packData?.fullModuleData ?? []}/>}
         </div>
         <table className="font-semibold mt-4">
