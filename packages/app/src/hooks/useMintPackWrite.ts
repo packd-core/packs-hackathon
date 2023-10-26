@@ -28,10 +28,6 @@ export function useMintPackWrite(
         args: [address, claimPublicKey, moduleList, additionalData],
     });
 
-    useEffect(() => {
-        console.log('useMintPackWrite',address, claimPublicKey, moduleList, additionalData)
-    }, [address, claimPublicKey, moduleList, additionalData])
-
     const {write, data, error, isLoading, isError} = usePackMainPack(config);
 
 

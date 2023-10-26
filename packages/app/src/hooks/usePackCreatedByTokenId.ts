@@ -79,7 +79,6 @@ export async function fetchPackCreatedByTokenId(tokenId: bigint | undefined, pac
         const packMain = new ethers.Contract(packMainAddress, packMainABI, signer);
 
         const filterByTokenId = packMain.filters.PackCreated(tokenId)
-        console.log('creation bloc: ', creationBlock)
         const packCreatedEvents = await packMain.queryFilter(filterByTokenId, creationBlock, creationBlock);
         const transfers = []
         if (packCreatedEvents.length === 0) return undefined

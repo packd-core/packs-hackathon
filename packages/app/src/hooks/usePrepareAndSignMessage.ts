@@ -15,11 +15,11 @@ export const usePrepareAndSignMessage = (
   const signer = useEthersSigner();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  useEffect(() => {
-
-      console.log("Signer loaded successfully");
-      console.log("Signer:", signer);
-  }, [signer]);
+  // useEffect(() => {
+  //
+  //     console.log("Signer loaded successfully");
+  //     console.log("Signer:", signer);
+  // }, [signer]);
 
   // useEffect(() => {
   //   if (signData) {
@@ -59,7 +59,6 @@ export const usePrepareAndSignMessage = (
       // }
       setIsLoading(true);
       signer?.signer?.signMessage(messageToSign).then((signature) => {
-        console.log("Signature:", signature);
         setSignData(signature);
         setIsLoading(false);
         setIsSuccess(true);

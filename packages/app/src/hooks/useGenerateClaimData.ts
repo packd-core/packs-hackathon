@@ -24,7 +24,6 @@ export const useGenerateClaimData = (
       if (tokenId==undefined || !privateKeyDecoded) {
         return;
       }
-      console.log("privateKeyDecoded", privateKeyDecoded);
       const sigOwner = await keySignManager.generateClaimSignature(
         privateKeyDecoded,
         ["uint256", "address"],

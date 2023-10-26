@@ -76,7 +76,6 @@ function PackList({count,selectedTypes}: { count: number, selectedTypes: PackSta
 function PackItem({index, selectedTypes}: { index: number, selectedTypes: PackState[] }) {
     const {address: owner} = useAccount();
     const addresses = usePackdAddresses();
-    console.log('index:', index, 'owner:', owner);
     const {tokenId, isLoading, isError, refetch} = useTokenOfOwnerByIndex(
         owner!,
         BigInt(index)
