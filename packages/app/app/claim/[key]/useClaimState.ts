@@ -1,6 +1,7 @@
 import {create} from 'zustand'
 import {Address} from "wagmi";
 import {ReactNode} from "react";
+import {RawCreationData} from "@/src/hooks/usePackCreatedByTokenId";
 
 
 type ClaimState = {
@@ -20,6 +21,8 @@ type ClaimState = {
     mintedTokenId?: bigint,
     setMintedTokenId: (mintedTokenId: bigint) => void,
     setLoading: (hash?: `0x${string}`) => void,
+    packData?:RawCreationData,
+    setPackData: (packData: RawCreationData) => void,
     nextStep: () => void,
     previousStep: () => void,
     controls: ReactNode,
@@ -39,6 +42,8 @@ export const useClaimState = create<ClaimState>()((set) => ({
     privateKey: undefined,
     owner: undefined,
     sendingToRelayer: false,
+    packData: undefined,
+    setPackData: (packData) => set((state) => ({packData})),
     setSendingToRelayer: (sendingToRelayer) => set((state) => ({sendingToRelayer})),
     setOwner: (owner) => set((state) => ({owner})),
     setPrivateKey: (privateKey) => set((state) => ({privateKey})),

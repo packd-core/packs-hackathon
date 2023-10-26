@@ -13,11 +13,15 @@ export default function InitialForm() {
     const {packData,rawEth, isLoading} = usePackDataByTokenId(tokenId!);
     const setMaxRefundValue = useClaimState(state => state.setMaxRefundValue);
     const setOwner = useClaimState(state => state.setOwner);
+    const setPackData = useClaimState(state => state.setPackData);
     useEffect(() => {
         setMaxRefundValue(rawEth ?? BigInt(0))
     }, [rawEth,setMaxRefundValue]);
     useEffect(() => {
-        setOwner(packData?.owner ?? '');
+        if (packData) {
+            setOwner(packData.owner ?? '');
+            setPackData(packData);
+        }
     }, [packData,setOwner]);
     useEffect(() => {
         setControls(<div className='w-full flex justify-end py-1'>
