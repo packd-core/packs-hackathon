@@ -1,6 +1,5 @@
 import {useEffect, useMemo, useState} from 'react'
 import usePackdAddresses from "@/src/hooks/usePackdAddresses";
-import {ContentCard} from "@/app/components/content/ContentCard";
 import {BsChevronDown, BsSearch, BsX} from "react-icons/bs";
 import {Address, useAccount, useBalance, useToken} from "wagmi";
 import Modal from "@/app/components/dialog/Modal";
@@ -136,20 +135,25 @@ export function TokenSelectorFrom({closeModal, onAdd}: {
 
 function TokenSearchItem({tokenAddress, name, onClick}: { tokenAddress: string, name: string, onClick: () => void }) {
     const {address} = useAccount()
-    const {data: balance, isLoading} = useBalance({
+    const {data: balance} = useBalance({
         address: address as Address,
         token: tokenAddress as Address,
         enabled: !!address
     })
-    const {data} = useToken({address: tokenAddress as Address})
+    const {data, isLoading, isError} = useToken({address: tokenAddress as Address})
+
     return <button
         onClick={onClick}
+        disabled={isLoading || isError}
         className=" text-left flex items-center p-1 hover:border-gray-500 p rounded-lg border border-transparent">
         <Icon className='h-6 mr-2'/>
-        <div className='flex flex-col grow'>
-            <span className='text-card-title'>{data?.name}: {data?.symbol}</span>
-            <span className='text-xs text-gray-400'>{tokenAddress}</span>
-        </div>
-        <span className='text-card-title'>{balance?.formatted}</span>
+        {isLoading && <span className='text-xs text-gray-400'>Loading...</span>}
+        {!isLoading && isError && <span className='text-xs text-red-500'>Error: The provided address is not a token</span>}
+        {!isLoading && !isError && <>
+            <div className='flex flex-col grow'>
+                <span className='text-card-title'>{data?.name}: {data?.symbol}</span>
+                <span className='text-xs text-gray-400'>{tokenAddress}</span>
+            </div>
+            <span className='text-card-title'>{balance?.formatted}</span></>}
     </button>
 }
