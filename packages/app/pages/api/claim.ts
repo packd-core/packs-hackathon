@@ -5,7 +5,7 @@ import { PackMain } from '@/app/abi/types/contracts/PackMain';
 import { JsonRpcProvider, JsonRpcSigner, Wallet } from 'ethers';
 
 export type ResponseData = {
-    error: string
+    error: "INVALID_BODY_PARAMETERS" | "GAS_ESTIMATATION_FAILED" | 'MAX_REFUND_VALUE_TOO_LOW' | "UNABLE_TO_BROADCAST_TX"
     details?: object
 } | {
     hash: string,
@@ -43,12 +43,14 @@ export default async function handler(
     res: NextApiResponse<ResponseData>
 ) {
     if (req.method !== 'POST') {
-        res.status(400).send({ error: '404 not found' })
+        res.status(400).send({ error: '404 not found' } as any)
         return;
     }
+
+
     const parsedBody = RelayerRequestSchema.safeParse(JSON.parse(req.body))
     if (!parsedBody.success) {
-        res.status(400).send({ error: 'Invalid body parameters', details: parsedBody.error })
+        res.status(400).send({ error: 'INVALID_BODY_PARAMETERS', details: parsedBody.error })
         return;
     }
 
@@ -61,26 +63,43 @@ export default async function handler(
     console.log('****************  Relay request *****************')
     console.log(tx)
 
-    try {
-        const feeData = await signer.provider?.getFeeData()
-        console.log('Fee data', feeData);
-        const gasCostEstimate = await tryEstimateGas()
-        const weiEstimate = gasCostEstimate * (feeData?.gasPrice ?? 1n)
 
-        console.log('Estimates', {
-            gasCostEstimate,
-            weiEstiamte: weiEstimate,
-            maxRefundValue: tx.args.maxRefundValue,
-            refundValue: weiEstimate
+    const feeData = await signer.provider?.getFeeData()
+    console.log('Fee data', feeData);
+    let gasCostEstimate: bigint
+    try {
+        const gasResult = await packMain.open.estimateGas({
+            ...tx.args,
+            refundValue: tx.args.maxRefundValue
+        }, [])
+
+        const margin = 15n
+
+        gasCostEstimate = (gasResult * margin) / 10n
+        console.log('Gas estimate', {
+            gasResult,
+            gasCostEstimate
         })
 
-        if (weiEstimate > BigInt(tx.args.maxRefundValue)) {
-            res.status(400).send({ error: `Transaction will cost more than maxRefundValue.`, details: { weiEstimate, maxRefundValue: tx.args.maxRefundValue } })
-            return;
-        }
+    } catch (e: any) {
+        return res.status(400).send({ error: 'GAS_ESTIMATATION_FAILED', details: e })
+    }
 
 
+    const weiEstimate = gasCostEstimate * (feeData?.gasPrice ?? 1n) // In mainnet, we cannot do this because it would result in netloss for the relayer.
 
+    console.log('Estimates', {
+        gasCostEstimate,
+        weiEstiamte: weiEstimate,
+        maxRefundValue: tx.args.maxRefundValue,
+        refundValue: weiEstimate
+    })
+
+    if (weiEstimate > BigInt(tx.args.maxRefundValue)) {
+        return res.status(400).send({ error: `MAX_REFUND_VALUE_TOO_LOW`, details: { weiEstimate, maxRefundValue: tx.args.maxRefundValue } })
+    }
+
+    try {
         const openReceipt = await packMain.open({
             ...tx.args,
             refundValue: weiEstimate
@@ -88,27 +107,17 @@ export default async function handler(
             gasLimit: gasCostEstimate,
         })
 
-        console.log(openReceipt);
+        console.log('hash', openReceipt.hash)
+
         return res.status(200).send({
             hash: openReceipt.hash,
             chainId: openReceipt.chainId.toString(),
             message: "Transaction sent"
-        });
+        })
+
     } catch (error: any) {
         console.log(error);
-        return res.status(500).send({ error: error })
-    }
-
-    async function tryEstimateGas(): Promise<bigint> {
-        try {
-            return await packMain.open.estimateGas({
-                ...tx.args,
-                refundValue: tx.args.maxRefundValue
-            }, []) * 12n / 10n
-        } catch (e) {
-            console.error('failed to estimate gas', e)
-        }
-        return BigInt(15_000_000)
+        return res.status(500).send({ error: "UNABLE_TO_BROADCAST_TX", details: error })
     }
 }
 
