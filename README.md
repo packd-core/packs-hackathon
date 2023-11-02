@@ -1,6 +1,6 @@
 ![Packd Logo](./packd.png)
 
-# Packs Main Repo
+# Packs Repo for ETHOnline 2023 Hackathon
 
 PACKD is a web3 project that introduces a new way of sharing and receiving digital assets.
 
